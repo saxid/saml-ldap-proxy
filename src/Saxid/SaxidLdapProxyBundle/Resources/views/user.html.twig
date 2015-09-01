@@ -1,0 +1,34 @@
+{% extends "SaxidLdapProxyBundle::base.html.twig" %}
+
+{% block body %}
+			<div class="page-header">
+				<h1>Benutzerdaten für {{ user.displayName }}</h1>
+			</div>
+
+			<section id="userdata">
+				<ul>
+					<li>uid: <code>{{ user.uid }}</code></li>
+					<li>uidNumber: <code>{{ user.uidNumber }}</code></li>
+					<li>eppn: <code>{{ user.eppn }}</code></li>
+					<li>eduPersonAffiliation: <code>{{ user.eduPersonAffiliation }}</code></li>
+					<li>eduPersonPrimaryAffiliation: <code>{{ user.eduPersonPrimaryAffiliation }}</code></li>
+					<li>eduPersonScopedAffiliation: <code>{{ user.eduPersonScopedAffiliation }}</code></li>
+					<li>surname: <code>{{ user.surname }}</code></li>
+					<li>givenName: <code>{{ user.givenName }}</code></li>
+					<li>eduPersonEntitlement: <code>{{ user.eduPersonEntitlement }}</code></li>
+					<li>organizationalUnitName: <code>{{ user.organizationalUnitName }}</code></li>
+					<li>commonName: <code>{{ user.commonName }}</code></li>
+					<li>email: <code>{{ user.email }}</code></li>
+					<li>eduPersonOrgUnitDN: <code>{{ user.eduPersonOrgUnitDN }}</code></li>
+					<li>displayName: <code>{{ user.displayName }}</code></li>
+					<li>academy: <code>{{ user.academy }}</code></li>
+					<li>academyDomain: <code>{{ user.academyDomain }}</code></li>
+				</ul>
+
+				<h2>Object SaxIDUser</h2>
+				<pre>{{ dump(user) }}</pre>
+
+				<h2>LDAP Data Array</h2>
+				<pre>{{ dump(user.createLdapDataArray()) }}</pre>
+			</section>
+{% endblock body %}

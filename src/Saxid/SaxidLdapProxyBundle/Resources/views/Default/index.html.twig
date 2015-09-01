@@ -1,4 +1,10 @@
+{% extends "SaxidLdapProxyBundle::base.html.twig" %}
+
+{% block body %}
 {{ dump(user) }}
 
-<a href="{{ path('') }}">Diese Daten in LDAP eintragen</a>
+<a href="{{ path('saxid_ldap_proxy_adduser') }}">Diese Daten in LDAP eintragen</a>
 <a href="{{ logout }}">Logout</a>
+
+{{ parent() }}
+{% endblock body %}
