@@ -1,0 +1,1891 @@
+\section{Installation von Identity Provider und Service Provider}
+\subsection{VirtualBox}
+Da der IdP die IPs per DHCP im VM-Netz übernehmen soll, muss der
+VirtualBox-interne DHCP Server für das Host-Only-Netzwerk deaktiviert werden.
+Laufen bereits VMs auf dem Host-System, die den VirtualBox-DHCP für das interne
+Netz nutzen, sollte ein neues Host-Only-Netzwerk angelegt werden:\newline
+Datei $\rightarrow$ Globale EInstellungen $\rightarrow$ Netzwerk $\rightarrow$
+Reiter "`Host-Only-Netzwerke"' $\rightarrow$ Host-Only-Netzwerk hinzufügen
+(kleine Buttons rechts) bzw. für den vorhandenen den DHCP-Server deaktivieren
+(über "`Host-Only-Netzwerk ändern"'-Button) $\rightarrow$ IP-Adresse des
+Adapters: 192.168.100.1/24
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.75\textwidth]{img/vbox-network-global.png}
+    \caption{Host-Only-Netzwerk - globale Einstellungen VirtualBox}
+\end{figure}
+
+Danach ist natürlich darauf zu achten, dass die beiden Shibboleth-VMs als
+zweiten Netzwerkadapter (neben dem NAT-Adapter) noch einen "`Host-only Adapter"'
+erhalten. Dieser muss als virtuellen Host-Adapter natürlich den gerade in den
+globalen Einstellungen konfigurierten Host-Only-Adapter nutzen.
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.75\textwidth]{img/vbox-network-vm.png}
+    \caption{Host-Only-Netzwerk in den VMs}
+\end{figure}
+
+\newpage
+\subsection{Grundkonfiguration auf beiden Systemen}
+\textcolor{red}{\textbf{Kennwörter für sudo (siehe auch Kapitel
+\ref{sec:spickzettel} \nameref{sec:spickzettel}):
+\newline IDP: idp\newline SP: sp}}
+
+PPA für SublimeText3 hinzufügen aktuelle Patches einspielen (hier für shibidp):
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo add-apt-repository ppa:webupd8team/sublime-text-3
+shib-idp@shibidp:~$ sudo apt-get update
+shib-idp@shibidp:~$ sudo apt-get upgrade
+\end{lstlisting}
+
+Pakete installieren:
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo apt-get install chromium-browser openssh-server apache2 php5 php5-mysql mysql-server vim ntp sublime-text-installer
+\end{lstlisting}
+Für MySQL wird das MySQL-root-Passwort abgefragt, hier wurde "`idp"' gewählt.
+\newline Optional kann noch der SSH-Server angepasst werden, die Config findet
+sich unter \mbox{/etc/ssh/sshd\_config}. Die Grundkonfiguration ist aber
+ausreichend.
+\subsection{Identity Provider - Teil 1}
+Im ersten Teil des IdP-Setups werden DNS, DHCP, LDAP, CA und der Shibboleth IdP
+installiert und konfiguriert. Um die Basiskonfiguration zu testen wird
+anschließend der SP aufgesetzt. Im zweiten Teil des IdP-Setups erfolgt dann der
+Feinschliff und die Konfiguration des Attribute-Resolvers und -Filters.
+\subsubsection{DNS}
+\step{/etc/network/interfaces anpassen (KEIN Gateway für eth1 setzen, alle was
+  nicht nach 192.168.100.0 geht wird über NAT geroutet. Das Gateway wird per
+  DHCP vom VM-Wirtsrechner verteilt!):}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/network/interfaces
+	# interfaces(5) file used by ifup(8) and ifdown(8)
+	auto lo
+	iface lo inet loopback
+		auto eth0
+	iface eth0 inet dhcp
+		auto eth1
+	iface eth1 inet static
+		address 192.168.100.100
+		netmask 255.255.255.0
+		dns-nameservers 192.168.100.100
+		dns-search shib.lan
+\end{lstlisting}
+\step{bind9 installieren und konfigurieren}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo apt-get install bind9
+shib-idp@shibidp:~$ sudo service bind9 stop
+\end{lstlisting}
+\step{da wir nur IPv4 nutzen kann eibe "`-4"' in der bind-config in die Optionen
+übernommen werden:} 
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/default/bind9 
+	# run resolvconf?
+	RESOLVCONF=no
+
+	# startup options for the server
+	OPTIONS="-u bind -4"
+\end{lstlisting}	
+\step{Zonendateien für Forward-Lookup erstellen}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/bind/db.shib.lan 
+	;; db.shib.lan
+	;; Forwardlookupzone für domainname
+	;;
+	$TTL 2D
+	@       IN      SOA     shib.lan. mail.shib.lan. (
+							2015051801      ; Serial
+									8H      ; Refresh
+									2H      ; Retry
+									4W      ; Expire
+									3H )    ; NX (TTL Negativ Cache)
+	@                               IN      NS      shib.lan.
+									IN      MX      10 mailserver.shib.lan.
+									IN      A       192.168.100.100
+	idp                             IN      A       192.168.100.100
+	localhost                       IN      A       127.0.0.1
+	sp                              IN      A       192.168.100.200
+	www                             IN      A       192.168.100.100
+
+\end{lstlisting}
+\step{Zonendateien für Reverse-Lookup erstellen}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/bind/db.100.168.192 
+	;; db.100.168.192
+	;; Reverselookupzone für shib.lan
+	;;
+	$TTL 2D
+	@       IN      SOA     shib.lan. mail.shib-idp.lan. (
+									2015051801      ; Serial
+											8H      ; Refresh
+											2H      ; Retry
+											4W      ; Expire
+											2D )    ; TTL Negative Cache
+
+	@       IN      NS      shib.lan.
+
+	100     IN      PTR     shib.lan.
+	200     IN      PTR     sp.shib.lan.
+\end{lstlisting}
+
+\step{neuen DNS "`bekannt machen"':}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/bind/named.conf.local 
+	//
+	// Do any local configuration here
+	//
+
+	// Consider adding the 1918 zones here, if they are not used in your
+	// organization
+	//include "/etc/bind/zones.rfc1918";
+
+	zone "shib.lan" {
+	type master;
+	file "/etc/bind/db.shib.lan";
+	};
+
+	zone "100.168.192.in-addr.arpa" {
+	type master;
+	file "/etc/bind/db.100.168.192";
+\end{lstlisting}
+\step{lokalen Nameserver als Default festlegen (immer der erste, der abgefragt
+wird, head wird immer zuerst eingebunden in die resolv.conf):}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/resolvconf/resolv.conf.d/head
+	# Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)
+	#     DO NOT EDIT THIS FILE BY HAND -- YOUR CHANGES WILL BE OVERWRITTEN
+	nameserver 192.168.100.100
+\end{lstlisting}
+\step{DNS-Weiterleitung aktivieren (forwarders { ... } einkommentieren, 8.8.8.8
+(google) ggf. durch lokalen DNS (der Uni) ersetzen):}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/bind/named.conf.options 
+	options {
+		directory "/var/cache/bind";
+
+		// If there is a firewall between you and nameservers you want
+		// to talk to, you may need to fix the firewall to allow multiple
+		// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+		// If your ISP provided one or more IP addresses for stable 
+		// nameservers, you probably want to use them as forwarders.  
+		// Uncomment the following block, and insert the addresses replacing 
+		// the all-0's placeholder.
+
+		forwarders {
+			8.8.8.8;
+		};
+
+		//========================================================================
+		// If BIND logs error messages about the root key being expired,
+		// you will need to update your keys.  See https://www.isc.org/bind-keys
+		//========================================================================
+		dnssec-validation auto;
+
+		auth-nxdomain no;    # conform to RFC1035
+		listen-on-v6 { any; };
+	};
+\end{lstlisting}
+\step{entweder jetzt einfach das System neu durchstarten (sudo reboot now)
+oder:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo ifdown eth0
+shib-idp@shibidp:~$ sudo ifdown eth1
+shib-idp@shibidp:~$ sudo ifup eth0
+shib-idp@shibidp:~$ sudo ifup eth1
+shib-idp@shibidp:~$ sudo service bind9 restart
+shib-idp@shibidp:~$ sudo resolvconf -u
+\end{lstlisting}				
+\step{Config checken:}
+Routing sollte so aussehen (10er Netz ist das NAT vom Wirt, kann ggf. anders sein):
+\begin{lstlisting}		
+shib-idp@shibidp:~$ route -n
+	Kernel-IP-Routentabelle
+	Ziel            Router          Genmask         Flags Metric Ref    Use Iface
+	0.0.0.0         10.0.2.2        0.0.0.0         UG    0      0        0 eth0
+	10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+	169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 eth1
+	192.168.100.0    0.0.0.0         255.255.255.0   U     0      0        0 eth1
+\end{lstlisting}
+Nameserver-Config (der zweite nameserver 192... Eintrag kommt aus der interfaces-Datei, kann dort ggf. auch weggelassen werden):
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/resolv.conf 
+	# Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)
+	#     DO NOT EDIT THIS FILE BY HAND -- YOUR CHANGES WILL BE OVERWRITTEN
+	nameserver 192.168.100.100
+	nameserver 139.20.64.1
+	nameserver 139.20.64.2
+	nameserver 192.168.100.100
+	search shib.lan
+\end{lstlisting}
+DNS-Auflösung mit dig testen (Ergebnisse sollten zumindest ähnlich sein, was auf jeden Fall funktionieren muss ist die Auflösung der Domain in eine IP):
+ Test nach "`außen"' über NAT:
+\begin{lstlisting}
+shib-idp@shibidp:~$ dig www.linux.org
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> www.linux.org
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9156
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 13, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;www.linux.org.			IN	A
+	
+	;; ANSWER SECTION:
+	www.linux.org.		12488	IN	CNAME	linux.org.
+	linux.org.		1055	IN	A	107.170.40.56
+	
+	;; AUTHORITY SECTION:
+	.			927	IN	NS	g.root-servers.net.
+	.			927	IN	NS	i.root-servers.net.
+	.			927	IN	NS	m.root-servers.net.
+	.			927	IN	NS	b.root-servers.net.
+	.			927	IN	NS	c.root-servers.net.
+	.			927	IN	NS	j.root-servers.net.
+	.			927	IN	NS	d.root-servers.net.
+	.			927	IN	NS	f.root-servers.net.
+	.			927	IN	NS	a.root-servers.net.
+	.			927	IN	NS	h.root-servers.net.
+	.			927	IN	NS	l.root-servers.net.
+	.			927	IN	NS	k.root-servers.net.
+	.			927	IN	NS	e.root-servers.net.
+	
+	;; Query time: 77 msec
+	;; SERVER: 192.168.56.150#53(192.168.56.150)
+	;; WHEN: Tue May 19 11:54:52 CEST 2015
+	;; MSG SIZE  rcvd: 283
+				
+\end{lstlisting} 
+Test des lokalen Netzes (shib.lan)
+\begin{lstlisting}
+shib-idp@shibidp:~$ dig idp.shib.lan
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> idp.shib.lan
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57983
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;idp.shib.lan.			IN	A
+
+	;; ANSWER SECTION:
+	idp.shib.lan.		172800	IN	A	192.168.100.100
+
+	;; AUTHORITY SECTION:
+	shib.lan.		172800	IN	NS	shib.lan.
+
+	;; ADDITIONAL SECTION:
+	shib.lan.		172800	IN	A	192.168.100.100
+
+	;; Query time: 1 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 11:56:47 CEST 2015
+	;; MSG SIZE  rcvd: 87
+\end{lstlisting}				
+Reverse-Lookup (idp.shib-lan hat im Beispiel 192.168.100.100)
+\begin{lstlisting}
+shib-idp@shibidp:~$ dig -x 192.168.100.100
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> -x 192.168.100.100
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 341
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;100.100.168.192.in-addr.arpa.	IN	PTR
+
+	;; ANSWER SECTION:
+	100.100.168.192.in-addr.arpa. 172800 IN	PTR	shib.lan.
+
+	;; AUTHORITY SECTION:
+	100.168.192.in-addr.arpa. 172800	IN	NS	shib.lan.
+
+	;; ADDITIONAL SECTION:
+	shib.lan.		172800	IN	A	192.168.100.100
+
+	;; Query time: 0 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 11:59:32 CEST 2015
+	;; MSG SIZE  rcvd: 108
+\end{lstlisting}
+Reverse-Lookup für 192.168.100.200 sollte auf den noch aufzusetzenden SP mit sp.shib.lan zeigen: 
+\begin{lstlisting}
+shib-idp@shibidp:~$ dig -x 192.168.100.200
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> -x 192.168.100.200
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8338
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;200.100.168.192.in-addr.arpa.	IN	PTR
+
+	;; ANSWER SECTION:
+	200.100.168.192.in-addr.arpa. 172800 IN	PTR	sp.shib.lan.
+
+	;; AUTHORITY SECTION:
+	100.168.192.in-addr.arpa. 172800	IN	NS	shib.lan.
+
+	;; ADDITIONAL SECTION:
+	shib.lan.		172800	IN	A	192.168.100.100
+
+	;; Query time: 0 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 11:58:30 CEST 2015
+	;; MSG SIZE  rcvd: 111
+\end{lstlisting}
+\step{Der DNS-Server kann jetzt auch auf dem VM-Host als Standard-Nameserver
+für das Host-Only-Netzwerk eingetragen werden (das, in welchem sich Host, IdP
+und SP bewegen sollen).}
+\subsubsection{DHCP}
+\step{DHCP3 Installieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo apt-get install isc-dhcp-server
+\end{lstlisting}
+\step{DHCP Config (/etc/dhcp/dhcpd.conf) - "`authoritative"' aktivieren,
+Domainname setzen, Bereich "`subnet"' anlegen und host "`sp"' auf IP
+192.168.100.200 fixieren (hier muss natürlich die MAC des eth1 Interfaces der SP-VM eingetragen werden):}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/dhcp/dhcpd.conf 
+	ddns-update-style none;
+	option domain-name "shib.lan";
+	option domain-name-servers 192.168.100.100;
+	default-lease-time 600;
+	max-lease-time 7200;
+	authoritative;
+	log-facility local7;
+	subnet 192.168.100.0 netmask 255.255.255.0 {
+		range 192.168.100.101 192.168.100.200;
+		interface eth1;
+	}
+
+	host sp {
+		hardware ethernet 08:00:27:9e:43:d3;
+		fixed-address 192.168.100.200;
+	}
+\end{lstlisting}
+
+\step{ DHCP starten:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo /etc/init.d/isc-dhcp-server start
+\end{lstlisting}
+\subsubsection{Certificate Authority aufsetzen und Zertifikate erstellen}
+\step{CA erstellen (im Home-Verzeichnis möglich):}
+\begin{lstlisting}
+shib-idp@shibidp:~$ mkdir CA
+shib-idp@shibidp:~$ cd CA
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -newca
+\end{lstlisting}
+\begin{itemize}
+ \item für Filename: <Enter> (neue erstellen)
+ \item CA-Passphrase (auch für cakey.pem): +\$hib-idp.C@\_p@\$\$phr@5e**
+ \item Country: DE
+ \item State: Saxony
+ \item Common Name: shib.lan
+ \item Rest leer.
+\end{itemize}
+			
+\step{eigene Zertifikate erstellen, die von der erstellten CA zertifiziert
+sind:}
+\anno{Anm.: es werden drei Zertifikate erstellt: eines für den PHP-LDAP-Admin,
+eines für den Shibboleth IdP und ein "default"-Zertifikat (www.shib.lan)} 
+\anno{Anm.: vorher prüfen, ob das .rnd-File im Home-Verzeichnis dem Nutzer
+gehört:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ ll ~/ | grep .rnd
+	-rw-------  1 root     root      1024 Mai 20 08:49 .rnd
+\end{lstlisting}			
+Ist das nicht so (hier gehört das File root), dann sollte dies dem Nutzer (hier
+shib-idp) übergeben werden:
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo chown shib-idp:shib-idp ~/.rnd
+\end{lstlisting}		
+\step{neuen Request für LDAP-Zertifikat erstellen und signieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -newreq
+\end{lstlisting}	
+\begin{itemize}
+\item Hier genutzt:
+\item Passphrase: +\$hib-idp.LD@P\_p@\$\$**
+\item Country: DE
+\item State: Saxony
+\item Common Name: ldap.shib.lan
+\item Rest leer.
+\end{itemize}
+
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -sign
+	Passphrase: CA-Passphrase (von oben)
+	Sign Sertificae: y
+	Commit: y
+\end{lstlisting}
+\step{im Verzeichnis CA sollte es jetzt so aussehen:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ ll
+	drwxrwxr-x  3 shib-idp shib-idp 4096 Mai 20 10:28 ./
+	drwxr-xr-x 20 shib-idp shib-idp 4096 Mai 20 10:09 ../
+	drwxrwxr-x  6 shib-idp shib-idp 4096 Mai 20 10:29 demoCA/
+	-rw-rw-r--  1 shib-idp shib-idp 4481 Mai 20 10:29 newcert.pem
+	-rw-rw-r--  1 shib-idp shib-idp 1834 Mai 20 10:26 newkey.pem
+	-rw-rw-r--  1 shib-idp shib-idp  985 Mai 20 10:26 newreq.pem
+\end{lstlisting}
+\step{für die Nutzung im Apache muss noch die Passphrase aus dem newkey.pem-File
+entfernt werden:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ openssl rsa -in newkey.pem > ldap.shib.lan_key.pem 
+\end{lstlisting}
+Passphrase: die vom LDAP-Key oben\newline
+\step{Schlüssel und Key verschieben ("`Backup"'):}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ mv ldap.shib.lan_key.pem demoCA/private/
+shib-idp@shibidp:~/CA$ mv newcert.pem demoCA/certs/ldap.shib.lan_cert.pem
+\end{lstlisting}
+\step{Aufräumen:} 
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ rm newreq.pem newkey.pem 
+\end{lstlisting}
+\step{CA und LDAP-Cert bereitstellen:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ sudo cp demoCA/private/ldap.shib.lan_key.pem /etc/ssl/private/
+shib-idp@shibidp:~/CA$ sudo cp demoCA/certs/ldap.shib.lan_cert.pem /etc/ssl/certs/
+shib-idp@shibidp:~/CA$ sudo cp demoCA/cacert.pem /usr/share/ca-certificates/shib.lan/shib.lan.crt
+\end{lstlisting}
+
+\step{Das Zertifikat beinhalten noch "`Überhang"' der entfernt werden
+muss:\newline Aus /etc/ssl/certs/ldap.shib.lan\_cert.pem muss alles entfernt werden, was
+AUSSERHALB von BEGIN CERTIFICATE ... END CERTIFICATE steht, am Ende beinhaltet
+die Datei nur noch etwas wie:}
+\begin{lstlisting}
+	-----BEGIN CERTIFICATE-----
+	MIIDqzCCApOgAwIBAgIJAM857DKIFfSRMA0GCSqGSIb3DQEBCwUAMFQxCzAJBgNV
+	.....
+	DjW8g+KdwDa09JetID+kHiwto3NB3IN2YzUfr7nhSQ==
+	-----END CERTIFICATE-----
+\end{lstlisting}
+
+\step{CA über ca-certificates importieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ sudo dpkg-reconfigure ca-certificates 
+\end{lstlisting}
+neue Zertifizierungsstellen vertrauen: JA \newline
+in der Liste shib,lan/shib.lan.crt raussuchen und anhaken (Leertaste), mit Enter weiter
+		
+\step{Zertifikate für www.shib.lan und idp.shib.lan erstellen:}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -newreq
+\end{lstlisting}
+\begin{itemize}
+\item Passphrase: +\$hib-idp.www\_p@\$\$**
+\item Country: DE
+\item State: Saxony
+\item Common Name: ldap.shib.lan
+\item Rest leer.
+\end{itemize}
+\begin{lstlisting}
+			shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -sign
+\end{lstlisting}
+\begin{itemize}
+  \item cakey-Passphrase com CA (oben)
+  \item sign und commit: y
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ openssl rsa -in newkey.pem > www.shib.lan_key.pem
+shib-idp@shibidp:~/CA$ mv www.shib.lan_key.pem demoCA/private/
+shib-idp@shibidp:~/CA$ mv newcert.pem demoCA/certs/www.shib.lan_cert.pem
+shib-idp@shibidp:~/CA$ rm new*
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -newreq
+\end{lstlisting}
+\begin{itemize}
+\item Passphrase: +\$hib-idp.idp\_p@\$\$**
+\item Country: DE
+\item State: Saxony
+\item Common Name: ldap.shib.lan
+\item Rest leer.
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -sign
+\end{lstlisting}
+\begin{itemize}
+\item cakey-Passphrase com CA (oben)
+\item sign und commit: y
+\end{itemize}			
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ openssl rsa -in newkey.pem > idp.shib.lan_key.pem
+shib-idp@shibidp:~/CA$ mv idp.shib.lan_key.pem demoCA/private/
+shib-idp@shibidp:~/CA$ mv newcert.pem demoCA/certs/idp.shib.lan_cert.pem
+shib-idp@shibidp:~/CA$ rm new*
+shib-idp@shibidp:~/CA$ sudo cp demoCA/certs/www.shib.lan_cert.pem /etc/ssl/certs/
+shib-idp@shibidp:~/CA$ sudo cp demoCA/certs/idp.shib.lan_cert.pem /etc/ssl/certs/
+shib-idp@shibidp:~/CA$ sudo cp demoCA/private/www.shib.lan_key.pem /etc/ssl/private/
+shib-idp@shibidp:~/CA$ sudo cp demoCA/private/idp.shib.lan_key.pem
+/etc/ssl/private/
+\end{lstlisting}
+\step{www.shib.lan\_cert.pem und
+idp.shib.lan\_cert.pem (/etc/ssl/certs/) noch vom "`Überhang"' bereinigen (wie
+oben)}
+
+\step{ wird Chromium / Chrome zum Browsen verwendet, so sollte hier die CA als
+ vertrauenswürdig hinzugefügt werden:}
+\begin{itemize}
+  \item Chromium:
+  \begin{itemize}
+    \item  Chromium in der VM: Einstellungen $\rightarrow$
+  erweiterte Einstellungen $\rightarrow$ HTTPS/SSL (Zertifikate verwalten...) $\rightarrow$ Zertifizierungsstellen (Chromium) $\rightarrow$ Importieren... $\rightarrow$ cacert.pem aus /home/shib-idp/CA/demoCA/ importieren $\rightarrow$ Haken bei "`Diesem Zertifikat zur Identifizierung von Webseiten vertrauen"' $\rightarrow$ OK 
+  \item  Chromium auf VM-Host: analog, nur muss hier die cacert.pem noch per
+  (Win)SCP oder Shared Folder für den Zugriff bereitgestellt
+  werden)\footnote{\textbf{{\color{red} ACHTUNG:} DAMIT BEWERTET DAS
+  WIRTS-SYSTEM VON DER DEMO-CA SIGNIERTE CERTS ALS ABSOLUT VERTRAUENSWÜRDIG! WENN MÖGLICH
+  HIER DIE DEMO-CA NUR FÜR DIE VMs ALS VALIDE STAMMZERTIFIZIERUNGSSTELLE
+  NUTZEN. 
+  AUF DEM VM-WIRT SOLLTE IN KAUF GENOMMEN WERDEN, IM BROWSER DIE WARNUNG
+  WEGKLICKEN ZU MÜSSEN.}}
+  \end{itemize} 
+\end{itemize}
+		
+\step{Mozilla: hier sollte es genügen, einmalig das Zertifikat herunterzuladen
+(auf dem Hinweisbildschirm) und als Ausnahme zu genehmigen} 
+\step{ggf. ist noch ein Browser-Neustart nötig.}
+
+\subsubsection{Apache Grundkonfig}
+\step{Apache sollte per default schon für SSL vorbereitet sein, die ports.conf
+sollte so aussehen:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/apache2/ports.conf 
+	# If you just change the port or add more ports here, you will likely also
+	# have to change the VirtualHost statement in
+	# /etc/apache2/sites-enabled/000-default.conf
+
+	Listen 80
+
+	<IfModule ssl_module>
+		Listen 443
+	</IfModule>
+
+	<IfModule mod_gnutls.c>
+		Listen 443
+	</IfModule>
+\end{lstlisting}
+
+\step{ggf. Apache SSL Modul aktivieren und Apache neustarten:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo a2enmod ssl
+shib-idp@shibidp:~$ sudo service apache2 restart
+\end{lstlisting}
+
+\step{VHost für www.shib.lan:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/apache2/sites-available/www.conf 
+	<VirtualHost*:443> 
+		ServerAdmin admin@shib.lan
+		ServerName www.shib.lan
+		ServerAlias www.shib.lan
+		SSLEngine On
+		SSLCertificateFile /etc/ssl/certs/www.shib.lan_cert.pem
+		SSLCertificateKeyFile /etc/ssl/private/www.shib.lan_key.pem
+		DocumentRoot "/var/www/html"
+		<Directory "/var/www/html">
+				Options FollowSymLinks
+				AllowOverride AuthConfig
+				Order allow,deny
+				Allow from all
+		</Directory>
+		DirectoryIndex index.html
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+\end{lstlisting}
+\step{Vhost für Redirect von https://shib.lan und http://shib.lan auf
+https://www.shib.lan}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/apache2/sites-available/redirect.conf 
+	<VirtualHost*:443> 
+	ServerName shib.lan
+		ServerAlias shib.lan 
+		SSLEngine On
+		SSLCertificateFile /etc/ssl/certs/www.shib.lan_cert.pem
+		SSLCertificateKeyFile /etc/ssl/private/www.shib.lan_key.pem
+		Redirect 301 / https://www.shib.lan/
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+
+	<VirtualHost *:80>
+		ServerAdmin admin@shib.lan
+		ServerName shib.lan
+		ServerAlias shib.lan 
+		Redirect 301 / https://www.shib.lan/
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+\end{lstlisting}
+\step{VHosts aktivieren und Apache neu starten} 
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo a2ensite ldap.conf
+shib-idp@shibidp:~$ sudo a2ensite www.conf
+shib-idp@shibidp:~$ sudo a2ensite redirect.conf
+shib-idp@shibidp:~$ sudo service apache2 restart
+\end{lstlisting}
+
+\subsubsection{OpenLDAP-Server}
+\step{Pakete  slapd, ldap-utils installieren}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo apt-get install slapd ldap-utils
+\end{lstlisting}
+\step{OpenLDAP konfigurieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo dpkg-reconfigure slapd
+\end{lstlisting}
+\begin{itemize}
+	\item DNS: shib.lan
+	\item Organisation: shib
+	\item Password: idp
+	\item Backend: hdb
+	\item Löschen: nein
+	\item Backup alte DB: ja
+	\item LDAPv2 erlauben: nein
+\end{itemize}
+
+\step{TLS aktivieren:}
+\begin{itemize}
+  	\item Zertifikate in LDAP-Config laden: folgendes LDIF erzeugen und dieses
+  ins Backend einfügen:
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/ldap/tls.ldif 
+	\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+	\# CONFIGURATION for Support of TLS
+	\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+	\# Add TLS supported access to user passwords for LDAP clients
+	\# to the LDAP config. 
+
+	dn: cn=config
+	changetype: modify
+	add: olcTLSCACertificateFile
+	olcTLSCACertificateFile: /etc/ssl/certs/ldap.shib.lan_cert.pem
+
+	dn: cn=config
+	changetype: modify
+	add: olcTLSCertificateKeyFile
+	olcTLSCertificateKeyFile: /etc/ssl/private/ldap.shib.lan_key.pem
+
+	\#dn: cn=config
+	\#changetype: modify
+	\#delete: olcTLSCertificateFile
+
+	dn: cn=config
+	changetype: modify
+	add: olcTLSCertificateFile
+	olcTLSCertificateFile: /etc/ssl/certs/ldap.shib.lan_cert.pem
+	
+shib-idp@shibidp:~$ sudo ldapmodify -Y EXTERNAL -H ldapi:/// -f /etc/ldap/tls.ldif
+\end{lstlisting}		
+		
+\step{slapd (openldap) benötigt natürlich noch Rechte, um die
+Zertifikatschlüssel auslesen zu dürfen:}
+\begin{lstlisting}
+shib-idp@shibidp:/etc/ldap$ sudo adduser openldap ssl-cert
+\end{lstlisting}
+
+\subsubsection*{(OPTIONAL phpldapadmin - man kann alle Arbeiten am LDAP auch
+über das Apache Directory Studio wesentlich komfortabler erledigen)} * phpldapadmin installieren und Link erzeugen \footnote{Bug:
+https://bugs.launchpad.net/ubuntu/+source/phpldapadmin/+bug/1321831}
+\begin{lstlisting}		
+shib-idp@shibidp:~$ sudo ln -s /etc/apache2/conf-enabled /etc/apache2/conf.d
+shib-idp@shibidp:~$ sudo apt-get install phpldapadmin
+shib-idp@shibidp:~$ sudo rm /etc/apache2/conf.d
+shib-idp@shibidp:~$ sudo service apache2 restart
+\end{lstlisting}
+* phpldapadmin für PHP >=5.5 patchen\footnote{
+(http://sourceforge.net/u/nihilisticz/phpldapadmin/ci/7e53dab990748c546b79f0610c3a7a58431e9ebc/\#diff-1}:\newline
+Diese Patches sind im aktuellen Paket schon angewandt, was fehlt ist
+in /usr/share/phpldapadmin/lib/TemplateRender.php:
+\begin{lstlisting}
+Z.2469: 
+-- $default = $this->getServer()->getValue('appearance','password_hash'); 
+++ $default = $this->getServer()->getValue('appearance','password_hash_custom');
+\end{lstlisting}
+		
+* Apache VHost für phpldapadmin und SSL:
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/apache2/sites-available/ldap.conf 
+	<VirtualHost *:443>
+		ServerAdmin admin@shib.lan
+		ServerName ldap.shib.lan
+		ServerAlias ldap.shib.lan
+		SSLEngine On
+		SSLCertificateFile /etc/ssl/certs/ldap.shib.lan_cert.pem
+		SSLCertificateKeyFile /etc/ssl/private/ldap.shib.lan_key.pem
+		DocumentRoot "/usr/share/phpldapadmin/htdocs"
+		<Directory "/usr/share/phpldapadmin">
+				Options FollowSymLinks
+				AllowOverride AuthConfig
+				Order allow,deny
+				Allow from all
+		</Directory>
+		DirectoryIndex index.php
+		ErrorLog "/var/log/apache2/phpldapadmin_error.log"
+		CustomLog "/var/log/apache2/phpldapadmin_access.log" combined
+	</VirtualHost>		
+	
+	<VirtualHost *:80>
+			ServerAdmin admin@shib.lan
+			ServerName ldap.shib.lan
+			ServerAlias ldap.shib.lan 
+			Redirect 301 / https://ldap.shib.lan/
+			ErrorLog ${APACHE_LOG_DIR}/error.log
+			CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+\end{lstlisting}
+		
+* VHost aktivieren und Apache neu starten (oder auch reload, geht beides):
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo a2ensite ldap.conf
+shib-idp@shibidp:~$ sudo service apache2 restart
+\end{lstlisting}
+
+* Schemata für eduPerson, schac, dfnEduPerson herunterladen:
+\begin{lstlisting}
+shib-idp@shibidp:~$ mkdir -p LDAP/schema
+shib-idp@shibidp:~$ cd LDAP/schema
+\end{lstlisting}
+* folgende Schemata herunterladen:
+\begin{itemize}
+  \item
+  https://wiki.refeds.org/download/attachments/1606048/schac-20150413-1.5.0.schema.txt
+  \item https://spaces.internet2.edu/display/macedir/OpenLDAP+eduPerson
+  \item
+  https://www.aai.dfn.de/fileadmin/documents/attributes/200811/dfneduperson-1.0.schema.txt
+\end{itemize}
+
+* bis auf eduperson liegen die Schemata im "`schema"' Format vor, es wird jedoch LDIF benötigt. Daher ist hier eine Umwandlung nötig:
+\newline * Anlegen einer schema\_convert.conf mit folgendem Inhalt:
+\begin{lstlisting}
+shib-idp@shibidp:~/LDAP/schema$ cat schema_convert.conf 
+	include /etc/ldap/schema/core.schema
+	include /etc/ldap/schema/collective.schema
+	include /etc/ldap/schema/corba.schema
+	include /etc/ldap/schema/cosine.schema
+	include /etc/ldap/schema/duaconf.schema
+	include /etc/ldap/schema/dyngroup.schema
+	include /etc/ldap/schema/inetorgperson.schema
+	include /etc/ldap/schema/java.schema
+	include /etc/ldap/schema/misc.schema
+	include /etc/ldap/schema/nis.schema
+	include /etc/ldap/schema/openldap.schema
+	include /etc/ldap/schema/ppolicy.schema
+	include /etc/ldap/schema/ldapns.schema
+	include /etc/ldap/schema/schac-1.5.0.schema
+	include /etc/ldap/schema/dfneduperson-1.0.schema
+\end{lstlisting}
+					
+* dfneduperson und schac schema kopieren:
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema$ sudo cp dfneduperson-1.0.schema /etc/ldap/schema/
+	shib-idp@shibidp:~/LDAP/schema$ sudo cp schac-1.5.0.schema /etc/ldap/schema/
+\end{lstlisting}
+* eduperson war schon LDIF, dies muss natürlich auch in's Schema:	
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema$ sudo cp eduperson.ldif /etc/ldap/schema/
+\end{lstlisting}
+* konvertierung mittels slapcat:
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema$ mkdir ldif
+	shib-idp@shibidp:~/LDAP/schema$ slapcat -f schema_convert.conf -F ./ldif -n0
+\end{lstlisting}
+* in den cn=schema - Ordner wechseln 
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema$ cd ldif/cn\=config/cn\=schema/
+\end{lstlisting}
+* neu erstellte LDIFs nach /etc/ldap/schema kopieren (die Zahlen in den {} können variieren!):
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema/ldif/cn=config/cn=schema$ sudo mv cn\=\{13\}schac-1.ldif /etc/ldap/schema/schac-1.5.0.ldif
+	shib-idp@shibidp:~/LDAP/schema/ldif/cn=config/cn=schema$ sudo mv cn\=\{14\}dfneduperson-1.ldif /etc/ldap/schema/dfneduperson-1.0.ldif
+\end{lstlisting}
+* die LDIFs müssen noch nachbearbeitet werden:
+\begin{lstlisting}
+	# Zeile 3 in dfneduperson-1.0.ldif muss geändert werden:
+	Z3 -- dn: cn={14}dfneduperson-1
+	Z3 ++ dn: cn=dfneduperson,cn=schema,cn=config
+	\# Zeile 5 in dfneduperson-1.0.ldif:
+	Z5 -- cn: {14}dfneduperson-1
+	Z5 ++ cn: dfneduperson
+	 
+	# die letzten 7 Zeilen müssen entfernt werden (Werte können variieren):
+	Zn-6 -- structuralObjectClass: olcSchemaConfig
+	Zn-5 -- entryUUID: 571ca564-932e-1034-8286-bdb5afc52f0d
+	Zn-4 -- creatorsName: cn=config
+	Zn-3 -- createTimestamp: 20150520112310Z
+	Zn-2 -- entryCSN: 20150520112310.319976Z#000000#000#000000
+	Zn-1 -- modifiersName: cn=config
+	Zn   -- modifyTimestamp: 20150520112310Z
+	# analog gilt für schac-1.5.0.ldif für Zeilen3, 5 und die letzten 7:
+	Z3 -- dn: cn={13}schac-1
+	Z3 ++ dn: cn=schac,cn=schema,cn=config
+	Z5 -- cn: {13}schac-1
+	Z5 ++ cn: schac
+	Zn-6 -- structuralObjectClass: olcSchemaConfig
+	Zn-5 -- entryUUID: 571c9ff6-932e-1034-8285-bdb5afc52f0d
+	Zn-4 -- creatorsName: cn=config
+	Zn-3 -- createTimestamp: 20150520112310Z
+	Zn-2 -- entryCSN: 20150520112310.319976Z#000000#000#000000
+	Zn-1 -- modifiersName: cn=config
+	Zn   -- modifyTimestamp: 20150520112310Z
+\end{lstlisting}
+* LDIFs zum Schema von LDAP hinzufügen:
+\begin{lstlisting}
+	shib-idp@shibidp:~/LDAP/schema$ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/eduperson.ldif
+	shib-idp@shibidp:~/LDAP/schema$ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/dfneduperson-1.0.ldif 
+	shib-idp@shibidp:~/LDAP/schema$ sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/schac-1.5.0.ldif 
+\end{lstlisting}
+* phpldapadmin konfigurieren (in /etc/phpldapadmin):
+\begin{lstlisting}
+	# Backup Orginal-Konfig:
+		shib-idp@shibidp:/etc/phpldapadmin$ sudo cp config.php config.php.bak
+	# Server-DN:
+		Z300 -- $servers->setValue('server','base',array('dc=example,dc=com'));
+		Z300 ++ $servers->setValue('server','base',array('dc=shib,dc=lan'));
+		Z326 -- $servers->setValue('login','bind_id','cn=admin,dc=example,dc=com');
+		Z326 ++ $servers->setValue('login','bind_id','cn=admin,dc=shib,dc=lan');
+\end{lstlisting}
+* das Web-Interface ist jetzt über https://ldap.shib.lan/ erreichbar, Login ist wie oben angegeben cn=admin,dc=shib,dc=lan mit Passwort idp
+
+\subsubsection*{Apache Directory Studio - verwendung idealerweise auf dem
+Hostrechner:}
+\begin{itemize}
+  \item aktuelle Version hier raussuchen
+  https://directory.apache.org/studio/download/
+  \item ist der DNS auf dem Host eingetragen, so kann einfach per ldap.shib.lan auf den ldap server zugegriffen werden
+  \begin{itemize}
+		\item user: cn=admin,dc=shib,dc=lan
+		\item pass: idp
+\end{itemize}
+\end{itemize}
+\subsubsection*{Baum und Beispielnutzer:}
+Wurzel: dc=shib,dc=lan\newline
+OUs: students, staff, extern\newline
+\begin{center}
+\footnotesize
+	\begin{tabular}{| l | l | l | p{10cm} | }
+	\hline
+	uid & Passwort & ou & Attribute \\ \hline\hline
+	alice & alice & students & 
+sn: Alison\newline
+givenName: Alice\newline
+cn: Alice Alison\newline
+dfnEduPersonFieldOfStudyString: BWL\newline
+dfnEduPersonStudyBranch3: 021\newline
+dfnEduPersonStudyBranch2: 30\newline
+dfnEduPersonStudyBranch1: 03\newline
+eduPersonAffiliation: student\newline
+eduPersonAffiliation: member\newline
+eduPersonPrimaryAffiliation: student\newline
+eduPersonEntitlement: urn:mace:dir:common-lib-terms
+	 \\ \hline 
+	 bob & bob & students &
+sn: Bobinson\newline
+givenName: Bob\newline
+cn: Bob Bobinson\newline
+dfnEduPersonFieldOfStudyString: Maschinenbau\newline
+dfnEduPersonStudyBranch1: 08\newline
+dfnEduPersonStudyBranch2: 63\newline
+dfnEduPersonStudyBranch3: 104\newline
+eduPersonAffiliation: student\newline
+eduPersonAffiliation: member\newline
+eduPersonPrimaryAffiliation: student\newline
+eduPersonEntitlement: urn:mace:dir:common-lib-terms\\ \hline
+	ed & ed & students & 
+sn: Edison\newline
+givenName: Ed\newline
+cn: Ed Edison\newline
+dfnEduPersonFieldOfStudyString: Verfahrenstechnik\newline
+dfnEduPersonStudyBranch1: 08\newline
+dfnEduPersonStudyBranch2: 63\newline
+dfnEduPersonStudyBranch3: 226\newline
+eduPersonAffiliation: student\newline
+eduPersonAffiliation: member\newline
+eduPersonPrimaryAffiliation: student\newline
+eduPersonEntitlement: urn:mace:dir:common-lib-terms \\ \hline
+	carl & carl & staff & 
+sn: Carlson\newline
+givenName: Carl\newline
+cn: Carl Carlson\newline
+eduPersonAffiliation: member\newline
+eduPersonAffiliation: staff\newline
+eduPersonPrimaryAffiliation: staff\newline
+dfnEduPersonCostCenter: 01-INFO\newline
+eduPersonEntitlement: urn:mace:dir:common-lib-terms\\ \hline
+	gunhild & gunhild & staff & 
+sn: Gunhildson\newline
+givenName: Gundhild\newline
+cn: Gunhild Gunhildson\newline
+eduPersonAffiliation: member\newline
+eduPersonAffiliation: staff\newline
+eduPersonPrimaryAffiliation: staff\newline
+dfnEduPersonCostCenter: 02-CHEM\newline
+eduPersonEntitlement: urn:mace:dir:common-lib-terms\\ \hline
+	nils & nils & extern & 
+sn: Nilson	\newline
+givenName: Nilson\newline
+cn: Nils Nilson\newline
+eduPersonAffiliation: affiliate\newline
+eduPersonPrimaryAffiliation: affiliate\\ \hline
+	\end{tabular}
+\end{center}
+\subsubsection{Identity Provider}
+\step{Apache Module installieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo a2enmod headers
+shib-idp@shibidp:~$ sudo a2enmod proxy_ajp 
+shib-idp@shibidp:~$ sudo service apache2 restart
+\end{lstlisting}
+\step{Tomcat 7 installieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo apt-get install openjdk-7-jre
+shib-idp@shibidp:~$ sudo apt-get install tomcat7
+\end{lstlisting}
+\step{Tomcat Konfiguration anpassen:} 
+* editieren der /etc/default/tomcat7:
+\begin{lstlisting}
+Z21 -- JAVA_OPTS="-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC"
+Z21 ++ JAVA_OPTS="-Djava.awt.headless=true -Xmx512m -XX:+UseConcMarkSweepGC"
+Z32 -- #TOMCAT7_SECURITY=no
+Z32 ++ TOMCAT7_SECURITY=no
+\end{lstlisting}				
+* Rechte für SSL-Zertifikate:
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo adduser tomcat7 ssl-cert
+\end{lstlisting}
+\step{Identity Provider 2.4.4 installieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ mkdir IdP
+shib-idp@shibidp:~$ cd IdP/
+shib-idp@shibidp:~/IdP$ wget http://shibboleth.net/downloads/identity-provider/2.4.4/shibboleth-identityprovider-2.4.4-bin.tar.gz
+shib-idp@shibidp:~/IdP$ tar -xzf shibboleth-identityprovider-2.4.4-bin.tar.gz
+shib-idp@shibidp:~/IdP$ cd shibboleth-identityprovider-2.4.4/
+shib-idp@shibidp:~/IdP/shibboleth-identityprovider-2.4.4$ sudo JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/ ./install.sh
+\end{lstlisting}
+\begin{itemize}	
+	\item Installationverzeichnis: /opt/shibboleth-idp 
+	\item FQDN: idp.shib.lan
+	\item Keystore Pass: *\$hib-idp.k3yst0r3\_p@\$\$**
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo chown tomcat7 /opt/shibboleth-idp/{metadata,logs}
+\end{lstlisting}
+\step{Apache und Tomcat Konfigurieren \footnote{
+siehe
+auch https://www.aai.dfn.de/dokumentation/identity-provider/konfiguration/}:} 
+* Apache-Config (VHost für IDP anlegen (/etc/apache2/sites-available)):
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/apache2/sites-available/idp.conf
+	<VirtualHost *:443>
+	  ServerName              idp.shib.lan
+	  SSLEngine               on
+	  SSLCertificateFile      /etc/ssl/certs/idp.shib.lan_cert.pem
+	  SSLCertificateKeyFile   /etc/ssl/private/idp.shib.lan_key.pem
+	  SSLProtocol All -SSLv2 -SSLv3
+	  SSLHonorCipherOrder On
+	  SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
+
+	  <Location /idp>
+		Allow from all
+		ProxyPass ajp://localhost:8009/idp
+		#verhindern, dass die Login Seite in iFrames eingebunden wird
+		Header always append X-FRAME-OPTIONS "DENY"
+	  </Location>
+	</VirtualHost>
+	 
+	Listen 8443
+	 
+	<VirtualHost *:8443>
+	  ServerName              idp.hib.lan
+	  SSLEngine               on
+	  SSLCertificateFile      /opt/shibboleth-idp/credentials/idp.crt
+	  SSLCertificateKeyFile   /opt/shibboleth-idp/credentials/idp.key
+	  SSLProtocol All -SSLv2 -SSLv3
+	  SSLHonorCipherOrder On
+	  SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
+	  SSLVerifyClient optional_no_ca
+	  SSLVerifyDepth  10
+	  SSLOptions      +StdEnvVars +ExportCertData
+	 
+	  <Location /idp>
+		Allow from all
+		ProxyPass ajp://localhost:8009/idp
+	  </Location>
+	</VirtualHost>
+\end{lstlisting}			
+\step{VHosts aktivieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo a2ensite idp.conf 
+shib-idp@shibidp:~$ sudo service apache2 reload
+\end{lstlisting}		
+\step{Tomcat Konfiguration:}
+* server.xml anpasssen (/etc/tomcat7/) und in den Abschnitt <Service name="Catalina"> (Z.56) einen neuen Connector einfügen:
+\begin{lstlisting}
+<!-- Define an AJP 1.3 Connector on port 8009 -->
+<Connector port="8009" address="127.0.0.1"
+  enableLookups="false" 
+  redirectPort="8443"
+  protocol="AJP/1.3"
+  maxPostSize="100000" />
+\end{lstlisting}
+
+* idp.xml erzeugen (in /etc/tomcat7/Catalina/localhost/)
+\begin{lstlisting}
+shib-idp@shibidp:~$ cat /etc/tomcat7/Catalina/localhost/idp.xml 
+<Context docBase="/opt/shibboleth-idp/war/idp.war"
+		 privileged="true"
+		 antiResourceLocking="false"
+		 antiJARLocking="false"
+		 unpackWAR="false"
+		 swallowOutput="true" />
+\end{lstlisting}
+* Tomcat neu starten:
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo service tomcat7 restart
+\end{lstlisting}
+* kurz warten, bis der IdP komplett geladen ist.
+* Aufrufen: https://idp.shib.lan/idp/profile/Status, hier sollte einfach
+"`ok"' stehen - das IdP Servlet läuft!
+\step{Logs bei Fehlern:}
+\begin{itemize}
+  \item IdP: /opt/shibboleth-idp/logs/idp-process.log
+  \item Tomcat: /var/log/tomcat7/catalina.XXX.log (XXX = Datum)
+\end{itemize}
+\step{IdP konfigurieren:}
+* service.xml anpassen (/opt/shibboleth-idp/conf) / polling Intervall für Auslesen des Attribute-Resolvers und -Filters auf 5 Minuten setzen für den Test:
+\begin{lstlisting}
+Z14: -- <srv:Service id="shibboleth.AttributeResolver" xsi:type="attribute-resolver:ShibbolethAttributeResolver">
+Z14: ++ <srv:Service id="shibboleth.AttributeResolver" xsi:type="attribute-resolver:ShibbolethAttributeResolver" configurationResourcePollingFrequency="PT5M">
+
+Z18: -- <srv:Service id="shibboleth.AttributeFilterEngine" xsi:type="attribute-afp:ShibbolethAttributeFilteringEngine">
+Z18: ++ <srv:Service id="shibboleth.AttributeFilterEngine" xsi:type="attribute-afp:ShibbolethAttributeFilteringEngine" configurationResourcePollingFrequency="PT5M">
+\end{lstlisting}
+			
+* relying-party.xml anpassen (/opt/shibboleth-idp/conf) / wir sind NICHT im
+DFN-AAI mit dem Testsystem, daher unter <metadata:MetadataProvider
+id="ShibbolethMetadata" xsi:type="metadata:ChainingMetadataProvider"> (Z. 76) zusätzlich einfügen:
+\begin{lstlisting}	
+  <metadata:MetadataProvider id="sp.shib.lan" xsi:type="metadata:FileBackedHTTPMetadataProvider"
+      metadataURL="https://sp.shib.lan/Shibboleth.sso/Metadata"
+      backingFile="/opt/shibboleth-idp/metadata/sp-metadata.xml" />
+\end{lstlisting}
+* handler.xml (/opt/shibboleth-idp/conf) / Login-Methode unter <ph:LoginHandler>
+konfigurieren:
+\begin{lstlisting}
+		Z115: --    <ph:LoginHandler xsi:type="ph:RemoteUser">
+		Z116: --		<ph:AuthenticationMethod>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</ph:AuthenticationMethod>
+		Z117: --	</ph:LoginHandler>
+		Z115: ++    <!-- <ph:LoginHandler xsi:type="ph:RemoteUser">
+		Z116: ++		<ph:AuthenticationMethod>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</ph:AuthenticationMethod>
+		Z117: ++	</ph:LoginHandler> -->
+		* "Einkommentieren" von UsernamePassword:
+		Z129: -- <!-- 
+		Z134: -- -->
+\end{lstlisting}
+* login.config (/opt/shibboleth-idp/conf) - LDAP Auth definieren:
+\begin{lstlisting}
+	Z29: -- /*
+	Z30: --	edu.vt.middleware.ldap.jaas.LdapLoginModule required
+	Z31: --	  ldapUrl="ldap://ldap.example.org"
+	Z32: --	  baseDn="ou=people,dc=example,dc=org"
+	Z33: --	  ssl="true"
+	Z34: --	  userFilter="uid={0}";
+	Z35: --	*/
+	
+	Z29: ++ 
+	Z30: ++ edu.vt.middleware.ldap.jaas.LdapLoginModule required
+	Z31: ++ 	  ldapUrl="ldap://ldap.shib.lan"
+	Z32: ++ 	  baseDn="dc=shib,dc=lan"
+	Z33: ++	      subtreeSearch="true"
+	Z34: ++ 	  tls="true"
+	Z35: ++ 	  bindDn="cn=admin,dc=shib,dc=lan"
+	Z36: ++ 	  bindCredential="idp"
+	Z37: ++ 	  userFilter="uid={0}";
+\end{lstlisting}
+* logging.xml (/opt/shibboleth-idp/conf) anpassen: (Debugging für LDAP setzen)
+\begin{lstlisting}
+	Z15: -- <logger name="edu.vt.middleware.ldap" level="WARN"/>
+	Z15: ++ <logger name="edu.vt.middleware.ldap" level="DEBUG"/>
+\end{lstlisting}
+\step{Um jetzt den IdP testen zu können, muss hier der Tomcat neu gestartet
+werden. Außerdem wird jetzt natürlich der Service Provider gebraucht.}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo service tomcat7 restart
+\end{lstlisting}
+
+\subsection{Service Provider}
+\subsubsection{Netzwerk}
+\step{Interface auf DHCP für NAT und Host-Only (in der VM-Config müssen sich IdP
+und SP im selben Host-Only-Netzwerk befinden)}
+\begin{lstlisting}
+shib-sp@shib-sp:~$ cat /etc/network/interfaces 
+	# interfaces(5) file used by ifup(8) and ifdown(8)
+	auto lo
+	iface lo inet loopback
+
+	auto eth0
+	iface eth0 inet dhcp
+
+	auto eth1
+	iface eth1 inet dhcp
+\end{lstlisting}
+	
+\step{DNS auf Reihenfolge 192.168.100.100 forcen\footnote{Ansonsten
+wird versucht, über eth0 aufzulösen, was natürlich nicht klappt. Hier muss noch eine Lösung
+gefunden werden!}:} 
+* anpassen der dhclient.conf (/etc/dhcp) und neues DHCP-Lease holen:
+\begin{lstlisting}
+Z20: ++ supersede domain-name-servers 192.168.100.100;
+		
+shib-sp@shib-sp:~$ sudo ifdown eth0
+shib-sp@shib-sp:~$ sudo ifdown eth1
+shib-sp@shib-sp:~$ sudo ifup eth0
+shib-sp@shib-sp:~$ sudo ifup eth1
+\end{lstlisting}
+\step{wenn der DHCP und DNS auf dem IdP korrekt konfiguriert ist, sollte
+folgendes funktionieren:}
+* DNS-Abfrage über NAT:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ dig google.de
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> google.de
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 21335
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 13, ADDITIONAL: 1
+
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;google.de.			IN	A
+
+	;; ANSWER SECTION:
+	google.de.		117	IN	A	173.194.32.223
+	google.de.		117	IN	A	173.194.32.215
+	google.de.		117	IN	A	173.194.32.207
+	google.de.		117	IN	A	173.194.32.216
+
+	;; AUTHORITY SECTION:
+	.			18625	IN	NS	c.root-servers.net.
+	.			18625	IN	NS	d.root-servers.net.
+	.			18625	IN	NS	i.root-servers.net.
+	.			18625	IN	NS	b.root-servers.net.
+	.			18625	IN	NS	h.root-servers.net.
+	.			18625	IN	NS	e.root-servers.net.
+	.			18625	IN	NS	m.root-servers.net.
+	.			18625	IN	NS	g.root-servers.net.
+	.			18625	IN	NS	j.root-servers.net.
+	.			18625	IN	NS	l.root-servers.net.
+	.			18625	IN	NS	a.root-servers.net.
+	.			18625	IN	NS	f.root-servers.net.
+	.			18625	IN	NS	k.root-servers.net.
+
+	;; Query time: 9 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 12:59:48 CEST 2015
+	;; MSG SIZE  rcvd: 313
+\end{lstlisting}
+* DNS-Abfrage auf shib.lan:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ dig shib.lan
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> shib.lan
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 16736
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;shib.lan.			IN	A
+
+	;; ANSWER SECTION:
+	shib.lan.		172800	IN	A	192.168.100.100
+
+	;; AUTHORITY SECTION:
+	shib.lan.		172800	IN	NS	shib.lan.
+
+	;; Query time: 0 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 12:59:52 CEST 2015
+	;; MSG SIZE  rcvd: 67
+\end{lstlisting}
+* DNS auf sp.shib.lan (SP-VM selbst):
+\begin{lstlisting}
+shib-sp@shib-sp:~$ dig sp.shib.lan
+	; <<>> DiG 9.9.5-3ubuntu0.2-Ubuntu <<>> sp.shib.lan
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 23654
+	;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 4096
+	;; QUESTION SECTION:
+	;sp.shib.lan.			IN	A
+	
+	;; ANSWER SECTION:
+	sp.shib.lan.		172800	IN	A	192.168.100.200
+	
+	;; AUTHORITY SECTION:
+	shib.lan.		172800	IN	NS	shib.lan.
+	
+	;; ADDITIONAL SECTION:
+	shib.lan.		172800	IN	A	192.168.100.100
+	
+	;; Query time: 0 msec
+	;; SERVER: 192.168.100.100#53(192.168.100.100)
+	;; WHEN: Tue May 19 13:00:01 CEST 2015
+	;; MSG SIZE  rcvd: 86
+\end{lstlisting}
+
+\subsubsection{Apache und Shibboleth Daemon (shibd)}
+\step{Apache + Shibboleth-SP Daemon (shibd) installieren}
+\begin{lstlisting}
+shib-sp@shib-sp:~$ sudo apt-get install apache2
+shib-sp@shib-sp:~$ sudo a2enmod ssl
+shib-sp@shib-sp:~$ sudo apt-get install libapache2-mod-shib2 
+shib-sp@shib-sp:~$ sudo adduser _shibd ssl-cert
+shib-sp@shib-sp:~$ sudo service apache2 restart
+shib-sp@shib-sp:~$ sudo service shibd restart
+\end{lstlisting} 
+\step{wir brauchen noch ein gültiges Zertifikat für den SP. Zufälligerweise
+haben wir ja im IdP eine eigene CA...}
+* im Homeverzeichnis im SP:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ mkdir certs
+\end{lstlisting}
+
+\step{$\rightarrow$ Wechseln zur IdP-VM}
+* Wechseln nach CA im Home-Verzeichnis (cd ~/CA)
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -newreq
+\end{lstlisting}
+\begin{itemize}
+\item Passphrase: +\$hib-idp.sp\_p@\$\$**
+\item Country: DE
+\item State: Saxony
+\item Common Name: ldap.shib.lan
+\item Rest leer.
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ /usr/lib/ssl/misc/CA.pl -sign
+\end{lstlisting}
+\begin{itemize}	
+\item cakey-Passphrase vom CA: +\$hib-idp.C@\_p@\$\$phr@5e**
+\item sign und commit: y
+\end{itemize}
+\begin{lstlisting}
+shib-idp@shibidp:~/CA$ openssl rsa -in newkey.pem > sp.shib.lan_key.pem
+shib-idp@shibidp:~/CA$ mv sp.shib.lan_key.pem demoCA/private/
+shib-idp@shibidp:~/CA$ mv newcert.pem demoCA/certs/sp.shib.lan_cert.pem
+shib-idp@shibidp:~/CA$ rm new*
+shib-idp@shibidp:~/CA$ scp demoCA/private/sp.shib.lan_key.pem shib-sp@sp.shib.lan:/home/shib-sp/certs
+	# connect: yes
+	# passwort: sp
+shib-idp@shibidp:~/CA$ scp demoCA/certs/sp.shib.lan_cert.pem  shib-sp@sp.shib.lan:/home/shib-sp/certs
+shib-idp@shibidp:~/CA$ scp demoCA/cacert.pem  shib-sp@sp.shib.lan:/home/shib-sp/certs/shib.lan.crt
+\end{lstlisting}
+
+\step{$\rightarrow$ Wechseln zur SP-VM}
+\step{Zertifikate installieren}	
+* aus dem Zertifikat (sp.shib.lan\_cert.pem) wieder alles AUSSERHALB von BEGIN
+RSA PRIVATE KEY und END RSA PRIVATE KEY entfernen, danach:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ sudo cp certs/sp.shib.lan\_key.pem /etc/ssl/private/
+shib-sp@shib-sp:~$ sudo cp certs/sp.shib.lan\_cert.pem /etc/ssl/certs/
+shib-sp@shib-sp:~$ sudo mkdir /usr/share/ca-certificates/shib.lan
+shib-sp@shib-sp:~$ sudo cp certs/shib.lan.crt /usr/share/ca-certificates/shib.lan/
+shib-sp@shib-sp:~$ sudo dpkg-reconfigure ca-certificates 
+	# yes
+	# shib.lan suchen und anhaken -> OK
+\end{lstlisting}
+
+* VHost für sp.shib.lan erzeugen:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ cat /etc/apache2/sites-available/sp.conf 
+	<VirtualHost *:443>
+	  ServerName              sp.shib.lan
+	  ServerAdmin             webmaster@example.org
+	  DocumentRoot            /var/www/html
+	  SSLEngine on
+	  SSLCertificateFile      /etc/ssl/certs/sp.shib.lan_cert.pem
+	  SSLCertificateKeyFile   /etc/ssl/private/sp.shib.lan_key.pem
+	 
+	  SSLCertificateChainFile /etc/ssl/certs/shib.lan.pem
+	 
+	  SSLProtocol All -SSLv2 -SSLv3
+	  SSLHonorCipherOrder On
+	  SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
+
+	  ErrorLog ${APACHE_LOG_DIR}/error.log
+	  CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	  <Location /shibtest>
+		AuthType shibboleth
+		ShibRequireSession On
+		require valid-user
+		DirectoryIndex shib-info.php
+	  </Location>
+	  
+	  # optional (Metadata-Access at entityID-URL)
+	  Redirect seeother /shibboleth https://sp.shib.lan/Shibboleth.sso/Metadata
+	 
+	</VirtualHost>
+
+	<VirtualHost *:80>
+	  ServerAdmin admin@shib.lan
+	  ServerName sp.shib.lan
+	  ServerAlias sp.shib.lan 
+	  Redirect 301 / https://sp.shib.lan/
+	  ErrorLog ${APACHE_LOG_DIR}/error.log
+	  CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	  <Location /shibtest>
+		Redirect 301 / https://sp.shib.lan/shibtest
+	  </Location>
+
+	</VirtualHost>
+\end{lstlisting}
+* Verzeichnis shibtest im Apache-www-Root erstellen und einfache
+Beispiel-index.html erzeugen:
+\begin{lstlisting}
+shib-sp@shib-sp:~$ sudo mkdir /var/www/html/shibtest
+shib-sp@shib-sp:~$ cat /var/www/html/shibtest/index.html 
+	<html>
+	<head>
+	<title>SHIBTEST</title>
+	</head>
+	<body>
+	<h1>SHIBTEST</h1>
+	</body>
+	</html>
+			
+shib-sp@shib-sp:~$ sudo a2ensite sp.conf
+shib-sp@shib-sp:~$ sudo service apache2 restart
+\end{lstlisting}
+
+* SP konfigurieren (shibboleth2.xml  in /etc/shibboleth/)
+\begin{lstlisting}
+Z23: -- <ApplicationDefaults entityID="https://sp.example.org/shibboleth"
+Z24: --      REMOTE_USER="eppn persistent-id targeted-id"
+Z23: ++ <ApplicationDefaults entityID="https://sp.shib.lan/shibboleth"
+Z24: ++      REMOTE_USER="eppn persistent-id targeted-id uniqueID"
+Z25: ++      signing="back" requireTransportAuth="false">
+
+Z35: -- <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
+Z56: --           checkAddress="false" handlerSSL="false" cookieProps="http">
+Z35: ++ <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
+Z36: ++           checkAddress="false" consistentAddress="true" handlerSSL="true" cookieProps="https">
+
+Z44: -- <SSO entityID="https://idp.example.org/idp/shibboleth"
+Z45: --   discoveryProtocol="SAMLDS" discoveryURL="https://ds.example.org/DS/WAYF">
+Z46: --  SAML2 SAML1
+Z47: -- </SSO>
+
+Z44: ++ <SSO entityID="https://idp.shib.lan/idp/shibboleth">
+Z45: ++ 	SAML2 
+Z46: ++ </SSO>
+
+Z59: -- <Handler type="Session" Location="/Session" showAttributeValues="false"/>
+Z59: ++ <Handler type="Session" Location="/Session" showAttributeValues="true"/>
+
+Z77: ++ <MetadataProvider type="XML" url="https://idp.xacml.lan/idp/shibboleth" />
+
+Z98: -- <CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>
+Z98: ++ <CredentialResolver type="File" key="/etc/ssl/private/sp.shib.lan_key.pem" certificate="/etc/ssl/certs/sp.shib.lan_cert.pem"/>
+\end{lstlisting}
+
+* shibd neu starten:
+\begin{lstlisting}
+	shib-sp@shib-sp:~$ sudo service shibd restart
+\end{lstlisting}
+* jetzt sollte der Login über Shibboleth funktionieren: 
+\begin{itemize}
+\item https://sp.shib.lan/shibtest/ \footnote{Achtung: shibtest ist nur für SSL mit Shibboleth-Auth, normales http geht auch ohne! (Es ist ja nur ein Test ;-) )}
+\item User:Password: alice:alice
+\end{itemize}
+
+\subsection{Identity Provider - Teil 2}
+\subsubsection{uApprove}
+\step{$\rightarrow$ Wechsel in IdP-VM}
+\step{uApprove 2.6.0 herunterladen und entpacken}
+\begin{lstlisting}
+shib-idp@shibidp:~$ mkdir IdP/uApprove
+shib-idp@shibidp:~$ cd IdP/uApprove/
+shib-idp@shibidp:~/IdP/uApprove$ wget
+https://forge.switch.ch/redmine/attachments/download/1823/uApprove-2.6.0.zip shib-idp@shibidp:~/uApprove$ unzip uApprove-2.6.0.zip
+shib-idp@shibidp:~/IdP/uApprove$ cd uApprove-2.6.0/
+\end{lstlisting}
+\step{uApprove Bibliotheken in die IdP Quellen kopieren}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ cp lib/*.jar /home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/lib/
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ cp lib/jdbc/*.jar /home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/lib/
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ cp lib/jdbc/optional/mysql-connector-java-5.1.34.jar /home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/lib/
+\end{lstlisting}
+\subsubsection*{uApprove Konfiguration, Web-App bereit stellen und SQL-DB
+bauen:} 
+\step{Config-Templates kopieren}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ sudo cp manual/configuration/uApprove.properties /opt/shibboleth-idp/conf/
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ sudo cp manual/configuration/uApprove.xml /opt/shibboleth-idp/conf/
+\end{lstlisting}
+\step{Webapp kopieren:}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ mkdir /home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp/uApprove
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ cp webapp/* /home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp/uApprove/
+\end{lstlisting}
+\step{Datenbank vorbereiten:}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/uApprove/uApprove-2.6.0$ mysql -uroot -p
+	# Passwort: idp
+\end{lstlisting}
+\begin{lstlisting}[language=sql]
+mysql> set names 'utf8';
+mysql> set character set utf8;
+mysql> charset utf8;
+mysql> create database if not exists uApprove character set=utf8;
+mysql> create user 'uApprove'@'localhost' identified by 'idp';
+mysql> grant insert, select, update, delete on uApprove.* to 
+   'uApprove'@'localhost';
+mysql> flush privileges;
+mysql> create table ToUAcceptance (userId varchar(104) not null, version varchar(104) not null, fingerprint varchar(256) not null, acceptanceDate timestamp default current_timestamp not null, primary key (userId,version));
+mysql> create table AttributeReleaseConsent(userId varchar(104) not null, relyingPartyId varchar(104) not null, attributeId varchar(104) not null, valuesHash varchar(256) not null, consentDate timestamp default current_timestamp not null, primary key (userId, relyingPartyId, attributeId));
+mysql> show fields from AttributeReleaseConsent;
+mysql> quit
+\end{lstlisting}
+\step{uApprove konfigurieren:}
+* web.xml anpassen (/home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp/WEB-INF/)
+\begin{lstlisting}
+Z14: -- <param-value>$IDP_HOME$/conf/internal.xml; $IDP_HOME$/conf/service.xml;</param-value>
+Z14: ++ <param-value>$IDP_HOME$/conf/internal.xml; $IDP_HOME$/conf/service.xml; $IDP_HOME$/conf/uApprove.xml;</param-value>
+
+ab Z53ff: hinzufügen:
+<!-- uApprove -->
+<filter>
+	<filter-name>uApprove</filter-name>
+	<filter-class>ch.SWITCH.aai.uApprove.Intercepter</filter-class>
+</filter>
+<filter-mapping>
+	<filter-name>uApprove</filter-name>
+	<url-pattern>/profile/Shibboleth/SSO</url-pattern>
+	<url-pattern>/profile/SAML1/SOAP/AttributeQuery</url-pattern>
+	<url-pattern>/profile/SAML1/SOAP/ArtifactResolution</url-pattern>
+	<url-pattern>/profile/SAML2/POST/SSO</url-pattern>
+	<url-pattern>/profile/SAML2/POST-SimpleSign/SSO</url-pattern>
+	<url-pattern>/profile/SAML2/Redirect/SSO</url-pattern>
+	<url-pattern>/profile/SAML2/Unsolicited/SSO</url-pattern>
+	<url-pattern>/Authn/UserPassword</url-pattern>
+</filter-mapping>
+
+<servlet>
+	<servlet-name>uApprove - Terms Of Use</servlet-name>
+	<servlet-class>ch.SWITCH.aai.uApprove.tou.ToUServlet</servlet-class>
+</servlet>
+ 
+<servlet-mapping>
+	<servlet-name>uApprove - Terms Of Use</servlet-name>
+	<url-pattern>/uApprove/TermsOfUse</url-pattern>
+</servlet-mapping>
+ 
+<servlet>
+	<servlet-name>uApprove - Attribute Release</servlet-name>
+	<servlet-class>ch.SWITCH.aai.uApprove.ar.AttributeReleaseServlet</servlet-class>
+</servlet>
+ 
+<servlet-mapping>
+	<servlet-name>uApprove - Attribute Release</servlet-name>
+	<url-pattern>/uApprove/AttributeRelease</url-pattern>
+</servlet-mapping>
+\end{lstlisting}
+* uApprove.xml anpassen (/opt/shibboleth-idp/conf/)
+\begin{lstlisting}
+Z10: -- <context:property-placeholder location="classpath:/configuration/uApprove.properties" />
+Z10: ++ <context:property-placeholder location="file:/opt/shibboleth-idp/conf/uApprove.properties" />
+\end{lstlisting}
+* uApprove.properties anpassen (/opt/shibboleth-idp/conf/)
+\begin{lstlisting}
+Z26: -- view.defaultLocale          = en
+Z26: ++ view.defaultLocale          = de
+
+Z38: -- database.password           = secret
+Z38: ++ database.password           = idp
+\end{lstlisting}
+* Checkbox, um Zustimmung zu uApprove am IdP-Portal aufheben zu können
+einfügen, dazu login.jsp anpassen (/home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp)
+\begin{lstlisting}
+Z50: ++ <section>
+Z51: ++	 <input type="checkbox" name="uApprove.consent-revocation" value="true"/>
+Z52: ++	 Clear data release consent for this service
+Z53: ++	</section>
+\end{lstlisting}
+\subsubsection*{uApprove deployen}
+\step{Deployment geht mit einem neuen Bauen der .war Files einher, der IdP wird
+ daher neu installiert, wobei die alte Config beibehalten wird. Es wird nur
+ das .war File neu erstellt (und kopiert):}
+ \begin{lstlisting}
+shib-idp@shibidp:~/IdP/shibboleth-identityprovider-2.4.4$ sudo JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/ ./install.sh
+	# Installation nach: /opt/shibboleth-idp/ (default, also Enter)
+	# bestehende Config überschreiben: no (!!!)
+\end{lstlisting}
+\step{uApprove Logger zu logging.xml hinzufügen (/opt/shibboleth-idp/conf):}
+\begin{lstlisting}
+Z17: ++ <!-- uApprove Logger -->
+Z18: ++ <logger name="ch.SWITCH.aai.uApprove" level="DEBUG"/>
+\end{lstlisting}
+\step{abschließend Tomcat neu starten}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/shibboleth-identityprovider-2.4.4$ sudo service tomcat7 restart
+\end{lstlisting}
+
+\subsubsection{attribut-resolver.xml und attribute-filter.xml anpassen}	
+\step{anpassen der attribute-resolver.xml (/opt/shibboleth-idp/conf) und
+folgende Attribute aus der Auskommentierung entfernen:}
+\begin{itemize}
+\item uid
+\item commonName
+\item surname
+\item givenName
+\item eduPersonAffiliation
+\item eduPersonEntitlement
+\item eduPersonPrimaryAffiliation
+\item eduPersonPrincipalName
+\item eduPersonScopedAffiliation
+\end{itemize}
+* neu kommen die dfnEduPerson-Attribute hinzu (hier schon fertig aus- und
+einkommentiert), ab Z.261 einzufügen:
+\begin{lstlisting}[language=xml]
+<!-- DFN Attribute -->
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonCostCenter" sourceAttributeID="dfnEduPersonCostCenter">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonCostCenter" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.1" friendlyName="dfnEduPersonCostCenter" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonStudyBranch1" sourceAttributeID="dfnEduPersonStudyBranch1">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch1" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.2" friendlyName="dfnEduPersonStudyBranch1" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonStudyBranch2" sourceAttributeID="dfnEduPersonStudyBranch2">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch2" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.3" friendlyName="dfnEduPersonStudyBranch2" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonStudyBranch3" sourceAttributeID="dfnEduPersonStudyBranch3">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch2" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.4" friendlyName="dfnEduPersonStudyBranch3" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonFieldOfStudyString" sourceAttributeID="dfnEduPersonFieldOfStudyString">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonFieldOfStudyString" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.5" friendlyName="dfnEduPersonFieldOfStudyString" />
+</resolver:AttributeDefinition>
+<!--
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonFinalDegree" sourceAttributeID="dfnEduPersonFinalDegree">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonFinalDegree" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.6" friendlyName="dfnEduPersonFinalDegree" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonTypeOfStudy" sourceAttributeID="dfnEduPersonTypeOfStudy">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonTypeOfStudy" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.7" friendlyName="dfnEduPersonTypeOfStudy" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonTermsOfStudy" sourceAttributeID="dfnEduPersonTermsOfStudy">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonTermsOfStudy" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.8" friendlyName="dfnEduPersonTermsOfStudy" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonBranchAndDegree" sourceAttributeID="dfnEduPersonBranchAndDegree">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonBranchAndDegree" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.9" friendlyName="dfnEduPersonBranchAndDegree" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonBrachAndType" sourceAttributeID="dfnEduPersonBrachAndType">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonBrachAndType" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.10" friendlyName="dfnEduPersonBrachAndType" />
+</resolver:AttributeDefinition>
+
+<resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonFeaturesOfStudy" sourceAttributeID="dfnEduPersonFeaturesOfStudy">
+	<resolver:Dependency ref="myLDAP" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:dfnEduPersonFeaturesOfStudy" />
+	<resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.11" friendlyName="dfnEduPersonFeaturesOfStudy" />
+</resolver:AttributeDefinition>
+-->
+\end{lstlisting}
+* LDAP-Connector einfügen (Anpassung des "`Example LDAP Connector"', einkommentieren nicht vergessen):
+\begin{lstlisting}[language=xml]
+<resolver:DataConnector id="myLDAP" xsi:type="dc:LDAPDirectory"
+	ldapURL="ldap://ldap.shib.lan" 
+	baseDN="dc=shib,dc=lan" 
+	principal="uid=shib_ldap,dc=shib,dc=lan"
+	principalCredential="shib_ldap">
+	<dc:FilterTemplate>
+		<![CDATA[
+			(uid=$requestContext.principalName)
+		]]>
+	</dc:FilterTemplate>
+</resolver:DataConnector>
+\end{lstlisting}	
+\step{Anpassung attribute-filter.xml  (/opt/shibboleth-idp/conf)}
+* folgende Policy ab Zeile 26 einfügen:
+\begin{lstlisting}[language=xml]
+<afp:AttributeFilterPolicy id="sp.shib.lan-Policy">
+
+	<afp:PolicyRequirementRule xsi:type="basic:AttributeRequesterString" value="https://sp.shib.lan/shibboleth" />
+
+	<afp:AttributeRule attributeID="eduPersonAffiliation">
+		<afp:PermitValueRule xsi:type="basic:OR">
+			<basic:Rule xsi:type="basic:AttributeValueString" value="faculty" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="student" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="staff" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="alum" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="member" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="affiliate" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="employee" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="library-walk-in" ignoreCase="true" />
+		</afp:PermitValueRule>
+	</afp:AttributeRule>
+
+	<afp:AttributeRule attributeID="eduPersonPrimaryAffiliation">
+		<afp:PermitValueRule xsi:type="basic:OR">
+			<basic:Rule xsi:type="basic:AttributeValueString" value="faculty" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="student" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="staff" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="alum" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="member" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="affiliate" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="employee" ignoreCase="true" />
+			<basic:Rule xsi:type="basic:AttributeValueString" value="library-walk-in" ignoreCase="true" />
+		</afp:PermitValueRule>
+	</afp:AttributeRule>
+	
+	<afp:AttributeRule attributeID="commonName">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="surname">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="givenName">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="eduPersonPrincipalName">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="eduPersonScopedAffiliation">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="eduPersonPrimaryAffiliation">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="dfnEduPersonStudyBranch1">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="dfnEduPersonStudyBranch2">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="dfnEduPersonStudyBranch3">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="dfnEduPersonFieldOfStudyString">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="eduPersonEntitlement">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+	<afp:AttributeRule attributeID="dfnEduPersonCostCenter">
+		<afp:PermitValueRule xsi:type="basic:ANY" />
+	</afp:AttributeRule>
+
+</afp:AttributeFilterPolicy>
+\end{lstlisting}		
+\step{Abschließend Tomcat neu starten:}
+\begin{lstlisting}
+shib-idp@shibidp:~$ sudo service tomcat7 restart
+\end{lstlisting}
+\subsubsection*{Attribute-Mapping auf dem SP anpassen:}
+$\rightarrow$ Wechsel zur SP-VM
+\step{alle Attribute, die vom IdP kommen, müssen im SP noch gemappt werden. Dazu
+die attribute-map.xml (/etc/shibboleth) anpassen:}
+* einkommentieren von:
+\begin{itemize}
+\item eduPersonPrimaryAffiliation
+\item cn
+\item sn
+\item givenName
+\end{itemize}
+\step{Attribute sowohl im alten NameID- als auch OID-Format einkommentieren!} 
+* zusätzlich ist für die eduPersonScopedAffiliation die oid-Variante einzufügen:
+\begin{lstlisting}	
+<Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.5" id="primary-affiliation">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+\end{lstlisting}
+* außerdem neu hinzufügen:
+\begin{lstlisting}[language=xml]
+<!-- DFN Attribute dfnEduPerson -->
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonCostCenter" id="dfnEduPersonCostCenter">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.1" id="dfnEduPersonCostCenter">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch1" id="dfnEduPersonStudyBranch1">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.2" id="dfnEduPersonStudyBranch1">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch2" id="dfnEduPersonStudyBranch2">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.3" id="dfnEduPersonStudyBranch2">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch3" id="dfnEduPersonStudyBranch3">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.4" id="dfnEduPersonStudyBranch3">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonFieldOfStudyString" id="dfnEduPersonFieldOfStudyString">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.5" id="dfnEduPersonFieldOfStudyString">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<!--
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonFinalDegree" id="dfnEduPersonFinalDegree">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.6" id="dfnEduPersonFinalDegree">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonTypeOfStudy" id="dfnEduPersonTypeOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.7" id="dfnEduPersonTypeOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonTermsOfStudy" id="dfnEduPersonTermsOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.8" id="dfnEduPersonTermsOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonBranchAndDegree" id="dfnEduPersonBranchAndDegree">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.9" id="dfnEduPersonBranchAndDegree">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonBrachAndType" id="dfnEduPersonBrachAndType">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.10" id="dfnEduPersonBrachAndType">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+
+<Attribute name="urn:mace:dir:attribute-def:dfnEduPersonFeaturesOfStudy" id="dfnEduPersonFeaturesOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+<Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.11" id="dfnEduPersonFeaturesOfStudy">
+	<AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+</Attribute>
+-->
+\end{lstlisting}
+
+\step{Auf den shibtest im SP ( https://sp.shib.lan/shibtest ) kann jetzt per IdP
+Authentifizierung und uApprove zugegriffen werden}
+
+\step{Optional: Anpassung der shibtest-Seite auf dem SP für die Ausgabe der
+übertragenen Shibboleth-Attribute:}
+$\rightarrow$ Wechsel in die SP-VM:
+\step{sp.conf anpassen (/etc/apache2/sites-available)}
+\begin{lstlisting}
+Z19: ++    DirectoryIndex shib-info.php
+\end{lstlisting}
+\step{shib-info.php in /var/www/html/shibtest anlegen:}
+\begin{lstlisting}[language=html]
+shib-sp@shib-sp:/var/www/html/shibtest$ cat shib-info.php 
+	<html>
+	<head>
+	<title>SHIB-INFO</title>
+	</head>
+	<body>
+	<h1>SHIBTEST</h1>
+	<h2>$_SERVER:</h2>
+	<?php
+		foreach($_SERVER as $key => $value)
+		{
+			echo "<pre>".$key.": ".$value."</pre>";
+		}
+	?>
+	</body>
+\end{lstlisting}
+
+\subsection{optionale Einstellungen}
+\subsubsection{Statusseiten für IdP und SP verfügbar machen}
+ACHTUNG: Das Verfügbarmachen der Statusseiten von "`außerhalb"' ist für den
+Produktivbetrieb natürlich nicht sinnvoll, da hier z.T. interne Informationen
+angezeigt werden!
+\subsubsection*{IdP}
+\step{Anpassung der web.xml (/home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp/WEB-INF)}:
+\begin{lstlisting}
+<!-- Servlet for displaying IdP status. -->
+ <servlet>
+   <servlet-name>Status</servlet-name>
+    <servlet-class>edu.internet2.middleware.shibboleth.idp.StatusServlet</servlet-class>
+     <!-- Space separated list of CIDR blocks allowed to access the status page -->
+      <init-param>
+        <param-name>AllowedIPs</param-name>
+--      <param-value>127.0.0.1/32 ::1/128</param-value>
+++      <param-value>127.0.0.1/32 ::1/128 192.168.100.0/24</param-value>
+      </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+\end{lstlisting}
+\step{IdP neu deployen und Tomcat neu starten:}
+\begin{lstlisting}
+shib-idp@shibidp:~/IdP/shibboleth-identityprovider-2.4.4$ sudo JAVA\_HOME=/usr/lib/jvm/java-7-openjdk-amd64/ ./install.sh
+	# bestehende config NICHT überschreiben!
+shib-idp@shibidp:~$ sudo service tomcat7 restart
+\end{lstlisting}
+\step{IdP-Status-Seite: https://idp.shib.lan/idp/status}
+\subsubsection{SP}
+\step{shibboleth2.xml (/etc/shibboleth) anpassen:}
+\begin{lstlisting}
+-- <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1"/>
+++ <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1  192.168.100.0/24"/>
+\end{lstlisting}
+\step{shibd neu starten:}
+\begin{lstlisting}
+shib-sp@shib-sp:~$ sudo service shibd restart
+\end{lstlisting}
+\step{SP-Status-Seite: https://sp.shib.lan/Shibboleth.sso/Status}

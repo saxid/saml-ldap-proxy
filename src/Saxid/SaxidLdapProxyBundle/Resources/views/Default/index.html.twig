@@ -1,10 +1,33 @@
 {% extends "SaxidLdapProxyBundle::base.html.twig" %}
 
 {% block body %}
-{{ dump(user) }}
 
-<a href="{{ path('saxid_ldap_proxy_adduser') }}">Diese Daten in LDAP eintragen</a>
-<a href="{{ logout }}">Logout</a>
+<pre>
+username: {{ user.username }}
+uid: {{ user.uid }}
+eduPersonPrincipalName: {{ user.eduPersonPrincipalName }}
+eduPersonAffiliation: {{ user.eduPersonAffiliation }}
+eduPersonPrimaryAffiliation: {{ user.eduPersonPrimaryAffiliation }}
+eduPersonScopedAffiliation: {{ user.eduPersonScopedAffiliation }}
+surname: {{ user.surname }}
+givenName: {{ user.givenName }}
+uidNumber: {{ user.uidNumber }}
+password: {{ user.password }}
+eduPersonEntitlement: {{ user.eduPersonEntitlement }}
+organizationalUnitName: {{ user.organizationalUnitName }}
+commonName: {{ user.commonName }}
+email: {{ user.email }}
+eduPersonOrgUnitDN: {{ user.eduPersonOrgUnitDN }}
+displayName: {{ user.displayName }}
+academy: {{ user.academy }}
+academyDomain: {{ user.academyDomain }}
+</pre>
+
+{% if user.isFromSaxonAcademy() %}
+<a class="btn btn-primary" href="{{ path('saxid_ldap_proxy_adduser') }}">Diese Daten in LDAP eintragen</a>
+{% else %}
+<a title="Nur für Studenten/Mitarbeiter teilnehmender Hochschulen möglich" class="btn btn-default disabled" href="{{ path('saxid_ldap_proxy_adduser') }}" disabled="disabled">Diese Daten in LDAP eintragen</a> (Nur für Studenten/Mitarbeiter teilnehmender SaxID-Hochschulen möglich)
+{% endif %}
 
 {{ parent() }}
 {% endblock body %}

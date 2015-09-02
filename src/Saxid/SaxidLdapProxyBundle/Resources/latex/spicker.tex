@@ -1,0 +1,49 @@
+\section{Spickzettel}\label{sec:spickzettel}
+\subsection{Nutzer und Passwörter}
+
+\begin{center}
+	\begin{tabular}{| l | l | p{4cm} | l | }
+		\hline
+		Host & Service / Objekt & Nutzername & Passwort\\ \hline \hline
+		\multirow{11}{*}{shibidp} 
+		 & Benutzer & shib-idp & idp \\ \cline{2-4}
+		 & sudo & - & idp \\ \cline{2-4}
+		 & MySQL & root & idp \\ \cline{2-4}
+		 & MySQL & uApprove & idp \\ \cline{2-4}
+		 & LDAP & cn=admin, dc=shib,dc=lan & idp \\ \cline{2-4}
+		 & LDAP & uid=shib\_ldap, dc=shib,dc=lan & shib\_ldap \\ \cline{2-4}
+		 & CA-Stammzertifikat & - & +\$hib-idp.C@\_p@\$\$phr@5e** \\ \cline{2-4}
+		 & ldap.shib.lan-Zertifikat & - & +\$hib-idp.LD@P\_p@\$\$** \\ \cline{2-4}
+		 & www.shib.lan-Zertifikat & - & +\$hib-idp.www\_p@\$\$** \\ \cline{2-4}
+		 & idp.shib.lan-Zertifikat & - & +\$hib-idp.idp\_p@\$\$** \\ \cline{2-4}
+		 & IdP-Keystore & - & *\$hib-idp.k3yst0r3\_p@\$\$** \\ \hline
+		\hline
+		\multirow{4}{*}{shibsp} 
+		 & Benutzer & shib-sp & sp \\ \cline{2-4}
+		 & sudo & - & sp \\ \cline{2-4}
+		 & MySQL & root & sp \\ \cline{2-4}
+		 & sp.shib.lan-Zertifikat & - & +\$hib-idp.sp\_p@\$\$** \\ \hline
+	\end{tabular}
+\end{center}
+
+\subsection{Hosts}
+\begin{center}
+	\begin{tabular}{| l | l | l | p{7cm} |}
+		\hline
+		Host & DNS & (hier benötigte) erreichbare Dienste \\ \hline\hline
+		 shibidp & shib.lan & bei HTTP(S): Weiterleitung auf
+		https://www.shib.lan \\ \hline
+		shibidp & idp.shib.lan & DNS, DHCP, www
+		(allg.), MySQL, Shib-IdP (Tomcat), SSH
+		\\
+		\hline 
+		shibidp & ldap.shib.lan & LDAP, phpldapadmin (https,
+		vHost)
+		\\
+		\hline  shibsp & sp.shib.lan & www (allg.) inkl. Shib-SP (https,
+		vHost)
+		\\
+		\hline
+		
+	\end{tabular}
+\end{center}

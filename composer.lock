@@ -1042,12 +1042,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/saxid/SimplesamlphpBundle.git",
-                "reference": "5de0d1c3887b6680baf15b53656d596e6e586f73"
+                "reference": "77e96d5152e620c1f963df5e343d691b69bd553f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/saxid/SimplesamlphpBundle/zipball/5de0d1c3887b6680baf15b53656d596e6e586f73",
-                "reference": "5de0d1c3887b6680baf15b53656d596e6e586f73",
+                "url": "https://api.github.com/repos/saxid/SimplesamlphpBundle/zipball/77e96d5152e620c1f963df5e343d691b69bd553f",
+                "reference": "77e96d5152e620c1f963df5e343d691b69bd553f",
                 "shasum": ""
             },
             "require": {
@@ -1057,7 +1057,7 @@
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
-                    "Hslavich\\SimplesamlphpBundle\\": ""
+                    "Saxid\\SimplesamlphpBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1072,7 +1072,7 @@
                 "saml",
                 "simplesamlphp"
             ],
-            "time": "2015-09-01 10:20:17"
+            "time": "2015-09-02 07:39:06"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -1289,12 +1289,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplesamlphp/simplesamlphp.git",
-                "reference": "a184fb3678760dfd82c500e6eda7c705b6717b49"
+                "reference": "2e2294757f0f71b209fca97da7e3b3c4d0e3ac5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp/zipball/a184fb3678760dfd82c500e6eda7c705b6717b49",
-                "reference": "a184fb3678760dfd82c500e6eda7c705b6717b49",
+                "url": "https://api.github.com/repos/simplesamlphp/simplesamlphp/zipball/2e2294757f0f71b209fca97da7e3b3c4d0e3ac5f",
+                "reference": "2e2294757f0f71b209fca97da7e3b3c4d0e3ac5f",
                 "shasum": ""
             },
             "require": {
@@ -1342,7 +1342,7 @@
                 "sp",
                 "ws-federation"
             ],
-            "time": "2015-08-31 15:00:32"
+            "time": "2015-09-01 12:03:43"
         },
         {
             "name": "swiftmailer/swiftmailer",

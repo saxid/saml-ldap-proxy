@@ -2,6 +2,8 @@
 
 namespace Saxid\SaxidLdapProxyBundle\LdapProxy;
 
+use Symfony\Component\Security\Core\SecurityContext;
+
 use Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser;
 
 /**
@@ -10,23 +12,19 @@ use Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser;
 class SaxidLdapProxy
 {
 	private $debug = true;
-	private $ldapHost = 'ldap://127.0.0.1';
+	private $ldapHost = 'ldap://192.168.56.102';
 	private $ldapPass = 'saxidsaxid';
 	private $ldapConn;
 	private $user;
 	private $logger;
+	private $status;
 	
-	function __construct($auth) {
+	function __construct(SecurityContext $securityContext) {
 		$this->startLogging();
+
+		$this->user = $securityContext->getToken()->getUser();
+
 		$this->createLdapBind();
-
-		// Get user attributes
-		$attributes = $auth->getAttributes();
-		
-		$this->logEvent("User information fetched from IdP");
-
-		// Instantiate new SaxID User
-		$this->user = new SaxidUser($attributes);
 
 		// Check if user is from Saxon academy
 		if($this->user->isFromSaxonAcademy()) {
@@ -40,30 +38,45 @@ class SaxidLdapProxy
 			// Modify if LDAP entry already exists
 			if($result === false && ldap_errno($this->ldapConn) == 68) {
 				@ldap_modify($this->ldapConn, $data['dn'], $data['data']);
+				$this->setStatus("Userdata of {$this->user} updated in LDAP", 'info');
 			}
 
 			// Check for other errors
 			elseif($result === false) {
-				$error = $this->getLdapError("Could not add user {$this->user} to LDAP");
-				$this->logEvent($error);
+				$message = "Could not add user {$this->user} to LDAP";
+				$this->setStatus($this->getLdapError($message), 'danger');
 			}
 
 			// No errors, ldap query successful
 			else {
-				$this->logEvent("User {$this->user} added to LDAP");
+				$this->setStatus("User {$this->user} added to LDAP");
 			}
 		}
 
 		// User is no SaxID member (no member of a Saxon academy), abort process
 		else {
-			$this->logEvent("User {$this->user} is not associate of a Saxon academy, aborting");
+			$this->setStatus("User {$this->user} is not associate of a Saxon academy, aborting", 'danger');
 		}
+
+		$this->logEvent($this->getStatusMessage());
 
 		// Close LDAP connection
 		ldap_close($this->ldapConn);
 
 		// Close log file access
 		fclose($this->logger);
+	}
+
+	private function setStatus($message, $type = 'success') {
+		$this->status = array('message' => $message, 'type' => $type);
+	}
+
+	public function getStatus() {
+		return $this->status;
+	}
+
+	public function getStatusMessage() {
+		return $this->status['message'];
 	}
 
 	public function getUser() {
@@ -93,14 +106,14 @@ class SaxidLdapProxy
 
 	private function createLdapBind() {
 		// Connect to LDAP server
-		$this->ldapConn = ldap_connect($this->ldapHost) or die("Could not connect to {$this->ldapHost}");
+		$this->ldapConn = \ldap_connect($this->ldapHost) or die("Could not connect to {$this->ldapHost}");
 		$this->logEvent("Connection to LDAP established");
 
 		// Enforcve LDAP v3
 		ldap_set_option($this->ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3);
 
 		// Bind to LDAP
-		$ldapBind = ldap_bind($this->ldapConn, "cn=admin,dc=sax-id,dc=de", $this->ldapPass);
+		$ldapBind = @ldap_bind($this->ldapConn, "cn=admin,dc=sax-id,dc=de", $this->ldapPass);
 
 		if($ldapBind !== false) {
 			$this->logEvent("Bind successfull established");
@@ -108,15 +121,19 @@ class SaxidLdapProxy
 
 		// Bind error
 		else {
-			$error = $this->getLdapError("Could not bind to LDAP server");
+			$message = 'Could not bind to LDAP server';
+			$error = $this->getLdapError($message);
 			$this->logEvent($error);
-			die();
+			throw new \RuntimeException($message);
 		}
 	}
 
 	private function startLogging() {
 		$date = date('Y-m-d');
-		$file = "/var/log/www/saxid-ldap-proxy/{$date}.log";
+
+		$ldaplogdir = getenv('SAXIDLDAPPROXY_LOG_DIR');
+
+		$file = "{$ldaplogdir}/{$date}.log";
 		$this->logger = fopen($file, 'a');
 	}
 

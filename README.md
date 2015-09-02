@@ -41,6 +41,10 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
             DocumentRoot /srv/www/htdocs/saxid-ldap-proxy
             
             SetEnv SIMPLESAMLPHP_CONFIG_DIR /var/simplesamlphp/config
+            SetEnv SIMPLESAMLPHP_METADATA_DIR /var/simplesamlphp/metadata
+            SetEnv SIMPLESAMLPHP_CERT_DIR /var/simplesamlphp/cert
+            SetEnv SIMPLESAMLPHP_LOG_DIR /var/log/simplesamlphp
+            SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/saxid-ldap-proxy
         </VirtualHost>
 
 Hinweise:

@@ -1,0 +1,87 @@
+\section{Übersicht}
+\subsection{Infrastruktur}
+Die virtuelle Test-Infrastruktur besteht initial aus zwei Servern:
+\begin{itemize}
+  \item 1x Identity Provider mit Shibboleth IdP 2.4.4
+  \item 1x Service Provider mit Shibboleth SP Modul 2.5.2 für Apache 
+\end{itemize} 
+Als Virtualisierungsumgebung kommt die OpenSource Software
+VirtualBox\footnote{https://www.virtualbox.org/} zum Einsatz, andere
+Virtualisierungsprodukte sollten ebenfalls funktionieren.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=1.0\textwidth]{img/infrastruktur.png}
+    \caption{VM Infrastruktur}
+\end{figure}
+
+Die Maschinen der Testumgebung kommunizieren über ein host-internes Netzwerk.
+Zusätzlich wird jede Maschine per NAT über den Host mit dem Internet verbunden
+um Pakete nachinstallieren zu können. Als Datenquelle für die
+Shibboleth-Nutzerdaten dient auf IdP-Seite eine OpenLDAP-Server. Die Nutzerdaten
+können entweder über das Webinterface phpldapadmin oder (besser) per Apache
+Directory Studio (zB. auf dem VM Hostrechner) administriert werden. Der Zugriff
+auf beide Maschinen kann entweder über das GUI erfolgen oder per SSH-Client. Für
+die Namensauflösung innerhalb des VM-Netzes wird auf dem IdP ein DNS-Server
+(bind9) konfiguriert, die IP-Vergabe erfolgt über einen DHCP-Server (ebenfalls
+auf dem IdP). Um die für eine gesicherte Verbindung nötigen (selbst signierten)
+Zertifikate erzeugen zu können, wird eine Certificate Authority auf dem
+IdP-Server bereitgestellt. Dieser CA wird innerhalb der Testumgebung vertraut,
+sodass eine durchgängige Zertifikatskette erzeugt werden kann.
+
+\subsection{Software}
+Auf beiden Maschinen kommt Ubuntu 14.04 LTS (Desktop) x64 zum Einsatz. Die
+Desktop Version wurde für die Testumgebung gewählt, um für die Entwicklung von
+Zusatzmodulen und die Konfiguration ein GUI "`out-of-the-box"' zur Verfügung zu
+haben. Alternativ kann sicherlich auch die Ubuntu Server-Variante eingesetzt
+werden. Die auszuführenden Kommandos sollten nahezu identisch sein. Es ist
+jedoch darauf zu achten, dass ggf. weitere Pakete nachinstalliert werden müssen.
+Für die Installation und Konfiguration unter anderen Linux-Distributionen können
+die hier gezeigten Schritte als grobe Orientierungshilfe dienen.
+\newline Neben der reinen Identity-Provider-Funktionalität soll die IdP-VM noch
+weitere Aufgaben im Netz übernehmen:
+\begin{itemize}
+  \item DNS-Server
+  \item DHCP-Server
+  \item Bereitstellung von Nutzerdaten per LDAP
+  \item Certificate Authority (CA)
+\end{itemize}
+Die Service-Provider-VM wird hier so weit Konfiguriert, dass eine per Shibboleth
+gesicherte Webseite betrieben werden kann. Der SP kann dann für weitere
+Testzwecke wie das Anbinden von Services an Shibboleth genutzt werden.
+\newline Zur Basis-Installation auf beiden Maschinen zählen folgende
+zusätzliche Pakete:
+\begin{itemize}
+  \item Apache 2.4
+  \item MySQL 5.5
+  \item PHP 5.5 (inkl. PHP-MySQL)
+  \item Sublime Text 3 (aus PPA)
+  \item vim
+  \item openssh-Server
+  \item Chromium-Browser
+  \item NTP
+  \item Gasterweiterungen für VirtualBox  
+\end{itemize}
+\subsection{Hinweise}
+\begin{itemize}
+  \item zum Editieren der Dateien bieten sich entweder SublimeText, gedit oder
+  vim an.
+  SublimeText ist schon installiert, aus dem Terminal einfach mit subl
+  <filename> starten, vim und gedit natürlich analog
+  \item Änderungen an Dateien sind in einer Notation mit Zeilennummer
+  (Orginaldokument) und einem "`--"' für zu entfernende und "`++"' für
+  hinzuzufügende Zeilen dokumentiert.
+  \item als Basis für die Installation wurden die Anleitungen vom DFN sowie von
+  SWITCH genutzt. Diese konnten aber oftmals nicht 1:1 angewendet werden, daher
+  bitte vorrangig an dieses Dokument halten.
+  \begin{itemize}
+    \item https://www.aai.dfn.de/dokumentation/identity-provider/konfiguration/
+    \item https://www.aai.dfn.de/dokumentation/service-provider/
+    \item
+    https://www.aai.dfn.de/fileadmin/documents/attributes/200811/Object\_Identifier\_DFN-AAI.pdf
+    (ACHTUNG: Schreibfehler bei den Attributnamen!)
+    \item https://www.switch.ch/aai/support/tools/uapprove/
+  \end{itemize}
+  \item vollständige Listings der umfangreicheren Konfigurationsdateien sind
+  auch nochmal am Ende des Dokumentes angefügt.
+\end{itemize}

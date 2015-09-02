@@ -1,0 +1,129 @@
+#B.0: OID-Definition
+
+objectIdentifier dfnEduPersonRoot  1.3.6.1.4.1.22177.400.1.1
+objectIdentifier dfnEduPersonAttributes dfnEduPersonRoot:3
+objectIdentifier dfnEduPersonClasses dfnEduPersonRoot:4
+
+#B.1: Attribut dfnEduPersonCostCenter
+
+attributetype ( dfnEduPersonAttributes:1
+      NAME 'dfnEduPersonCostCenter'
+      DESC 'numeric or alphanumeric string that identifies a cost center'
+      EQUALITY caseExactMatch
+      SUBSTR caseExactSubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+ )
+
+#B.2: Attribut dfnEduPersonStudyBranch1:
+
+attributetype ( dfnEduPersonAttributes:2
+      NAME 'dfnEduPersonStudyBranch1'
+      DESC 'numerically identifies a group of study branches in Germany according to the Statistisches Bundesamt'
+      EQUALITY numericStringMatch
+      ORDERING numericStringOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.36{2}
+ )
+
+#B.3: Attribut dfnEduPersonStudyBranch2:
+
+attributetype ( dfnEduPersonAttributes:3
+      NAME 'dfnEduPersonStudyBranch2'
+      DESC 'numerically identifies a group of field of studies in Germany according to the Statistisches Bundesamt'
+      EQUALITY numericStringMatch
+      ORDERING numericStringOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.36{2}
+ )
+
+#B.4: Attribut dfnEduPersonStudyBranch3:
+
+attributetype ( dfnEduPersonAttributes:4
+      NAME 'dfnEduPersonStudyBranch3'
+      DESC 'numerically identifies a single field of study in Germany according to the Statistisches Bundesamt'
+      EQUALITY numericStringMatch
+      ORDERING numericStringOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.36{3}
+ )
+
+#B.5: Attribut dfnEduPersonFieldOfStudyString
+
+attributetype ( dfnEduPersonAttributes:5
+      NAME 'dfnEduPersonFieldOfStudyString'
+      DESC 'string that identifies field of study as it is named at the local institution'
+      EQUALITY caseIgnoreMatch
+      SUBSTR caseIgnoreSubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+ )
+
+#B.6: Attribut dfnEduPersonFinalDegree
+
+attributetype ( dfnEduPersonAttributes:6
+      NAME 'dfnEduPersonFinalDegree'
+      DESC 'numerically identifies a type of final degree in Germany ac cording to the Statistisches Bundesamt'
+      EQUALITY numericStringMatch
+      ORDERING numericStringOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.36{2}
+ )
+
+#B.7: Attribut dfnEduPersonTypeOfStudy
+
+attributetype ( dfnEduPersonAttributes:7
+      NAME 'dfnEduPersonTypeOfStudy'
+      DESC 'numerically identifies a type of study in Germany according to the Statistisches Bundesamt'
+      EQUALITY numericStringMatch
+      ORDERING numericStringOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.36{1}
+ )
+
+#B.8: Attribut dfnEduPersonTermsOfStudy
+
+attributetype ( dfnEduPersonAttributes:8
+      NAME 'dfnEduPersonTermsOfStudy'
+      DESC 'identifies how many terms in a single field of study a student has passed'
+      EQUALITY caseExactIA5Match
+      SUBSTR caseExactIA5SubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{6}
+ )
+
+#B.9: Attribut dfnEduPersonBranchAndDegree
+
+attributetype ( dfnEduPersonAttributes:9
+      NAME 'dfnEduPersonBranchAndDegree'
+      DESC 'numerically identifies a field of study in correlation with the final degree in Germany according to the Statistisches Bundesamt'
+      EQUALITY caseExactIA5Match
+      SUBSTR caseExactIA5SubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{6}
+ )
+
+#B.10: Attribut dfnEduPersonBranchAndType
+
+attributetype ( dfnEduPersonAttributes:10
+      NAME 'dfnEduPersonBranchAndType'
+      DESC 'numerically identifies a type of a studybranch according to the Statistisches Bundesamt'
+      EQUALITY caseExactIA5Match
+      SUBSTR caseExactIA5SubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{10}
+ )
+
+#B.11: Attribut dfnEduPersonFeaturesOfStudy
+
+attributetype ( dfnEduPersonAttributes:11
+      NAME 'dfnEduPersonFeaturesOfStudy'
+      DESC 'complex string that specifies degree, type of study and the single fields of study with their type and terms using values according to the Statistisches Bundesamt'
+      EQUALITY caseExactIA5Match
+      SUBSTR caseExactIA5SubstringsMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+ )
+
+#B.12: Objectclass dfnEduPerson
+
+objectclass ( dfnEduPersonClasses:1
+      NAME 'dfnEduPerson'
+      SUP top
+      AUXILIARY
+      MAY ( dfnEduPersonCostCenter $ personalTitle $
+            dfnEduPersonStudyBranch1 $ dfnEduPersonStudyBranch2 $
+            dfnEduPersonStudyBranch3 $ dfnEduPersonFieldOfStudyString $
+            dfnEduPersonFinalDegree $ dfnEduPersonTypeOfStudy $
+            dfnEduPersonTermsOfStudy $ dfnEduPersonBranchAndDegree $
+            dfnEduPersonBranchAndType $ dfnEduPersonFeaturesOfStudy )
+      )

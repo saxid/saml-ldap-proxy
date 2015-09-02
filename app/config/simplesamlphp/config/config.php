@@ -5,6 +5,8 @@
  */
 
 $metadatadir = getenv('SIMPLESAMLPHP_METADATA_DIR');
+$certdir = getenv('SIMPLESAMLPHP_CERT_DIR');
+$logdir = getenv('SIMPLESAMLPHP_LOG_DIR');
 
 $config = array(
 

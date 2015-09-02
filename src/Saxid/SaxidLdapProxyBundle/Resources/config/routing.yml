@@ -2,4 +2,6 @@ saxid_ldap_proxy_homepage:
     path:     /
     defaults: { _controller: SaxidLdapProxyBundle:Default:index }
 
-saxid_ldap_proxy_homepage:
+saxid_ldap_proxy_adduser:
+    path:     /ldap/adduser
+    defaults: { _controller: SaxidLdapProxyBundle:Ldap:adduser }
