@@ -32,14 +32,18 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 
 ### <a name="apache"></a>Apache-Konfiguration ###
 
-1. Virtual Host einrichten, hierbei sind zwei Parameter besonders zu beachten:  zum einen `Options FollowSymLinks`, zum anderen die Environment-Variable `SIMPLESAMLPHP_CONFIG_DIR` mit Verweis auf die entsprechende `config.php`-Datei für SimpleSAMLphp.
+1. Virtual Host einrichten: die Environment-Variablen `SIMPLESAMLPHP_*_DIR`/`SAXIDLDAPPROXY_LOG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp sind obligatorisch.
 
         Alias /simplesaml /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp/www
-        <VirtualHost *>
-            Options FollowSymLinks
+        <VirtualHost *:443>
             ServerName saxid.zih.tu-dresden.de
             DocumentRoot /srv/www/htdocs/saxid-ldap-proxy
             
+            SSLEngine on
+            SSLCertificateKeyFile /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.key.pem
+            SSLCertificateFile /etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem
+            SSLCertificateChainFile /etc/apache2/ssl.crt/chain.txt
+
             SetEnv SIMPLESAMLPHP_CONFIG_DIR /var/simplesamlphp/config
             SetEnv SIMPLESAMLPHP_METADATA_DIR /var/simplesamlphp/metadata
             SetEnv SIMPLESAMLPHP_CERT_DIR /var/simplesamlphp/cert
@@ -47,16 +51,22 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
             SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/saxid-ldap-proxy
         </VirtualHost>
 
-Hinweise:
+#### Hinweise ####
 
 * Apache2 benötigt für die `SetEnv`-Anweisung das Modul [`mod_env`](http://httpd.apache.org/docs/2.2/mod/mod_env.html).
 * Alternativ zu der `Alias`-Anweisung kann natürlich auch ein Symlink (`ln -s`) gesetzt werden.
 
 ### <a name="ldap"></a>LDAP-Konfiguration ###
 
-1. LDAP-Schemata importieren ([mindestens `eduPerson`, `SCHAC`, `dfnEduPerson`](https://www.aai.dfn.de/der-dienst/attribute/))
- 1. `ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f file.ldif`
- 1. manuell im LDAP-Server alle teilnehmenden Hochschulen als Organisation (`o`) manuell anlegen (`o=tu-dresden.de` usw.)
+Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyBundle/Resources/schema`.
+
+1. LDAP-Fremdschemata importieren ([mindestens `eduPerson`, `SCHAC`, `dfnEduPerson`](https://www.aai.dfn.de/der-dienst/attribute/))
+        
+        ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f file.ldif
+
+1. SaxID-Hochschulen (= LDAP-Organisationen) importieren
+
+        ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f saxid-organisations.ldif
 
 ### <a name="php"></a>Installation PHP-Repository ###
 
