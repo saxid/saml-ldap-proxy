@@ -17,3 +17,8 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # LDAP server settings
+    ldap_host:         141.76.38.92
+    ldap_user:         admin
+    ldap_pass:         saxidsaxid

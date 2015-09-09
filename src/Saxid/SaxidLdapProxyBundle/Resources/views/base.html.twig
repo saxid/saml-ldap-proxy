@@ -38,9 +38,6 @@
 				</div>
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li><a href="/">Über SaxID</a></li>
-						<li><a href="teilnehmer">Teilnehmer</a></li>
-						<li><a href="dienste">Dienste</a></li>
 						<!-- <li><a href="#">Publikationen</a></li> -->
 					</ul>
 					<ul class="nav navbar-nav navbar-right">
@@ -50,8 +47,8 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Mein Konto <span class="caret"></span></a>
 							<ul class="dropdown-menu dropdown-menu-right" role="menu">
-								<li><a href="user">Daten anzeigen</a></li>
-								<li><a href="password">Passwörter verwalten</a></li>
+								<li><a href="{{ path('saxid_ldap_proxy_homepage') }}">Meine Daten anzeigen</a></li>
+								<li><a href="#">Passwörter verwalten</a></li>
 								<li class="divider"></li>
 								<!-- <li class="dropdown-header">Nav header</li> -->
 								<li><a href="{{ getLogoutURL() }}">Logout</a></li>

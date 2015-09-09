@@ -2,31 +2,29 @@
 
 {% block body %}
 
-<pre>
-username: {{ user.username }}
-uid: {{ user.uid }}
-eduPersonPrincipalName: {{ user.eduPersonPrincipalName }}
-eduPersonAffiliation: {{ user.eduPersonAffiliation }}
-eduPersonPrimaryAffiliation: {{ user.eduPersonPrimaryAffiliation }}
-eduPersonScopedAffiliation: {{ user.eduPersonScopedAffiliation }}
-surname: {{ user.surname }}
-givenName: {{ user.givenName }}
-uidNumber: {{ user.uidNumber }}
-password: {{ user.password }}
-eduPersonEntitlement: {{ user.eduPersonEntitlement }}
-organizationalUnitName: {{ user.organizationalUnitName }}
-commonName: {{ user.commonName }}
-email: {{ user.email }}
-eduPersonOrgUnitDN: {{ user.eduPersonOrgUnitDN }}
-displayName: {{ user.displayName }}
-academy: {{ user.academy }}
-academyDomain: {{ user.academyDomain }}
-</pre>
+{% if app.user and app.user.isFromSaxonAcademy() %}
+<p>Folgende Attributswerte wurden vom Identity Provider übermittelt:</p>
 
-{% if user.isFromSaxonAcademy() %}
-<a class="btn btn-primary" href="{{ path('saxid_ldap_proxy_adduser') }}">Diese Daten in LDAP eintragen</a>
-{% else %}
-<a title="Nur für Studenten/Mitarbeiter teilnehmender Hochschulen möglich" class="btn btn-default disabled" href="{{ path('saxid_ldap_proxy_adduser') }}" disabled="disabled">Diese Daten in LDAP eintragen</a> (Nur für Studenten/Mitarbeiter teilnehmender SaxID-Hochschulen möglich)
+<ul class="idp-attributelist">
+	<li>username: <code>{{ app.user.username }}</code></li>
+	<li>uid: <code>{{ app.user.uid }}</code></li>
+	<li>eduPersonPrincipalName: <code>{{ app.user.eduPersonPrincipalName }}</code></li>
+	<li>eduPersonAffiliation: <code>{{ app.user.eduPersonAffiliation }}</code></li>
+	<li>eduPersonPrimaryAffiliation: <code>{{ app.user.eduPersonPrimaryAffiliation }}</code></li>
+	<li>eduPersonScopedAffiliation: <code>{{ app.user.eduPersonScopedAffiliation }}</code></li>
+	<li>surname: <code>{{ app.user.surname }}</code></li>
+	<li>givenName: <code>{{ app.user.givenName }}</code></li>
+	<li>uidNumber: <code>{{ app.user.uidNumber }}</code></li>
+	<li>password: <code>{{ app.user.password }}</code></li>
+	<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
+	<li>organizationalUnitName: <code>{{ app.user.organizationalUnitName }}</code></li>
+	<li>commonName: <code>{{ app.user.commonName }}</code></li>
+	<li>email: <code>{{ app.user.email }}</code></li>
+	<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN }}</code></li>
+	<li>displayName: <code>{{ app.user.displayName }}</code></li>
+	<li>academy: <code>{{ app.user.academy }}</code></li>
+	<li>academyDomain: <code>{{ app.user.academyDomain }}</code></li>
+</ul>
 {% endif %}
 
 {{ parent() }}

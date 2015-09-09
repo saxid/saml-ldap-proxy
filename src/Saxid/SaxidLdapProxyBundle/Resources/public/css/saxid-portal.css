@@ -1,4 +1,8 @@
 /* Basic styles */
+html {
+	background-color: #000;
+}
+
 body {
 	padding-top: 70px;
 }
@@ -8,7 +12,7 @@ h2 {
 }
 
 .gentle-image-border {
-	border:1px solid #eeeeee;
+	border:1px solid #eee;
 }
 
 /* Navbar styles */
@@ -74,7 +78,7 @@ section#academies li img {
 
 section#manage-passwords i.fa {
 	font-size: 0.7em;
-	color: #999999;
+	color: #999;
 	cursor: pointer;
 	position: relative;
 	top: -2px;
@@ -85,7 +89,7 @@ section#services .panel-body h2 {
 }
 
 section#services .panel-body h3 {
-	border-bottom: 1px solid #eeeeee;
+	border-bottom: 1px solid #eee;
 }
 
 section#services a.service-button, section#manage-passwords a.password-button {
@@ -95,7 +99,7 @@ section#services a.service-button, section#manage-passwords a.password-button {
 /* Footer styles */
 footer {
 	margin-top: 120px;
-	background-color: #000000;
+	background-color: #000;
 	padding-top: 40px;
 	padding-bottom: 120px;
 	color: #c3c3c3;
@@ -174,4 +178,10 @@ footer a:hover {
 }
 .modal.saxid-map .modal-content > img {
 	display: inline-block;
+}
+
+.idp-attributelist {
+	border: 1px solid #c3c3c3;
+    background-color: #f8f8f8;
+    padding: 2em 4em;
 }

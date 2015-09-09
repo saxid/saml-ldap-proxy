@@ -31,6 +31,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     
     private static $academies = array(
         'tu-dresden.de' => 'Technische Universität Dresden',
+        // 'rnd.feide.no'  => 'Feide NO',
     );
 
     private static $attributeMapping = array(
@@ -63,6 +64,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         'hfmdd.de'        => '20',
         'hgb-leipzig.de'  => '21',
         'hmt-leipzig.de'  => '22',
+        // 'rnd.feide.no'    => '40',
     );
 
     public function __construct($attributes)
@@ -117,6 +119,10 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function isEqualTo(UserInterface $user) {
         if (!$user instanceof SaxidUser) {
+            return false;
+        }
+
+        if ($this !== $user) {
             return false;
         }
 
@@ -413,9 +419,9 @@ class SaxidUser implements UserInterface, EquatableInterface
         // $data['dfnEduPersonTypeOfStudy'] = ;
 
     // nis/posixAccount
-        $data['uidNumber'] = $this->getUidNumber();
-        $data['gecos'] = $this->getGecos();
-        $data['gidNumber'] = 0;
+        $data['uidNumber']     = $this->getUidNumber();
+        $data['gecos']         = $this->getGecos();
+        $data['gidNumber']     = 0;
         $data['homeDirectory'] = '';
 
     // objectClasses
@@ -428,6 +434,10 @@ class SaxidUser implements UserInterface, EquatableInterface
 
         $dn = "cn=".$data['cn'].",o=".$this->getAcademyDomain().",dc=sax-id,dc=de";
         return array('dn' => $dn, 'data' => $data);
+    }
+
+    public function dump() {
+        print_r(get_object_vars($this));
     }
 
     public function __toString() {

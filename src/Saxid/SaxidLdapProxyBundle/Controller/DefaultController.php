@@ -8,11 +8,13 @@ class DefaultController extends Controller
 {
     public function indexAction()
     {
-    	$logout = $this->get('simplesamlphp.auth')->getLogoutURL();
-
-        return $this->render('SaxidLdapProxyBundle:Default:index.html.twig', array(
-        	'user' => $this->getUser(),
-        	'logout' => $logout
-        ));
+        if(!$this->getUser()->isFromSaxonAcademy()) {
+            $this->addFlash(
+                'danger',
+                'You have to be a member of a Saxon academy in order to persist User to LDAP'
+            );
+        }
+        
+        return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
     }
 }
