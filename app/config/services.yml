@@ -6,7 +6,7 @@ parameters:
 services:
     saxid_user_provider:
         class: Saxid\SaxidLdapProxyBundle\Security\User\SaxidUserProvider
-        arguments: [ @simplesamlphp.auth, @session ]
+        arguments: [ @simplesamlphp.auth, @session, %ldap_host%, %ldap_port%, %ldap_user%, %ldap_pass% ]
 
     # saxid_ldap_proxy:
     #     class: Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy

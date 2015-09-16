@@ -12,15 +12,21 @@ use Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser;
 class SaxidLdapProxy
 {
 	private $debug = true;
-	private $ldapHost = 'ldap://141.76.38.92';
-	private $ldapUser = 'admin';
-	private $ldapPass = 'saxidsaxid';
+	private $ldapHost;
+	private $ldapPort;
+	private $ldapUser;
+	private $ldapPass;
 	private $ldapConn;
 	private $user;
 	private $logger;
 	private $status;
 	
-	function __construct(SaxidUser $user) {
+	function __construct(SaxidUser $user, $ldap_host, $ldap_port, $ldap_user, $ldap_pass) {
+		$this->ldapHost = $ldap_host;
+		$this->ldapPort = $ldap_port;
+		$this->ldapUser = $ldap_user;
+		$this->ldapPass = $ldap_pass;
+
 		$this->startLogging();
 
 		$this->user = $user;
@@ -107,14 +113,14 @@ class SaxidLdapProxy
 
 	private function createLdapBind() {
 		// Connect to LDAP server
-		$this->ldapConn = \ldap_connect($this->ldapHost) or die("Could not connect to {$this->ldapHost}");
+		$this->ldapConn = \ldap_connect($this->ldapHost, $this->ldapPort) or die("Could not connect to {$this->ldapHost}");
 		$this->logEvent("Connection to LDAP established");
 
 		// Enforcve LDAP v3
 		ldap_set_option($this->ldapConn, LDAP_OPT_PROTOCOL_VERSION, 3);
 
 		// Bind to LDAP
-		$ldapBind = @ldap_bind($this->ldapConn, "cn={$this->ldapUser},dc=sax-id,dc=de", $this->ldapPass);
+		$ldapBind = @ldap_bind($this->ldapConn, $this->ldapUser, $this->ldapPass);
 
 		if($ldapBind !== false) {
 			$this->logEvent("Bind successfull established");

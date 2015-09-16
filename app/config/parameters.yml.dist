@@ -19,6 +19,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # LDAP server settings
-    ldap_host:         141.76.38.92
-    ldap_user:         admin
+    ldap_host:         'ldap://127.0.0.1'
+    ldap_port:         389
+    ldap_user:         'cn=admin,dc=sax-id,dc=de'
     ldap_pass:         saxidsaxid

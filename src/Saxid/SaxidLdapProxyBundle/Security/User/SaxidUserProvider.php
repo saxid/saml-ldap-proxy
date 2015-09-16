@@ -15,10 +15,18 @@ class SaxidUserProvider implements UserProviderInterface
 {
     private $auth;
     private $session;
+    private $ldapHost;
+    private $ldapPort;
+    private $ldapUser;
+    private $ldapPass;
 
-    public function __construct(SimpleSAML_Auth_Simple $auth, Session $session) {
-        $this->auth    = $auth;
-        $this->session = $session;
+    public function __construct(SimpleSAML_Auth_Simple $auth, Session $session, $ldap_host, $ldap_port, $ldap_user, $ldap_pass) {
+        $this->auth     = $auth;
+        $this->session  = $session;
+        $this->ldapHost = $ldap_host;
+        $this->ldapPort = $ldap_port;
+        $this->ldapUser = $ldap_user;
+        $this->ldapPass = $ldap_pass;
     }
 
     public function loadUserByUsername($username) {
@@ -28,7 +36,7 @@ class SaxidUserProvider implements UserProviderInterface
         $user = new SaxidUser($attributes);
 
         // Run the LDAP proxy
-        $slp    = new SaxidLdapProxy($user);
+        $slp    = new SaxidLdapProxy($user, $this->ldapHost, $this->ldapPort, $this->ldapUser, $this->ldapPass);
         $status = $slp->getStatus();
 
         // Add status message to Symfony flashbag
