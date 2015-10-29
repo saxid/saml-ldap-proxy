@@ -1,3 +1,12 @@
 saxid_ldap_proxy_homepage:
     path:     /
     defaults: { _controller: SaxidLdapProxyBundle:Default:index }
+
+saxid_ldap_proxy_imprint:
+    path: /imprint
+    defaults:
+        _controller: FrameworkBundle:Template:template
+        template:    SaxidLdapProxyBundle:Static:imprint.html.twig
+        # Cache for one day
+        maxAge:      86400
+        sharedAge:   86400

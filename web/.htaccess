@@ -17,6 +17,10 @@ DirectoryIndex app.php
     Options -MultiViews
 </IfModule>
 
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options DENY
+</IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
 

@@ -1,0 +1,663 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"exploded",
+				"explodedAttribute"
+			],
+			[
+				"ldap",
+				"ldapBind"
+			],
+			[
+				"meta",
+				"metadatadir"
+			],
+			[
+				"form",
+				"form	Tag"
+			],
+			[
+				"first",
+				"first_repository"
+			],
+			[
+				"array_ke",
+				"array_keys"
+			],
+			[
+				"saxi",
+				"saxidUid"
+			],
+			[
+				"config",
+				"configDirEnv"
+			],
+			[
+				"conf",
+				"configDir"
+			],
+			[
+				"price",
+				"price_employee"
+			],
+			[
+				"url",
+				"urlencode"
+			],
+			[
+				"getUid",
+				"getUidNumber"
+			],
+			[
+				"sax",
+				"saxidUid"
+			],
+			[
+				"mapping",
+				"uidPrefixMapping"
+			],
+			[
+				"list-st",
+				"list-style-type"
+			],
+			[
+				"u",
+				"ul	Tag"
+			],
+			[
+				"Sa",
+				"SaxIDLdapProxy"
+			],
+			[
+				"Sax",
+				"SaxID"
+			],
+			[
+				"sha",
+				"sha512"
+			],
+			[
+				"eduPers",
+				"eduPersonAffiliation"
+			],
+			[
+				"setAcadem",
+				"setAcademyDomain"
+			],
+			[
+				"academy",
+				"academyDomain"
+			],
+			[
+				"acade",
+				"academyDomain"
+			],
+			[
+				"logo",
+				"logoutUrl"
+			],
+			[
+				"SaxID",
+				"SaxidUser"
+			],
+			[
+				"SaxI",
+				"SaxIDLdapProxy"
+			],
+			[
+				"getOr",
+				"getEduPersonOrgUnitDN"
+			],
+			[
+				"getEd",
+				"getEduPersonOrgUnitDN"
+			],
+			[
+				"attri",
+				"attributeMapping"
+			],
+			[
+				"at",
+				"attributeMapping"
+			],
+			[
+				"Saxi",
+				"SaxidUser"
+			],
+			[
+				"max",
+				"max-width"
+			],
+			[
+				"list-",
+				"list-style-type"
+			],
+			[
+				"backgr",
+				"background-color"
+			],
+			[
+				"l",
+				"li	Tag"
+			],
+			[
+				"array_key",
+				"array_key_exists"
+			],
+			[
+				"getAca",
+				"getAcademyDomain"
+			],
+			[
+				"eduPer",
+				"eduPersonPrincipalName"
+			],
+			[
+				"lda",
+				"ldapBind"
+			],
+			[
+				"inlin",
+				"inline-block"
+			],
+			[
+				"pr",
+				"price_e"
+			],
+			[
+				"Men",
+				"MensOrgManager"
+			],
+			[
+				"pri",
+				"price_string"
+			],
+			[
+				"fet",
+				"fetch_data"
+			],
+			[
+				"is_",
+				"is_owncloud"
+			],
+			[
+				"text-",
+				"text-align"
+			],
+			[
+				"set",
+				"setJetztHolder"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/xampp/htdocs/saxidm.de/css/saxid-portal.css",
+		"/C/xampp/htdocs/saxidm.de/index.php",
+		"/C/xampp/htdocs/saxidm.de/_header.php",
+		"/C/xampp/htdocs/saxidm.de/_footer.php",
+		"/C/xampp/htdocs/saxidm.de/impressum.php",
+		"/C/xampp/htdocs/saxidm.de/_variables.php",
+		"/C/xampp/htdocs/saxidm.de/variables.php",
+		"/C/xampp/htdocs/saxidm.de/index.html",
+		"/C/xampp/htdocs/saxidm.de/impressum.html",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/config/routing.yml",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/security.yml",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/User/SaxidUserProvider.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/LdapProxy/SaxidLdapProxy.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/deploy-vm.sh",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/config/config.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/deploy-vm-config.sh",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/Static/imprint.html.twig",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/base.html.twig",
+		"/C/xampp/htdocs/saxid-ldap-proxy/web/app.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/web/.htaccess",
+		"/C/xampp/htdocs/saxid-queue/mysqldump/init.sql.gz",
+		"/C/xampp/htdocs/saxid-queue/report_process.php",
+		"/C/xampp/htdocs/saxid-queue/lib/Report.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/index.html.twig",
+		"/C/xampp/htdocs/saxidm.de/teilnehmer.html.twig",
+		"/C/xampp/htdocs/dfn-metadata-parser/parser.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/Default/index.html.twig",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/parameters.yml",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/parameters.yml.dist",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/services.yml",
+		"/C/var/log/www/saxid-ldap-proxy/2015-09-09.log",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/User/SaxidUser.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/public/css/saxid-portal.css",
+		"/C/xampp/htdocs/saxid-ldap-proxy/README.md",
+		"/C/xampp/htdocs/saxid-ldap-proxy/deploy-local-vm.sh",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Controller/DefaultController.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Tests/Controller/LdapControllerTest.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Controller/LdapController.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/deploy-vm-src.sh",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/schema/saxid-organisations.ldif",
+		"/C/xampp/htdocs/saxid-ldap-proxy/vendor/saxid/simplesamlphp-bundle/Twig/LogoutLinkExtension.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Twig/SimplesamlphpLogoutLinkTwigExtension.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/vendor/saxid/simplesamlphp-bundle/Resources/config/services.yml",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/AppKernel.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/app/config/config.yml",
+		"/C/xampp/htdocs/SimplesamlphpBundle/README.md",
+		"/C/xampp/htdocs/SimplesamlphpBundle/DependencyInjection/Configuration.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/DependencyInjection/SaxidSimplesamlphpExtension.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Resources/config/services.yml",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Security/Core/Authentication/Token/SamlToken.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Security/Core/User/SamlUserInterface.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Security/Http/Logout/LogoutSuccessHandler.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Security/SamlAuthenticator.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/SaxidSimplesamlphpBundle.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/composer.json",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Command/ScriptHandler.php",
+		"/C/xampp/htdocs/SimplesamlphpBundle/Command/SimplesamlphpCommand.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Exception/UserIsNoMemberOfSaxonAcademyException.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/base.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/Ldap/adduser.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Controller/LdapController.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/public/css/saxid-portal.css",
+		"/C/xampp/htdocs/saxid-ldap-proxy/variables.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/Default/index.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/Static/impressum.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/password.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/user.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/views/index.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/Resources/views/default/index.html.twig",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/LdapProxy/SaxidLdapProxy.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/simplesamlphp/config/config.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/services.yml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Resources/config/routing.yml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Controller/DefaultController.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/simplesamlphp/metadata/saml20-idp-remote.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/config/config.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Utils/Config.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Metadata/MetaDataStorageHandler.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Metadata/MetaDataStorageSource.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Configuration.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Metadata/MetaDataStorageHandlerFlatFile.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/www/_include.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/config/config.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/README.md",
+		"/C/xampp/htdocs/saxid-ldap-proxy/composer.json",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/User/SaxidUser.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Auth/Source.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/User/SaxidUserProvider.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/security.yml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/SaxidLdapProxy.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/Password/SaxidPasswordManager.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/SaxidUser.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Security/SaxidPasswordManager.php",
+		"/C/xampp/htdocs/saxid-ldap-proxy/src/SaxIDLdapProxy.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/Auth/Simple.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/config.yml",
+		"/C/xampp/htdocs/testsymfony/src/Saxid/SaxidLdapProxyBundle/Security/User/SaxidUserProvider.php",
+		"/C/xampp/htdocs/testsymfony/app/config/services.yml",
+		"/C/xampp/htdocs/testsymfony/app/config/security.yml",
+		"/C/xampp/htdocs/testsymfony/vendor/simplesamlphp/simplesamlphp/config/config.php",
+		"/C/xampp/htdocs/testsymfony/app/config/config.yml",
+		"/C/xampp/htdocs/testsymfony/composer.json",
+		"/C/xampp/htdocs/testsymfony/app/AppKernel.php",
+		"/C/xampp/htdocs/testsymfony/app/config/routing.yml",
+		"/C/xampp/htdocs/testsymfony/src/Saxid/SaxidLdapProxyBundle/Entity/SaxidUser.php",
+		"/C/Users/moritz/Desktop/FederationMetadata.xml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/routing.yml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/AppKernel.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/Saxid/SaxidLdapProxyBundle/Entity/SSOState.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/AppBundle/Resources/metadata.xml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/src/AppBundle/Entity/SSOState.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/parameters.yml",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/app/config/parameters.yml.dist",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/composer.json",
+		"/C/Users/moritz/Desktop/PuttyEinstellungen.reg",
+		"/C/xampp/apache/conf/httpd.conf",
+		"/C/xampp/apache/conf/extra/httpd-vhosts.conf",
+		"/C/Users/moritz/Desktop/uhh-generic-req.conf",
+		"/C/xampp/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp/lib/SimpleSAML/SessionHandlerPHP.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/hslavich/oneloginsaml-bundle/DependencyInjection/Security/Factory/SamlFactory.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/Security/Factory/AbstractFactory.php",
+		"/C/xampp/htdocs/saxid-symfony-ldap-proxy/vendor/symfony/symfony/src/Symfony/Bundle/SecurityBundle/DependencyInjection/MainConfiguration.php",
+		"/C/Users/moritz/Favorites/SaxID-Queue/scan.bat",
+		"/C/Users/moritz/Favorites/SaxID-Queue/run-saxid-queue-checker.bat",
+		"/C/xampp/htdocs/ssaxid/saxid-queue/lib/LogParser.php",
+		"/H/Projekte/01 SaxID/00 Material Speicherwolke/.owncloudsync.log",
+		"/C/xampp/htdocs/ssaxid/saxid-queue/lib/parseValues",
+		"/C/xampp/htdocs/sldaprx/composer.json"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\app",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\src",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\src",
+			"C:\\xampp\\htdocs\\SimplesamlphpBundle",
+			"C:\\xampp\\htdocs\\saxid-symfony-ldap-proxy\\vendor\\simplesamlphp\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-symfony-ldap-proxy\\src\\Saxid\\SaxidLdapProxyBundle\\Security",
+			"C:\\xampp\\htdocs\\saxid-symfony-ldap-proxy\\vendor\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\vendor\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-symfony-ldap-proxy",
+			"C:\\xampp",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\vendor\\simplesamlphp\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\simplesamlphp",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy",
+			"C:\\xampp\\htdocs\\sldaprx",
+			"C:\\xampp\\htdocs\\sldaprx\\src\\SaxID\\SaxIDLDAPProxyBundle\\Resources\\views",
+			"C:\\xampp\\htdocs\\sldaprx",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\templates",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\vendor",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy\\vendor\\composer",
+			"C:\\xampp\\htdocs\\saxid-ldap-proxy"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"img",
+			"impressum",
+			"status",
+			"setstatus",
+			"updated ",
+			"updated in ldap",
+			"header",
+			"comment",
+			"cmment",
+			"';\n",
+			"error:",
+			"error",
+			"setpassword",
+			"salt",
+			"createLdapBind",
+			"isEqualTo",
+			"web",
+			"adduser",
+			"twig",
+			"</code>",
+			"{{ user.",
+			"logs",
+			"hslavich",
+			"saxid",
+			"hslavich",
+			"saxid",
+			"assets(",
+			"metadatadir",
+			"flatfile",
+			".flatfile",
+			"SimpleSAML_Metadata_MetaDataStorageHandlerFlatFile",
+			"parseSources",
+			"metadata.sources",
+			"metadata",
+			"certdir",
+			"$config['certdir'",
+			"you have not yet",
+			"_source",
+			"_simple",
+			"simple",
+			"function getpassword",
+			"getpassword",
+			"$password",
+			"SaxID",
+			"SimpleSAML_Auth_Simple",
+			"session",
+			"input",
+			"git://github.com/dialogik/SimplesamlphpBundle.gi",
+			"},\n",
+			"sax",
+			"session_start",
+			"createAuthProvider",
+			"security.authentication.provider.saml",
+			"        ",
+			"              ",
+			"security.authentication.provider.saml",
+			"AbstractFactory",
+			"AbstractFactory::create(",
+			"create(",
+			"create",
+			"createAuthProvider",
+			"security.authentication.provider.saml.",
+			"security.authentication.provider",
+			"saxid",
+			"src/Saxid/SaxidLdapProxyBundle/",
+			"security.authentication.provider.saml.app",
+			"parseValues",
+			"skip",
+			"eduPersonScopedAffiliation",
+			"security.authentication.provider.saml.app",
+			"pre",
+			"form.html",
+			"saxid-ldap-proxy",
+			"htdocs",
+			"saxid-",
+			"getacademy",
+			"setdisplayname",
+			"setAcademyDomain",
+			"setPassword",
+			"setacadem",
+			"getacademydomain",
+			"alias",
+			"HTTP_ENV_VARS",
+			"virtual",
+			"	",
+			"autoload",
+			"e not yet created the simpleSAMLphp configurati",
+			"this->config",
+			"getenv",
+			"getConfigDir",
+			"setconfigdir",
+			"function getconfigdir",
+			"tldev",
+			"getconfigdir",
+			"function setConfigDir",
+			"setConfigDir",
+			"setConfigDir#",
+			"/",
+			"getConfigDir",
+			"ave not yet created the simpleSAMLphp configuratio",
+			"metadata",
+			"metadatadir",
+			"metadata",
+			"createLdapBind",
+			"   ",
+			"{",
+			"substr caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )",
+			"SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )",
+			"1.3.6.1.4.1.1466.115.121.1.15 )",
+			"olcattr",
+			"loggingdir",
+			"log",
+			"    ",
+			"getSaxidUidFromUuid",
+			"saxidUidNumber",
+			"</strong>",
+			"<strong>",
+			"myLargeModalLabel",
+			"  ",
+			"#services",
+			"'email' =>",
+			"'logo' =>",
+			"'logo'    =>",
+			"'url' =>",
+			"'long' =>",
+			"'name' =>",
+			"@",
+			"-ett-"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"</code></li>",
+			"{{ app.user.",
+			"saxid",
+			"asset(",
+			"    ",
+			"src/Acme/MyBundle/",
+			"form.php",
+			" ",
+			"	",
+			"</code>",
+			"<code>",
+			"	",
+			"'email'   =>",
+			"'logo'    =>",
+			"'logo' =>",
+			"'url'     =>",
+			"'long'    =>",
+			"'name'    =>",
+			"(ett)",
+			"-ett-",
+			"array(",
+			" }}",
+			".",
+			"",
+			"services",
+			"images/",
+			"<li><a class=\"btn btn-default btn-block\" h",
+			"	",
+			"$this->ldapConn",
+			"	",
+			"pma_",
+			"pma__"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "security.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 351.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -35,16 +35,6 @@ class SaxidUserProvider implements UserProviderInterface
         // Create SaxidUser from attributes
         $user = new SaxidUser($attributes);
 
-        // Run the LDAP proxy
-        $slp    = new SaxidLdapProxy($user, $this->ldapHost, $this->ldapPort, $this->ldapUser, $this->ldapPass);
-        $status = $slp->getStatus();
-
-        // Add status message to Symfony flashbag
-        $this->session->getFlashBag()->add(
-            $status['type'],
-            $status['message']
-        );
-
         return $user;
     }
 

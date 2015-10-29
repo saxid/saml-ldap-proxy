@@ -41,7 +41,7 @@ class SaxidLdapProxy
 				// Add user to LDAP
 				$result = @ldap_add($this->ldapConn, $data['dn'], $data['data']);
 
-				// Modify if LDAP entry already exists
+				// Modify if LDAP entry already exists (error code #68)
 				if($result === false && ldap_errno($this->ldapConn) == 68) {
 					@ldap_modify($this->ldapConn, $data['dn'], $data['data']);
 					$this->setStatus("Userdata of {$this->user} updated in LDAP", 'info');

@@ -86,46 +86,7 @@
 
 		<footer>
 			<div class="container">
-				<div class="col-sm-3">
-					<h1>SaxID</h1>
-					<ul>
-						<li><a href="/">Über SaxID</a></li>
-						<li><a href="teilnehmer">Teilnehmer</a></li>
-						<li><a href="dienste">Dienste</a></li>
-						<li><a href="impressum">Impressum</a></li>
-					</ul>
-				</div>
-
-				<div class="col-sm-3">
-					<h1>Teilnehmer</h1>
-					<ul>
-						{#
-						{% for academy in academies %}
-						<li><a href="{{ academy.url }}">{{ academy.name }}</a></li>
-						{% endfor %}
-						#}
-					</ul>
-				</div>
-				<div class="col-sm-3">
-					<h1>Dienste</h1>
-					<ul>
-						{#
-						{% for service in services %}
-						<li><a href="dienste">{{ service.name }}</a></li>
-						{% endfor %}
-						#}
-					</ul>
-				</div>
-
-				<div class="col-sm-3">
-					<h1>Ähnliche Projekte</h1>
-					<ul>
-						<li><a href="https://www.zki.de/arbeitskreise/verzeichnisdienste/">ZKI Verzeichnisdienste</a></li>
-						<li><a href="https://www.aai.dfn.de/">DFN-AAI</a></li>
-						<li><a href="http://www.bwidm.de">bwIDM</a></li>
-						<li><a href="http://www.tu-ilmenau.de/metadirectory/projektdokumentation/">Codex Thüringen</a></li>
-					</ul>
-				</div>
+				<a href="{{ path('saxid_ldap_proxy_imprint') }}">Impressum</a>
 			</div>
 		</footer>
 

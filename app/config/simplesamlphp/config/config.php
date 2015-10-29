@@ -760,6 +760,5 @@ $config = array(
      * Example:
      *   'trusted.url.domains' => array('sp.example.com', 'app.example.com'),
      */
-    'trusted.url.domains' => null,
-
+    'trusted.url.domains' => array(),
 );
