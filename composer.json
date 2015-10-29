@@ -17,9 +17,7 @@
         "symfony/monolog-bundle": "~2.4",
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "saxid/simplesamlphp-bundle": "dev-master",
-        "simplesamlphp/simplesamlphp": "dev-master"
+        "hslavich/simplesamlphp-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
