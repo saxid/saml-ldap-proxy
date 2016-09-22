@@ -1,0 +1,70 @@
+{% extends "SaxidLdapProxyBundle::base.html.twig" %}
+
+{% block body %}
+	<div class="page-header">
+		<h1>SaxID – föderiertes Identitätsmanagement sächsischer Hochschulen</h1>
+	</div>
+
+	<div class="row">
+		<div class="col-md-9">
+			<p>
+				Bereits seit 2011 existiert eine Kooperation mit einer Reihe sächsischer Hochschulen zur Harmonisierung der Identitätsmanagementsysteme, um die gemeinsame Nutzung universitärer Benutzerkonten zu erleichtern.
+			</p>
+
+			<p>
+				Mit dem Initiativbudget-Projekt "SaxID: Entwicklung eines föderierten Identitätsmanagementsystems zur verteilten Nutzung von IT-Diensten in Sachsen" wird dieses Vorhaben von Oktober 2014 bis Dezember 2016 durch das SMWK gefördert. Die sächsischen Hochschulen werden die landesweite Nutzung der angebotenen Dienste und Systeme vorantreiben, um die übergreifende Forschung und Lehre zu stärken. Nachdem der erste Meilenstein mit der Erfassung des Ist-Zustandes Ende Januar erreicht wurde, beginnt im Anschluss die Anforderungsdefinition an ein zukünftiges SaxID-System.
+			</p>
+		</div>
+		<div class="col-md-3">
+			<a class="modal-toggle hover-show-magnifier" href="#" data-toggle="modal" data-target=".saxid-map">
+				<img class="img-responsive gentle-image-border" src="img/karte-saxid-teilnehmer.png" alt="Übersicht beteiligte SaxID-Hochschulen">
+			</a>
+		</div>
+	</div>
+
+	<section id="academies-index" class="col-lg-6">
+		<div class="page-header">
+			<h2>
+				<i class="fa fa-graduation-cap"></i>
+				<!-- <i class="fa fa-university"></i> -->
+				Beteiligte Hochschulen</h2>
+		</div>
+
+		<ul>
+			{% for academy in academies %}
+			<li>
+				<a href="{{ academy.url }}">{{ academy.long }}</a>
+			</li>
+			{% endfor %}
+		</ul>
+
+		<a href="teilnehmer" type="button" class="btn btn-primary btn-block">Mehr über teilnehmende Hochschulen erfahren</a>
+	</section>
+
+	<section id="services-index" class="col-lg-6">
+		<div class="page-header">
+			<h2>
+				<!-- <i class="fa fa-database"></i> -->
+				<i class="fa fa-hdd-o"></i>
+				<!-- <i class="fa fa-cubes"></i> -->
+				Dienste</h2>
+		</div>
+
+		<ul>
+			{% for service in services %}
+			<li>{{ service.name }} ({{ service.academy }})</li>
+			{% endfor %}
+		</ul>
+
+		<a href="dienste" type="button" class="btn btn-default btn-block">Mehr über SaxID-Dienste erfahren</a>
+	</section>
+
+	<div class="modal fade saxid-map" tabindex="-1" role="dialog" aria-labelledby="saxid-map">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<h2>Teilnehmende SaxID-Hochschulen</h2>
+				<img class="img-responsive gentle-image-border" src="img/saxid-map-large.png" alt="Übersicht beteiligte SaxID-Hochschulen">
+			</div>
+		</div>
+	</div>
+{% endblock body %}

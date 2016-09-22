@@ -1,0 +1,5 @@
+dn: o=tu-dresden.de,dc=sax-id,dc=de
+o: tu-dresden.de
+objectClass: top
+objectClass: organization
+description: Organisational container for the TU Dresden

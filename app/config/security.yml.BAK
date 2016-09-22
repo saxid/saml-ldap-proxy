@@ -1,0 +1,23 @@
+security:
+    providers:
+        simplesaml:
+            id: saxid_user_provider
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        saml:
+            pattern: ^/
+            anonymous: true
+            stateless: true
+            simple_preauth:
+                authenticator: simplesamlphp.authenticator
+                provider: simplesaml
+            logout:
+                path:   /logout
+                success_handler: simplesamlphp.logout_handler
+
+    access_control:
+        # Make imprint accessible for anonymous access
+        - { path: ^/imprint$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

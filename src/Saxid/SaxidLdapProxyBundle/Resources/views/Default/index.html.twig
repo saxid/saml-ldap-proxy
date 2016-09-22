@@ -1,0 +1,29 @@
+{% extends "SaxidLdapProxyBundle::base.html.twig" %}
+
+{% block body %}
+
+{% if app.user and app.user.isFromSaxonAcademy() %}
+<p>Folgende Attributswerte wurden vom Identity Provider übermittelt:</p>
+
+<ul class="idp-attributelist">
+	<li>username: <code>{{ app.user.username }}</code></li>
+	<li>uidNumber: <code>{{ app.user.uidNumber }}</code></li>
+	<li>uid: <code>{{ app.user.uid }}</code></li>
+	<li>eduPersonPrincipalName: <code>{{ app.user.eduPersonPrincipalName }}</code></li>
+	<li>eduPersonAffiliation: <code>{{ app.user.eduPersonAffiliation }}</code></li>
+	<li>eduPersonPrimaryAffiliation: <code>{{ app.user.eduPersonPrimaryAffiliation }}</code></li>
+	<li>eduPersonScopedAffiliation: <code>{{ app.user.eduPersonScopedAffiliation }}</code></li>
+	<li>surname: <code>{{ app.user.surname }}</code></li>
+	<li>givenName: <code>{{ app.user.givenName }}</code></li>
+	<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
+	<li>organizationalUnitName: <code>{% for value in app.user.organizationalUnitName %}{{ value }}{% endfor %} </code></li>
+	<li>commonName: <code>{{ app.user.commonName }}</code></li>
+	<li>email: <code>{{ app.user.email }}</code></li>
+	<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN[0] }}</code></li>
+	<li>Password: <code>{{ app.user.password }}</code></li>
+	<li>uncryptPassword: <code>{{ app.user.uncryptPassword }}</code></li>
+</ul>
+{% endif %}
+
+{{ parent() }}
+{% endblock body %}
