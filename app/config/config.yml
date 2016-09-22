@@ -83,5 +83,5 @@ swiftmailer:
     spool:     { type: memory }
 
 # SimplesamlphpBundle Configuration
-saxid_simplesamlphp:
+hslavich_simplesamlphp:
     sp: saxid-ldap-proxy
