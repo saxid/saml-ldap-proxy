@@ -31,17 +31,21 @@ class SaxidLdapProxy
 
 		$this->user = $user;
 
-		if($this->createLdapBind()) {
+		if($this->createLdapBind()) 
+                {
 			// Check if user is from Saxon academy
-			if($this->user->isFromSaxonAcademy()) {
+			if($this->user->isFromSaxonAcademy()) 
+                        {
 				// Prepare user data
 				$data = $this->user->createLdapDataArray();
 				$this->logEvent("User data for user {$this->user} prepared");
 
+                                
 				// Add user to LDAP
 				$result = @ldap_add($this->ldapConn, $data['dn'], $data['data']);
-
-				// Modify if LDAP entry already exists (error code #68)
+                                
+	
+			// Modify if LDAP entry already exists (error code #68)
 				if($result === false && ldap_errno($this->ldapConn) == 68) {
 
 					//preserve initial UID of User ... error -> see apache.log?!

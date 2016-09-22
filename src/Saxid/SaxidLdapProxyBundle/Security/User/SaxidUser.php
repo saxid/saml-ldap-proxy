@@ -12,13 +12,13 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $roles;
 
     private $uid;
+    private $uidNumber;
     private $eduPersonPrincipalName;
     private $eduPersonAffiliation;
     private $eduPersonPrimaryAffiliation;
     private $eduPersonScopedAffiliation;
     private $surname;
     private $givenName;
-    private $uidNumber;
     private $password;
     private $uncryptPassword;
     private $eduPersonEntitlement;
@@ -79,8 +79,10 @@ class SaxidUser implements UserInterface, EquatableInterface
     public function __construct($attributes)
     {
         // Map SAML2 attributes into class properties
-        foreach($attributes as $key => $attribute) {
-            if(in_array($key, array_keys(self::$attributeMapping))) {
+        foreach($attributes as $key => $attribute) 
+        {
+            if(in_array($key, array_keys(self::$attributeMapping))) 
+            {
                 $key = self::$attributeMapping[$key];
             }
 
@@ -94,17 +96,19 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
 
         $this->username         = $this->getEppn();
-        //not needed; generated for each password seperately -> more secure!!
-        //$this->salt             = 'hurra-hurra';
         $this->uncryptPassword  = 'knack';
         $this->roles            = array();
 
         $this->setAcademyDomain();
         $this->setAcademy();
+        
+        //TMP, festes Passwort
         $this->setPassword('knack');
 
+	//####UIDNumber####
         $digits = 5;
         // generate 5 digit random UID
+        //TODO - Prüfe ob UidNumber bereits vorhanden
         $saxidUidNumber = $this->getSaxidUidFromUuid(str_pad(rand(0, pow(10, $digits)-1), $digits, '0', STR_PAD_LEFT));
         $this->setUidNumber($saxidUidNumber);
 
@@ -113,7 +117,6 @@ class SaxidUser implements UserInterface, EquatableInterface
             $this->setDisplayName($displayName);
         }
     }
-
     public function getRoles() {
         return $this->roles;
     }
@@ -277,8 +280,24 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $this;
     }
 
-    public function getOrganizationalUnitName() {
-        return $this->organizationalUnitName;
+    public function getOrganizationalUnitName($asArray = false) 
+    {
+        $return = null;
+
+
+        if(!empty($this->organizationalUnitName)) 
+        {
+        	//wenn array, aber rückgabe nicht als array -> zu string konvertieren
+        	if(is_array($this->organizationalUnitName) and !$asArray)
+        	{
+            	$return = implode(', ', $this->organizationalUnitName);
+        	}
+        	else
+        	{
+        		$return = $this->organizationalUnitName;
+        	}
+        }
+        return $return;
     }
 
     public function setCommonName($commonName) {
@@ -304,8 +323,23 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $this;
     }
 
-    public function getEduPersonOrgUnitDN() {
-        return $this->eduPersonOrgUnitDN;
+    public function getEduPersonOrgUnitDN($asArray = false) 
+    {
+    	$return = null;
+    	
+        if(!empty($this->eduPersonOrgUnitDN)) 
+        {
+        	//wenn array, aber rückgabe nicht als array -> zu string konvertieren
+        	if(is_array($this->eduPersonOrgUnitDN) and !$asArray)
+        	{
+            	$return = implode(', ', $this->eduPersonOrgUnitDN);
+        	}
+        	else
+        	{
+        		$return = $this->eduPersonOrgUnitDN;
+        	}
+        }
+        return $return;
     }
 
     public function setDisplayName($displayName) {
@@ -392,8 +426,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         // $data['eduPersonAssurance']          = ;
         $data['eduPersonEntitlement']        = $this->getEduPersonEntitlement();
         // $data['eduPersonNickname']           = ;
-        // $data['eduPersonOrgDN']              = ;
-        $data['eduPersonOrgUnitDN']          = $this->getEduPersonOrgUnitDN();
+        $data['eduPersonOrgUnitDN']          = $this->getEduPersonOrgUnitDN(true);
         $data['eduPersonPrimaryAffiliation'] = $this->getEduPersonPrimaryAffiliation();
         // $data['eduPersonPrimaryOrgUnitDN']   = ;
         $data['eduPersonPrincipalName']      = $this->getEppn();

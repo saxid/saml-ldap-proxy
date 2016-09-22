@@ -27,7 +27,7 @@ class PasswordController extends Controller
 
           $this->addFlash(
               "info",
-              "data - " . "usr: " . $usrn . " pw: " . $pw
+              "usr: " . $usrn . " pw: " . $pw
           );
 
         }

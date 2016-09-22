@@ -16,10 +16,10 @@
 	<li>surname: <code>{{ app.user.surname }}</code></li>
 	<li>givenName: <code>{{ app.user.givenName }}</code></li>
 	<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
-	<li>organizationalUnitName: <code>{% for value in app.user.organizationalUnitName %}{{ value }}{% endfor %} </code></li>
+	<li>organizationalUnitName: <code>{{ app.user.organizationalUnitName }}</code></li>
 	<li>commonName: <code>{{ app.user.commonName }}</code></li>
 	<li>email: <code>{{ app.user.email }}</code></li>
-	<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN[0] }}</code></li>
+	<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN }}</code></li>
 	<li>Password: <code>{{ app.user.password }}</code></li>
 	<li>uncryptPassword: <code>{{ app.user.uncryptPassword }}</code></li>
 </ul>

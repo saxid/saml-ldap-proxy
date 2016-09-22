@@ -11,7 +11,7 @@ services:
 
     saxid_ldap_proxy.pwdm:
         class:      Saxid\SaxidLdapProxyBundle\Security\Password\SaxidPasswordManager
-        arguments:  ['%security.user%']
+        arguments: 
 
 
     saxid_ldap_proxy.proxy:

@@ -19,7 +19,7 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "saxid/simplesamlphp-bundle": "dev-master",
-        "simplesamlphp/simplesamlphp": "@dev"
+        "simplesamlphp/simplesamlphp": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

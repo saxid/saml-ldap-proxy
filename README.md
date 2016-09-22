@@ -64,6 +64,9 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 
 ### <a name="apache"></a>Apache-Konfiguration ###
 
+Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
+        /etc/apache2/httpd.conf.local
+
 1. Virtual Host einrichten: die Environment-Variablen `SIMPLESAMLPHP_*_DIR`/`SAXIDLDAPPROXY_LOG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp sind obligatorisch.
 
         Alias /simplesaml /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp/www
@@ -89,6 +92,12 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 * Alternativ zu der `Alias`-Anweisung kann natürlich auch ein Symlink (`ln -s`) gesetzt werden.
 
 ### <a name="ldap"></a>LDAP-Konfiguration ###
+
+1. /etc/openldap/ldap.conf
+
+        host    localhost
+        base    dc=sax-id,dc=de
+        binddn  cn=admin,dc=sax-id,dc=de
 
 Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyBundle/Resources/schema`.
 
@@ -125,7 +134,7 @@ Ich (Moritz) habe stets lokal entwickelt, und dann per (P)SCP auf die VM übertr
 * `deploy-vm-src.sh`: Deployment nur `src/`-Folder
 * `deploy-vm-config.sh`: Deployment nur `app/config/`-Folder
 
-Ich (Jan) habe eine neue deploy geschreiben, bei der das gesamte Verzeichnich vor der übertragung komprimiert wird und auf dem server weider entpackt wird.
+Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeichnis vor der Übertragung komprimiert wird und auf dem Server wieder entpackt wird.
 
 * `deploy.sh` : Deployment zipped (bz2) Folder
 
