@@ -150,8 +150,8 @@ Roh-Assets sind in `src/Saxid/SaxidLdapProxyBundle/Resource/public` und werden p
 
 in den Order `web/bundles/...` compiliert. Wenn die Assets ohne `--symlinks` installiert werden, muss der Befehl nach jeder Änderung in `src/` aufgerufen werden.
 
-# cache
+# Cache
 
-Prüfen ob der Cache vom Webserver beschreibbar ist!
+Prüfen ob der Cache vom Webserver beschreibbar ist und setzen des "Webserver-Users"!
 
-`chown -R wwwrun:www app/cache`
+    chown -R wwwrun:www app/cache
