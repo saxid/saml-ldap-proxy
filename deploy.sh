@@ -1,7 +1,15 @@
 #!/bin/bash
+########################################
+# Deploy Script
+# Zipping and Uploading Symfony Contents to Webserver. Setting up Owner, clearing cache
+# an installing Assets ith symlink.
+#
+# Author: Jan Frömberg
+# Date:   Sept 2016
+########################################
 echo "Creating Archive ..."
 rm -f saxidprox_depl.tar.bz2
-tar cjf saxidprox_depl.tar.bz2 *
+tar cjf saxidprox_depl.tar.bz2 * --exclude='.git/'
 #bzip2 saxidprox_depl.tar
 #tar uf saxidprox_depl.tar *
 echo "Deploying Archive to VM ..."
@@ -15,8 +23,8 @@ echo "... extracting"
 ssh root@saxid.zih.tu-dresden.de tar xjf /srv/www/htdocs/saxid-ldap-proxy/saxidprox_depl.tar.bz2 -C /srv/www/htdocs/saxid-ldap-proxy
 echo "... removing Archive on Server"
 ssh root@saxid.zih.tu-dresden.de rm -f /srv/www/htdocs/saxid-ldap-proxy/saxidprox_depl.tar.bz2
-echo "... removing .git"
-ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/.git
+#echo "... removing .git"
+#ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/.git
 echo "... set owner to wwwrun:www"
 ssh root@saxid.zih.tu-dresden.de chown -R wwwrun:www /srv/www/htdocs/saxid-ldap-proxy
 ssh root@saxid.zih.tu-dresden.de chmod u+x /srv/www/htdocs/saxid-ldap-proxy/app/console

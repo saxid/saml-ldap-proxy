@@ -130,16 +130,21 @@ Prüfen ob der Cache vom Webserver beschreibbar ist und setzen des "Webserver-Us
 check URL for making and installing reg-app -> https://git.scc.kit.edu/simon/reg-app/wikis/pages
 
 Generate a Certificate Signing Request (CSR)
-        $ openssl req -new -newkey rsa:2048 -nodes -keyout m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.csr
+
+    $ openssl req -new -newkey rsa:2048 -nodes -keyout m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.csr
+
 Generate a Self-Signed SSL Certificate
-        $ openssl x509 -req -days 365 -in m016.zih.tu-dresden.de.csr -signkey m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.crt
+
+    $ openssl x509 -req -days 365 -in m016.zih.tu-dresden.de.csr -signkey m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.crt
+
 Once you have these you need to create a Java keystore file. This is a two step process. First creating a pkcs12 file from your SSL certificate and then importing that into a keystore file.
-        $ openssl pkcs12 -export -in m016.zih.tu-dresden.de.crt -inkey m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.p12 -name default -caname root
-        $ keytool -importkeystore -deststorepass saxid -destkeypass saxid -destkeystore m016.zih.tu-dresden.de.jks -srckeystore m016.zih.tu-dresden.de.p12 -srcstoretype PKCS12 -srcstorepass saxid -alias default
+
+    $ openssl pkcs12 -export -in m016.zih.tu-dresden.de.crt -inkey m016.zih.tu-dresden.de.key -out m016.zih.tu-dresden.de.p12 -name default -caname root
+    $ keytool -importkeystore -deststorepass saxid -destkeypass saxid -destkeystore m016.zih.tu-dresden.de.jks -srckeystore m016.zih.tu-dresden.de.p12 -srcstoretype PKCS12 -srcstorepass saxid -alias default
 
 Copy the new keystore file to the your Wildfly configuration directory
 
-        sudo cp yourdomain.com.jks /usr/local/opt/wildfly-8.1.0.Final/standalone/configuration/
+    sudo cp yourdomain.com.jks /usr/local/opt/wildfly-8.1.0.Final/standalone/configuration/
 
 Insert the following into your standalone.xml in the security-realms section.
 
