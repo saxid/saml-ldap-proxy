@@ -18,8 +18,14 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "hslavich/simplesamlphp-bundle": "^1.1"
+        "sax_id/simplesamlphp-bundle": "dev-master@dev"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@gitlab.hrz.tu-chemnitz.de:froember--tu-dresden.de/simplesamlphp-bundle.git"
+        }
+    ],
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
     },

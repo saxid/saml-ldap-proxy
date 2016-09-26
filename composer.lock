@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2ca9830b91cf928343fe0c4a99bc04e9",
-    "content-hash": "fad3ba2b738d52fd4bf6251f05e2b5a1",
+    "hash": "7a3506ee36bb8dbd20a65c44e652490e",
+    "content-hash": "54b2d02699e5b51484ac25390737be32",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -711,48 +711,6 @@
             "time": "2015-08-31 13:19:01"
         },
         {
-            "name": "hslavich/simplesamlphp-bundle",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hslavich/SimplesamlphpBundle.git",
-                "reference": "44d42fe0016e0c325e5fb2b622f392f23aff91fa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hslavich/SimplesamlphpBundle/zipball/44d42fe0016e0c325e5fb2b622f392f23aff91fa",
-                "reference": "44d42fe0016e0c325e5fb2b622f392f23aff91fa",
-                "shasum": ""
-            },
-            "require": {
-                "simplesamlphp/simplesamlphp": "~1.13",
-                "symfony/symfony": ">=2.8"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "Hslavich\\SimplesamlphpBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "authors": [
-                {
-                    "name": "hslavich",
-                    "email": "hernan.slavich@gmail.com"
-                },
-                {
-                    "name": "Moritz Hesse",
-                    "email": "moritz.hesse@tu-dresden.de"
-                }
-            ],
-            "description": "SimpleSAMLphp Bundle for Symfony2",
-            "keywords": [
-                "saml",
-                "simplesamlphp"
-            ],
-            "time": "2016-02-16 18:08:26"
-        },
-        {
             "name": "incenteev/composer-parameter-handler",
             "version": "v2.1.2",
             "source": {
@@ -1185,6 +1143,41 @@
                 "xmldsig"
             ],
             "time": "2016-09-08 13:31:44"
+        },
+        {
+            "name": "sax_id/simplesamlphp-bundle",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@gitlab.hrz.tu-chemnitz.de:froember--tu-dresden.de/simplesamlphp-bundle.git",
+                "reference": "173a59a3bd16d621913418941af43b59aff57c73"
+            },
+            "require": {
+                "simplesamlphp/simplesamlphp": "~1.14",
+                "symfony/symfony": ">=2.4"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Saxid\\SimplesamlphpBundle\\": ""
+                }
+            },
+            "authors": [
+                {
+                    "name": "Moritz Hesse",
+                    "email": "moritz.hesse@tu-dresden.de"
+                },
+                {
+                    "name": "Jan Frömberg",
+                    "email": "jan.froemberg@tu-dresden.de"
+                }
+            ],
+            "description": "SimpleSAMLphp Bundle for Symfony2. Forked from hslavich/simplesamlphp-bundle.",
+            "keywords": [
+                "saml",
+                "simplesamlphp"
+            ],
+            "time": "2016-09-26 12:03:46"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -2507,7 +2500,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "sax_id/simplesamlphp-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
