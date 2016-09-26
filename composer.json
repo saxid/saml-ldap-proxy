@@ -2,7 +2,17 @@
     "name": "symfony/framework-standard-edition",
     "license": "MIT",
     "type": "project",
-    "description": "The \"Symfony Standard Edition\" distribution",
+    "description": "The \"Symfony Standard Edition\" distribution. SaxID-Ldap-Proxy Prototype",
+    "authors": [
+        {
+            "name": "Moritz Hesse",
+            "email": "moritz.hesse@tu-dresden.de"
+        },
+        {
+            "name": "Jan Frömberg",
+            "email": "jan.froemberg@tu-dresden.de"
+        }
+    ],
     "autoload": {
         "psr-4": { "": "src/", "SymfonyStandard\\": "app/SymfonyStandard/" }
     },
