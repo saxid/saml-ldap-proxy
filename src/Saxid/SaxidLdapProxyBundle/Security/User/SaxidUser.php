@@ -116,6 +116,8 @@ class SaxidUser implements UserInterface, EquatableInterface
             $displayName = $this->givenName . " " . $this->surname;
             $this->setDisplayName($displayName);
         }
+        
+        //TestGitNetbeans
     }
     public function getRoles() {
         return $this->roles;
