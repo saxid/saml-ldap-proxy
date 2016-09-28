@@ -31,20 +31,16 @@ class SaxidLdapProxy
 
 		$this->user = $user;
 
-		if($this->createLdapBind()) 
-                {
+		if($this->createLdapBind()) {
 			// Check if user is from Saxon academy
-			if($this->user->isFromSaxonAcademy()) 
-                        {
+			if($this->user->isFromSaxonAcademy()) {
 				// Prepare user data
 				$data = $this->user->createLdapDataArray();
 				$this->logEvent("User data for user {$this->user} prepared");
 
-                                
 				// Add user to LDAP
 				$result = @ldap_add($this->ldapConn, $data['dn'], $data['data']);
-                                
-	
+
 			// Modify if LDAP entry already exists (error code #68)
 				if($result === false && ldap_errno($this->ldapConn) == 68) {
 
@@ -145,7 +141,7 @@ class SaxidLdapProxy
 
 		if($ldapBind !== false) {
 			$this->logEvent("Bind successfull established");
-			$return = true;
+			return true;
 		}
 
 		// Bind error
@@ -154,10 +150,8 @@ class SaxidLdapProxy
 			$error = $this->getLdapError($message);
 			$this->setStatus($error, 'danger');
 			$this->logEvent($error);
-			$return = false;
+			return false;
 		}
-
-		return $return;
 	}
 
 	private function startLogging() {
