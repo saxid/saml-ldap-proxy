@@ -33,7 +33,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url":  "git@gitlab.hrz.tu-chemnitz.de:froember--tu-dresden.de/simplesamlphp-bundle.git"
+            "url":  "git@gitlab.hrz.tu-chemnitz.de:saxid-federated-resource-management/simplesamlphp-bundle.git"
         }
     ],
     "require-dev": {

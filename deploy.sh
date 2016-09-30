@@ -2,10 +2,10 @@
 ########################################
 # Deploy Script
 # Zipping and Uploading Symfony Contents to Webserver. Setting up Owner, clearing cache
-# an installing Assets ith symlink.
+# an installing Assets with symlink.
 #
 # Author: Jan Frömberg
-# Date:   Sept 2016
+# Date:   Mai 2016
 ########################################
 echo "Creating Archive ..."
 rm -f saxidprox_depl.tar.bz2
@@ -13,10 +13,10 @@ tar cjf saxidprox_depl.tar.bz2 * --exclude='.git/'
 #bzip2 saxidprox_depl.tar
 #tar uf saxidprox_depl.tar *
 echo "Deploying Archive to VM ..."
-echo "... deleting old content"
+echo "... deleting old content on server"
 ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/*
 # -r recursive and -p preserve -> time...
-echo "... copy new"
+echo "... copy new stuff to server"
 scp saxidprox_depl.tar.bz2 root@saxid:/srv/www/htdocs/saxid-ldap-proxy
 echo "Configuring VM ..."
 echo "... extracting"
