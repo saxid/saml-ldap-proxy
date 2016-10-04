@@ -106,9 +106,9 @@ options {
 	// to talk to, you may need to fix the firewall to allow multiple
 	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
 
-	// If your ISP provided one or more IP addresses for stable 
-	// nameservers, you probably want to use them as forwarders.  
-	// Uncomment the following block, and insert the addresses replacing 
+	// If your ISP provided one or more IP addresses for stable
+	// nameservers, you probably want to use them as forwarders.
+	// Uncomment the following block, and insert the addresses replacing
 	// the all-0's placeholder.
 
 	forwarders {
@@ -157,7 +157,7 @@ authoritative;
 # have to hack syslog.conf to complete the redirection).
 log-facility local7;
 
-# No service will be given on this subnet, but declaring it helps the 
+# No service will be given on this subnet, but declaring it helps the
 # DHCP server to understand the network topology.
 
 subnet 192.168.100.0 netmask 255.255.255.0 {
@@ -272,7 +272,7 @@ Listen 80
 <VirtualHost *:443>
         ServerAdmin admin@shib.lan
         ServerName www.shib.lan
-        ServerAlias www.shib.lan 
+        ServerAlias www.shib.lan
         SSLEngine On
         SSLCertificateFile /etc/ssl/certs/www.shib.lan_cert.pem
         SSLCertificateKeyFile /etc/ssl/private/www.shib.lan_key.pem
@@ -293,7 +293,7 @@ Listen 80
 \begin{lstlisting}
 <VirtualHost *:443>
         ServerName shib.lan
-        ServerAlias shib.lan 
+        ServerAlias shib.lan
         SSLEngine On
         SSLCertificateFile /etc/ssl/certs/www.shib.lan_cert.pem
         SSLCertificateKeyFile /etc/ssl/private/www.shib.lan_key.pem
@@ -305,7 +305,7 @@ Listen 80
 <VirtualHost *:80>
         ServerAdmin admin@shib.lan
         ServerName shib.lan
-        ServerAlias shib.lan 
+        ServerAlias shib.lan
         Redirect 301 / https://www.shib.lan/
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -336,7 +336,7 @@ Listen 80
 <VirtualHost *:80>
         ServerAdmin admin@shib.lan
         ServerName ldap.shib.lan
-        ServerAlias ldap.shib.lan 
+        ServerAlias ldap.shib.lan
         Redirect 301 / https://ldap.shib.lan/
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -350,11 +350,11 @@ Listen 80
   SSLEngine               on
   SSLCertificateFile      /etc/ssl/certs/idp.shib.lan_cert.pem
   SSLCertificateKeyFile   /etc/ssl/private/idp.shib.lan_key.pem
- 
+
   SSLProtocol All -SSLv2 -SSLv3
   SSLHonorCipherOrder On
   SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
- 
+
   <Location /idp>
     Allow from all
     ProxyPass ajp://localhost:8009/idp
@@ -362,9 +362,9 @@ Listen 80
     Header always append X-FRAME-OPTIONS "DENY"
   </Location>
 </VirtualHost>
- 
+
 Listen 8443
- 
+
 <VirtualHost *:8443>
   ServerName              idp.hib.lan
   SSLEngine               on
@@ -374,18 +374,18 @@ Listen 8443
   SSLProtocol All -SSLv2 -SSLv3
   SSLHonorCipherOrder On
   SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
- 
+
   SSLVerifyClient optional_no_ca
   # damit auch Zertifikate mit einer längeren CA-Kette funktionieren:
   SSLVerifyDepth  10
   # damit Apache das Client-Zertifkat an Tomcat weiterleitet:
   SSLOptions      +StdEnvVars +ExportCertData
- 
+
   <Location /idp>
     Allow from all
     ProxyPass ajp://localhost:8009/idp
   </Location>
- 
+
 </VirtualHost>
 \end{lstlisting}
 \subsubsection{/etc/ldap/tls.ldif}
@@ -394,7 +394,7 @@ Listen 8443
 # CONFIGURATION for Support of TLS
 ###########################################################
 # Add TLS supported access to user passwords for LDAP clients
-# to the LDAP config. 
+# to the LDAP config.
 
 dn: cn=config
 changetype: modify
@@ -446,7 +446,7 @@ TOMCAT7_USER=tomcat7
 TOMCAT7_GROUP=tomcat7
 
 # The home directory of the Java development kit (JDK). You need at least
-# JDK version 1.5. If JAVA_HOME is not set, some common directories for 
+# JDK version 1.5. If JAVA_HOME is not set, some common directories for
 # OpenJDK, the Sun JDK, and various J2SE 1.5 versions are tried.
 #JAVA_HOME=/usr/lib/jvm/openjdk-6-jdk
 
@@ -547,17 +547,17 @@ TOMCAT7_SECURITY=no
 
       <!-- Define an AJP 1.3 Connector on port 8009 -->
       <Connector port="8009" address="127.0.0.1"
-              enableLookups="false" 
+              enableLookups="false"
               redirectPort="8443"
               protocol="AJP/1.3"
               maxPostSize="100000" />
 
      <!-- hinter einem Load-Balancer kann das z.B. so aussehen:
-     <Connector port="8009" address="127.0.0.1" 
+     <Connector port="8009" address="127.0.0.1"
               scheme="https"
               enableLookups="false"
-              redirectPort="8443" 
-              proxyPort="443" 
+              redirectPort="8443"
+              proxyPort="443"
               protocol="AJP/1.3"
               maxPostSize="100000" />
      -->
@@ -668,10 +668,10 @@ TOMCAT7_SECURITY=no
 \subsubsection{/opt/shibboleth-idp/conf/service.xml}
 \begin{lstlisting}[language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
-<srv:Services xmlns:srv="urn:mace:shibboleth:2.0:services" xmlns:attribute-afp="urn:mace:shibboleth:2.0:afp" 
-              xmlns:attribute-authority="urn:mace:shibboleth:2.0:attribute:authority" xmlns:attribute-resolver="urn:mace:shibboleth:2.0:resolver" 
-              xmlns:profile="urn:mace:shibboleth:2.0:idp:profile-handler" xmlns:relyingParty="urn:mace:shibboleth:2.0:relying-party" 
-              xmlns:resource="urn:mace:shibboleth:2.0:resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<srv:Services xmlns:srv="urn:mace:shibboleth:2.0:services" xmlns:attribute-afp="urn:mace:shibboleth:2.0:afp"
+              xmlns:attribute-authority="urn:mace:shibboleth:2.0:attribute:authority" xmlns:attribute-resolver="urn:mace:shibboleth:2.0:resolver"
+              xmlns:profile="urn:mace:shibboleth:2.0:idp:profile-handler" xmlns:relyingParty="urn:mace:shibboleth:2.0:relying-party"
+              xmlns:resource="urn:mace:shibboleth:2.0:resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="urn:mace:shibboleth:2.0:services classpath:/schema/shibboleth-2.0-services.xsd
                                   urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd
                                   urn:mace:shibboleth:2.0:attribute:authority classpath:/schema/shibboleth-2.0-attribute-authority.xsd
@@ -687,16 +687,16 @@ TOMCAT7_SECURITY=no
     <srv:Service id="shibboleth.AttributeFilterEngine" xsi:type="attribute-afp:ShibbolethAttributeFilteringEngine" configurationResourcePollingFrequency="PT5M">
         <srv:ConfigurationResource file="/opt/shibboleth-idp/conf/attribute-filter.xml" xsi:type="resource:FilesystemResource"/>
     </srv:Service>
-    
-    <srv:Service id="shibboleth.SAML1AttributeAuthority" xsi:type="attribute-authority:SAML1AttributeAuthority" 
-                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine" 
-                 resolver="shibboleth.AttributeResolver" filter="shibboleth.AttributeFilterEngine"/>
-             
-    <srv:Service id="shibboleth.SAML2AttributeAuthority" xsi:type="attribute-authority:SAML2AttributeAuthority" 
-                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine" 
+
+    <srv:Service id="shibboleth.SAML1AttributeAuthority" xsi:type="attribute-authority:SAML1AttributeAuthority"
+                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine"
                  resolver="shibboleth.AttributeResolver" filter="shibboleth.AttributeFilterEngine"/>
 
-    <srv:Service id="shibboleth.RelyingPartyConfigurationManager" xsi:type="relyingParty:SAMLMDRelyingPartyConfigurationManager" 
+    <srv:Service id="shibboleth.SAML2AttributeAuthority" xsi:type="attribute-authority:SAML2AttributeAuthority"
+                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine"
+                 resolver="shibboleth.AttributeResolver" filter="shibboleth.AttributeFilterEngine"/>
+
+    <srv:Service id="shibboleth.RelyingPartyConfigurationManager" xsi:type="relyingParty:SAMLMDRelyingPartyConfigurationManager"
                  depends-on="shibboleth.SAML1AttributeAuthority shibboleth.SAML2AttributeAuthority">
         <srv:ConfigurationResource file="/opt/shibboleth-idp/conf/relying-party.xml" xsi:type="resource:FilesystemResource"/>
     </srv:Service>
@@ -704,15 +704,15 @@ TOMCAT7_SECURITY=no
     <srv:Service id="shibboleth.HandlerManager" depends-on="shibboleth.RelyingPartyConfigurationManager" xsi:type="profile:IdPProfileHandlerManager">
         <srv:ConfigurationResource file="/opt/shibboleth-idp/conf/handler.xml" xsi:type="resource:FilesystemResource"/>
     </srv:Service>
-    
-    <!-- 
-        A special service that exports all services upon which it depends into the ServletContext as an attribute 
+
+    <!--
+        A special service that exports all services upon which it depends into the ServletContext as an attribute
         with the same name as the service's ID.
     -->
     <srv:Service id="shibboleth.ServiceServletContextAttributeExporter" xsi:type="srv:ServletContextAttributeExporter"
-                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine 
+                 depends-on="shibboleth.AttributeResolver shibboleth.AttributeFilterEngine
                              shibboleth.SAML1AttributeAuthority shibboleth.SAML2AttributeAuthority
-                             shibboleth.RelyingPartyConfigurationManager shibboleth.HandlerManager 
+                             shibboleth.RelyingPartyConfigurationManager shibboleth.HandlerManager
                              shibboleth.StorageService" />
 </srv:Services>
 \end{lstlisting}
@@ -723,84 +723,84 @@ TOMCAT7_SECURITY=no
 <!--
     This file is an EXAMPLE configuration file.
 
-    This file specifies relying party dependent configurations for the IdP, for example, whether SAML assertions to a 
-    particular relying party should be signed.  It also includes metadata provider and credential definitions used 
+    This file specifies relying party dependent configurations for the IdP, for example, whether SAML assertions to a
+    particular relying party should be signed.  It also includes metadata provider and credential definitions used
     when answering requests to a relying party.
 -->
-<rp:RelyingPartyGroup xmlns:rp="urn:mace:shibboleth:2.0:relying-party" xmlns:saml="urn:mace:shibboleth:2.0:relying-party:saml" 
-                      xmlns:metadata="urn:mace:shibboleth:2.0:metadata" xmlns:resource="urn:mace:shibboleth:2.0:resource" 
-                      xmlns:security="urn:mace:shibboleth:2.0:security" xmlns:samlsec="urn:mace:shibboleth:2.0:security:saml" 
-                      xmlns:samlmd="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<rp:RelyingPartyGroup xmlns:rp="urn:mace:shibboleth:2.0:relying-party" xmlns:saml="urn:mace:shibboleth:2.0:relying-party:saml"
+                      xmlns:metadata="urn:mace:shibboleth:2.0:metadata" xmlns:resource="urn:mace:shibboleth:2.0:resource"
+                      xmlns:security="urn:mace:shibboleth:2.0:security" xmlns:samlsec="urn:mace:shibboleth:2.0:security:saml"
+                      xmlns:samlmd="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                       xsi:schemaLocation="urn:mace:shibboleth:2.0:relying-party classpath:/schema/shibboleth-2.0-relying-party.xsd
                                           urn:mace:shibboleth:2.0:relying-party:saml classpath:/schema/shibboleth-2.0-relying-party-saml.xsd
                                           urn:mace:shibboleth:2.0:metadata classpath:/schema/shibboleth-2.0-metadata.xsd
-                                          urn:mace:shibboleth:2.0:resource classpath:/schema/shibboleth-2.0-resource.xsd 
+                                          urn:mace:shibboleth:2.0:resource classpath:/schema/shibboleth-2.0-resource.xsd
                                           urn:mace:shibboleth:2.0:security classpath:/schema/shibboleth-2.0-security.xsd
                                           urn:mace:shibboleth:2.0:security:saml classpath:/schema/shibboleth-2.0-security-policy-saml.xsd
                                           urn:oasis:names:tc:SAML:2.0:metadata classpath:/schema/saml-schema-metadata-2.0.xsd">
-                                       
+
     <!-- ========================================== -->
     <!--      Relying Party Configurations          -->
     <!-- ========================================== -->
     <rp:AnonymousRelyingParty provider="https://idp.shib.lan/idp/shibboleth" defaultSigningCredentialRef="IdPCredential"/>
-    
+
     <rp:DefaultRelyingParty provider="https://idp.shib.lan/idp/shibboleth" defaultSigningCredentialRef="IdPCredential">
-        <!-- 
+        <!--
             Each attribute in these profiles configuration is set to its default value,
             that is, the values that would be in effect if those attributes were not present.
-            We list them here so that people are aware of them (since they seem reluctant to 
+            We list them here so that people are aware of them (since they seem reluctant to
             read the documentation).
         -->
-        <rp:ProfileConfiguration xsi:type="saml:ShibbolethSSOProfile" includeAttributeStatement="false" 
+        <rp:ProfileConfiguration xsi:type="saml:ShibbolethSSOProfile" includeAttributeStatement="false"
                                  assertionLifetime="PT5M" signResponses="conditional" signAssertions="never"
                                  includeConditionsNotBefore="true"/>
-                              
-        <rp:ProfileConfiguration xsi:type="saml:SAML1AttributeQueryProfile" assertionLifetime="PT5M" 
+
+        <rp:ProfileConfiguration xsi:type="saml:SAML1AttributeQueryProfile" assertionLifetime="PT5M"
                                  signResponses="conditional" signAssertions="never"
                                  includeConditionsNotBefore="true"/>
-        
-        <rp:ProfileConfiguration xsi:type="saml:SAML1ArtifactResolutionProfile" signResponses="conditional" 
+
+        <rp:ProfileConfiguration xsi:type="saml:SAML1ArtifactResolutionProfile" signResponses="conditional"
                                  signAssertions="never"/>
-        
-        <rp:ProfileConfiguration xsi:type="saml:SAML2SSOProfile" includeAttributeStatement="true" 
-                                 assertionLifetime="PT5M" assertionProxyCount="0" 
-                                 signResponses="never" signAssertions="always" 
+
+        <rp:ProfileConfiguration xsi:type="saml:SAML2SSOProfile" includeAttributeStatement="true"
+                                 assertionLifetime="PT5M" assertionProxyCount="0"
+                                 signResponses="never" signAssertions="always"
                                  encryptAssertions="conditional" encryptNameIds="never"
                                  includeConditionsNotBefore="true"/>
 
-        <rp:ProfileConfiguration xsi:type="saml:SAML2ECPProfile" includeAttributeStatement="true" 
-                                 assertionLifetime="PT5M" assertionProxyCount="0" 
-                                 signResponses="never" signAssertions="always" 
+        <rp:ProfileConfiguration xsi:type="saml:SAML2ECPProfile" includeAttributeStatement="true"
+                                 assertionLifetime="PT5M" assertionProxyCount="0"
+                                 signResponses="never" signAssertions="always"
                                  encryptAssertions="conditional" encryptNameIds="never"
                                  includeConditionsNotBefore="true"/>
 
-        <rp:ProfileConfiguration xsi:type="saml:SAML2AttributeQueryProfile" 
-                                 assertionLifetime="PT5M" assertionProxyCount="0" 
-                                 signResponses="conditional" signAssertions="never" 
+        <rp:ProfileConfiguration xsi:type="saml:SAML2AttributeQueryProfile"
+                                 assertionLifetime="PT5M" assertionProxyCount="0"
+                                 signResponses="conditional" signAssertions="never"
                                  encryptAssertions="conditional" encryptNameIds="never"
                                  includeConditionsNotBefore="true"/>
-        
-        <rp:ProfileConfiguration xsi:type="saml:SAML2ArtifactResolutionProfile" 
-                                 signResponses="never" signAssertions="always" 
+
+        <rp:ProfileConfiguration xsi:type="saml:SAML2ArtifactResolutionProfile"
+                                 signResponses="never" signAssertions="always"
                                  encryptAssertions="conditional" encryptNameIds="never"/>
 
         <rp:ProfileConfiguration xsi:type="saml:SAML2LogoutRequestProfile"
                                  signResponses="conditional"/>
-        
+
     </rp:DefaultRelyingParty>
-        
-    
+
+
     <!-- ========================================== -->
     <!--      Metadata Configuration                -->
     <!-- ========================================== -->
     <!-- MetadataProvider the combining other MetadataProviders -->
     <metadata:MetadataProvider id="ShibbolethMetadata" xsi:type="metadata:ChainingMetadataProvider">
-    
+
     	<!-- Load the IdP's own metadata.  This is necessary for artifact support. -->
         <metadata:MetadataProvider id="IdPMD" xsi:type="metadata:FilesystemMetadataProvider"
                                    metadataFile="/opt/shibboleth-idp/metadata/idp-metadata.xml"
                                    maxRefreshDelay="P1D" />
-        
+
         <metadata:MetadataProvider id="sp.shib.lan" xsi:type="metadata:FileBackedHTTPMetadataProvider"
                       metadataURL="https://sp.shib.lan/Shibboleth.sso/Metadata"
                       backingFile="/opt/shibboleth-idp/metadata/sp-metadata.xml" />
@@ -815,7 +815,7 @@ TOMCAT7_SECURITY=no
                           metadataURL="http://example.org/metadata.xml"
                           backingFile="/opt/shibboleth-idp/metadata/some-metadata.xml">
             <metadata:MetadataFilter xsi:type="metadata:ChainingFilter">
-                <metadata:MetadataFilter xsi:type="metadata:RequiredValidUntil" 
+                <metadata:MetadataFilter xsi:type="metadata:RequiredValidUntil"
                                 maxValidityInterval="P7D" />
                 <metadata:MetadataFilter xsi:type="metadata:SignatureValidation"
                                 trustEngineRef="shibboleth.MetadataTrustEngine"
@@ -826,10 +826,10 @@ TOMCAT7_SECURITY=no
             </metadata:MetadataFilter>
         </metadata:MetadataProvider>
         -->
-        
+
     </metadata:MetadataProvider>
 
-    
+
     <!-- ========================================== -->
     <!--     Security Configurations                -->
     <!-- ========================================== -->
@@ -837,7 +837,7 @@ TOMCAT7_SECURITY=no
         <security:PrivateKey>/opt/shibboleth-idp/credentials/idp.key</security:PrivateKey>
         <security:Certificate>/opt/shibboleth-idp/credentials/idp.crt</security:Certificate>
     </security:Credential>
-    
+
     <!-- Trust engine used to evaluate the signature on loaded metadata. -->
     <!--
     <security:TrustEngine id="shibboleth.MetadataTrustEngine" xsi:type="security:StaticExplicitKeySignature">
@@ -846,31 +846,31 @@ TOMCAT7_SECURITY=no
         </security:Credential>
     </security:TrustEngine>
      -->
-     
+
     <!-- DO NOT EDIT BELOW THIS POINT -->
-    <!-- 
-        The following trust engines and rules control every aspect of security related to incoming messages. 
-        Trust engines evaluate various tokens (like digital signatures) for trust worthiness while the 
+    <!--
+        The following trust engines and rules control every aspect of security related to incoming messages.
+        Trust engines evaluate various tokens (like digital signatures) for trust worthiness while the
         security policies establish a set of checks that an incoming message must pass in order to be considered
-        secure.  Naturally some of these checks require the validation of the tokens evaluated by the trust 
+        secure.  Naturally some of these checks require the validation of the tokens evaluated by the trust
         engines and so you'll see some rules that reference the declared trust engines.
     -->
     <security:TrustEngine id="shibboleth.SignatureTrustEngine" xsi:type="security:SignatureChaining">
-        <security:TrustEngine id="shibboleth.SignatureMetadataExplicitKeyTrustEngine" xsi:type="security:MetadataExplicitKeySignature" metadataProviderRef="ShibbolethMetadata"/>                              
+        <security:TrustEngine id="shibboleth.SignatureMetadataExplicitKeyTrustEngine" xsi:type="security:MetadataExplicitKeySignature" metadataProviderRef="ShibbolethMetadata"/>
         <security:TrustEngine id="shibboleth.SignatureMetadataPKIXTrustEngine" xsi:type="security:MetadataPKIXSignature" metadataProviderRef="ShibbolethMetadata"/>
     </security:TrustEngine>
-    
+
     <security:TrustEngine id="shibboleth.CredentialTrustEngine" xsi:type="security:Chaining">
         <security:TrustEngine id="shibboleth.CredentialMetadataExplictKeyTrustEngine" xsi:type="security:MetadataExplicitKey" metadataProviderRef="ShibbolethMetadata"/>
         <security:TrustEngine id="shibboleth.CredentialMetadataPKIXTrustEngine" xsi:type="security:MetadataPKIXX509Credential" metadataProviderRef="ShibbolethMetadata"/>
     </security:TrustEngine>
-     
+
     <security:SecurityPolicy id="shibboleth.ShibbolethSSOSecurityPolicy" xsi:type="security:SecurityPolicyType">
         <security:Rule xsi:type="samlsec:Replay" required="false"/>
         <security:Rule xsi:type="samlsec:IssueInstant" required="false"/>
         <security:Rule xsi:type="samlsec:MandatoryIssuer"/>
     </security:SecurityPolicy>
-    
+
     <security:SecurityPolicy id="shibboleth.SAML1AttributeQuerySecurityPolicy" xsi:type="security:SecurityPolicyType">
         <security:Rule xsi:type="samlsec:Replay"/>
         <security:Rule xsi:type="samlsec:IssueInstant"/>
@@ -879,7 +879,7 @@ TOMCAT7_SECURITY=no
         <security:Rule xsi:type="samlsec:MandatoryIssuer"/>
         <security:Rule xsi:type="security:MandatoryMessageAuthentication"/>
     </security:SecurityPolicy>
-    
+
     <security:SecurityPolicy id="shibboleth.SAML1ArtifactResolutionSecurityPolicy" xsi:type="security:SecurityPolicyType">
         <security:Rule xsi:type="samlsec:Replay"/>
         <security:Rule xsi:type="samlsec:IssueInstant"/>
@@ -909,7 +909,7 @@ TOMCAT7_SECURITY=no
         <security:Rule xsi:type="samlsec:MandatoryIssuer"/>
         <security:Rule xsi:type="security:MandatoryMessageAuthentication"/>
     </security:SecurityPolicy>
-    
+
     <security:SecurityPolicy id="shibboleth.SAML2ArtifactResolutionSecurityPolicy" xsi:type="security:SecurityPolicyType">
         <security:Rule xsi:type="samlsec:Replay"/>
         <security:Rule xsi:type="samlsec:IssueInstant"/>
@@ -920,7 +920,7 @@ TOMCAT7_SECURITY=no
         <security:Rule xsi:type="samlsec:MandatoryIssuer"/>
         <security:Rule xsi:type="security:MandatoryMessageAuthentication"/>
     </security:SecurityPolicy>
-    
+
     <security:SecurityPolicy id="shibboleth.SAML2SLOSecurityPolicy" xsi:type="security:SecurityPolicyType">
         <security:Rule xsi:type="samlsec:Replay"/>
         <security:Rule xsi:type="samlsec:IssueInstant"/>
@@ -931,7 +931,7 @@ TOMCAT7_SECURITY=no
         <security:Rule xsi:type="samlsec:MandatoryIssuer"/>
         <security:Rule xsi:type="security:MandatoryMessageAuthentication"/>
     </security:SecurityPolicy>
-    
+
 </rp:RelyingPartyGroup>
 \end{lstlisting}
 
@@ -939,41 +939,41 @@ TOMCAT7_SECURITY=no
 \begin{lstlisting}[language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
 
-<ph:ProfileHandlerGroup xmlns:ph="urn:mace:shibboleth:2.0:idp:profile-handler" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<ph:ProfileHandlerGroup xmlns:ph="urn:mace:shibboleth:2.0:idp:profile-handler" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                         xsi:schemaLocation="urn:mace:shibboleth:2.0:idp:profile-handler classpath:/schema/shibboleth-2.0-idp-profile-handler.xsd">
 
     <!-- Error Handler -->
     <ph:ErrorHandler xsi:type="ph:JSPErrorHandler" jspPagePath="/error.jsp"/>
 
     <!-- Profile Handlers -->
-    <!-- 
-        All profile handlers defined below are accessed via the Servlet path "/profile" so if your profile 
+    <!--
+        All profile handlers defined below are accessed via the Servlet path "/profile" so if your profile
         handler's request path is "/Status" then the full path is "<servletContextName>/profile/Status"
      -->
     <ph:ProfileHandler xsi:type="ph:Status">
         <ph:RequestPath>/Status</ph:RequestPath>
     </ph:ProfileHandler>
-    
+
     <ph:ProfileHandler xsi:type="ph:SAMLMetadata" metadataFile="/opt/shibboleth-idp/metadata/idp-metadata.xml">
         <ph:RequestPath>/Metadata/SAML</ph:RequestPath>
-    </ph:ProfileHandler>    
+    </ph:ProfileHandler>
 
-    <ph:ProfileHandler xsi:type="ph:ShibbolethSSO" inboundBinding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" 
+    <ph:ProfileHandler xsi:type="ph:ShibbolethSSO" inboundBinding="urn:mace:shibboleth:1.0:profiles:AuthnRequest"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:1.0:profiles:browser-post
                                                    urn:oasis:names:tc:SAML:1.0:profiles:artifact-01">
         <ph:RequestPath>/Shibboleth/SSO</ph:RequestPath>
     </ph:ProfileHandler>
-    
+
     <ph:ProfileHandler xsi:type="ph:SAML1AttributeQuery" inboundBinding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">
         <ph:RequestPath>/SAML1/SOAP/AttributeQuery</ph:RequestPath>
     </ph:ProfileHandler>
-    
-    <ph:ProfileHandler xsi:type="ph:SAML1ArtifactResolution" inboundBinding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" 
+
+    <ph:ProfileHandler xsi:type="ph:SAML1ArtifactResolution" inboundBinding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding">
         <ph:RequestPath>/SAML1/SOAP/ArtifactResolution</ph:RequestPath>
     </ph:ProfileHandler>
-    
+
     <ph:ProfileHandler xsi:type="ph:SAML2SSO" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
@@ -981,7 +981,7 @@ TOMCAT7_SECURITY=no
         <ph:RequestPath>/SAML2/POST/SSO</ph:RequestPath>
     </ph:ProfileHandler>
 
-    <ph:ProfileHandler xsi:type="ph:SAML2SSO" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" 
+    <ph:ProfileHandler xsi:type="ph:SAML2SSO" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact">
@@ -995,14 +995,14 @@ TOMCAT7_SECURITY=no
         <ph:RequestPath>/SAML2/Redirect/SSO</ph:RequestPath>
     </ph:ProfileHandler>
 
-    <ph:ProfileHandler xsi:type="ph:SAML2SSO" inboundBinding="urn:mace:shibboleth:2.0:profiles:AuthnRequest" 
+    <ph:ProfileHandler xsi:type="ph:SAML2SSO" inboundBinding="urn:mace:shibboleth:2.0:profiles:AuthnRequest"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact">
         <ph:RequestPath>/SAML2/Unsolicited/SSO</ph:RequestPath>
     </ph:ProfileHandler>
 
-    <ph:ProfileHandler xsi:type="ph:SAML2ECP" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" 
+    <ph:ProfileHandler xsi:type="ph:SAML2ECP" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:SOAP">
         <ph:RequestPath>/SAML2/SOAP/ECP</ph:RequestPath>
     </ph:ProfileHandler>
@@ -1023,7 +1023,7 @@ TOMCAT7_SECURITY=no
         <ph:RequestPath>/SAML2/POST/SLO</ph:RequestPath>
     </ph:ProfileHandler>
 
-    <ph:ProfileHandler xsi:type="ph:SAML2SLO" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" 
+    <ph:ProfileHandler xsi:type="ph:SAML2SLO" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign
                                                    urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
@@ -1035,26 +1035,26 @@ TOMCAT7_SECURITY=no
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:SOAP">
         <ph:RequestPath>/SAML2/SOAP/SLO</ph:RequestPath>
     </ph:ProfileHandler>
-    
+
     <ph:ProfileHandler xsi:type="ph:SAML2SLO" inboundBinding="urn:mace:shibboleth:2.0:profiles:LocalLogout">
         <ph:RequestPath>/Logout</ph:RequestPath>
     </ph:ProfileHandler>
-    
-    <ph:ProfileHandler xsi:type="ph:SAML2AttributeQuery" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" 
+
+    <ph:ProfileHandler xsi:type="ph:SAML2AttributeQuery" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:SOAP">
         <ph:RequestPath>/SAML2/SOAP/AttributeQuery</ph:RequestPath>
     </ph:ProfileHandler>
-    
-    <ph:ProfileHandler xsi:type="ph:SAML2ArtifactResolution" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" 
+
+    <ph:ProfileHandler xsi:type="ph:SAML2ArtifactResolution" inboundBinding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
                        outboundBindingEnumeration="urn:oasis:names:tc:SAML:2.0:bindings:SOAP">
         <ph:RequestPath>/SAML2/SOAP/ArtifactResolution</ph:RequestPath>
     </ph:ProfileHandler>
-    
+
     <!-- Login Handlers -->
     <!-- <ph:LoginHandler xsi:type="ph:RemoteUser">
         <ph:AuthenticationMethod>urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified</ph:AuthenticationMethod>
     </ph:LoginHandler> -->
-    
+
     <!-- Login handler that delegates the act of authentication to an external system. -->
     <!-- This login handler and the RemoteUser login handler will be merged in the next major release. -->
     <!--
@@ -1063,17 +1063,17 @@ TOMCAT7_SECURITY=no
         <ph:QueryParam name="foo" value="bar" />
     </ph:LoginHandler>
     -->
-    
+
     <!--  Username/password login handler -->
 
-    <ph:LoginHandler xsi:type="ph:UsernamePassword" 
+    <ph:LoginHandler xsi:type="ph:UsernamePassword"
                   jaasConfigurationLocation="file:///opt/shibboleth-idp/conf/login.config">
         <ph:AuthenticationMethod>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</ph:AuthenticationMethod>
     </ph:LoginHandler>
 
-    
-    <!-- 
-        Removal of this login handler will disable SSO support, that is it will require the user to authenticate 
+
+    <!--
+        Removal of this login handler will disable SSO support, that is it will require the user to authenticate
         on every request.
     -->
     <ph:LoginHandler xsi:type="ph:PreviousSession">
@@ -1087,21 +1087,21 @@ TOMCAT7_SECURITY=no
 \begin{lstlisting}
 /*
   This is the JAAS configuration file used by the Shibboleth IdP.
-  
+
   A JAAS configuration file is a grouping of LoginModules defined in the following manner:
   <LoginModuleClass> <Flag> <ModuleOptions>;
-  
+
   LoginModuleClass - fully qualified class name of the LoginModule class
-  Flag             - indicates whether the requirement level for the modules; 
+  Flag             - indicates whether the requirement level for the modules;
                          allowed values: required, requisite, sufficient, optional
   ModuleOptions    - a space delimited list of name="value" options
-  
+
   For complete documentation on the format of this file see:
   http://java.sun.com/j2se/1.5.0/docs/api/javax/security/auth/login/Configuration.html
-  
+
   For LoginModules available within the Sun JVM see:
   http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/tutorials/LoginConfigFile.html
-  
+
   Warning: Do NOT use Sun's JNDI LoginModule to authentication against an LDAP directory,
   Use the LdapLoginModule that ships with Shibboleth and is demonstrated below.
 
@@ -1138,7 +1138,7 @@ ShibUserPassAuth {
 \begin{lstlisting}[language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    
+
     <!--
         Loggers define indicate which packages/categories are logged, at which level, and to which appender.
         Levels: OFF, ERROR, WARN, INFO, DEBUG, TRACE, ALL
@@ -1148,24 +1148,24 @@ ShibUserPassAuth {
 
     <!-- Logs OpenSAML, but not IdP, messages -->
     <logger name="org.opensaml" level="WARN"/>
-    
+
     <!-- Logs LDAP related messages -->
     <logger name="edu.vt.middleware.ldap" level="DEBUG"/>
 
     <!-- uApprove Logger -->
     <logger name="ch.SWITCH.aai.uApprove" level="DEBUG"/>
-    
+
     <!-- Logs inbound and outbound protocols messages at DEBUG level -->
     <!--
     <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
     -->
-    
-    <!-- 
-        Normally you should not edit below this point.  These default configurations are sufficient for 
+
+    <!--
+        Normally you should not edit below this point.  These default configurations are sufficient for
         almost every system.
     -->
 
-    <!-- 
+    <!--
         Logging appenders define where and how logging messages are logged.
      -->
     <appender name="IDP_ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -1196,7 +1196,7 @@ ShibUserPassAuth {
 
     <appender name="IDP_PROCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>/opt/shibboleth-idp/logs/idp-process.log</File>
-        
+
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>/opt/shibboleth-idp/logs/idp-process-%d{yyyy-MM-dd}.log</FileNamePattern>
         </rollingPolicy>
@@ -1206,17 +1206,17 @@ ShibUserPassAuth {
             <Pattern>%date{HH:mm:ss.SSS} - %level [%logger:%line] - %msg%n</Pattern>
         </encoder>
     </appender>
-  
+
     <logger name="Shibboleth-Access" level="ALL">
         <appender-ref ref="IDP_ACCESS"/>
     </logger>
-    
+
     <logger name="Shibboleth-Audit" level="ALL">
         <appender-ref ref="IDP_AUDIT"/>
     </logger>
-        
+
     <logger name="org.springframework" level="ERROR"/>
-    
+
     <logger name="org.apache.catalina" level="ERROR"/>
 
     <root level="ERROR">
@@ -1229,19 +1229,19 @@ ShibUserPassAuth {
 \subsubsection{/opt/shibboleth-idp/conf/attribute-resolver.xml}
 \begin{lstlisting}[language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    This file is an EXAMPLE configuration file.  While the configuration presented in this 
+<!--
+    This file is an EXAMPLE configuration file.  While the configuration presented in this
     example file is functional, it isn't very interesting.  However, there are lots of example
     attributes, encoders, and a couple example data connectors.
-    
+
     Not all attribute definitions, data connectors, or principal connectors are demonstrated.
-    Deployers should refer to the Shibboleth 2 documentation for a complete list of components 
+    Deployers should refer to the Shibboleth 2 documentation for a complete list of components
     and their options.
 -->
-<resolver:AttributeResolver xmlns:resolver="urn:mace:shibboleth:2.0:resolver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                            xmlns:pc="urn:mace:shibboleth:2.0:resolver:pc" xmlns:ad="urn:mace:shibboleth:2.0:resolver:ad" 
-                            xmlns:dc="urn:mace:shibboleth:2.0:resolver:dc" xmlns:enc="urn:mace:shibboleth:2.0:attribute:encoder" 
-                            xmlns:sec="urn:mace:shibboleth:2.0:security" 
+<resolver:AttributeResolver xmlns:resolver="urn:mace:shibboleth:2.0:resolver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xmlns:pc="urn:mace:shibboleth:2.0:resolver:pc" xmlns:ad="urn:mace:shibboleth:2.0:resolver:ad"
+                            xmlns:dc="urn:mace:shibboleth:2.0:resolver:dc" xmlns:enc="urn:mace:shibboleth:2.0:attribute:encoder"
+                            xmlns:sec="urn:mace:shibboleth:2.0:security"
                             xsi:schemaLocation="urn:mace:shibboleth:2.0:resolver classpath:/schema/shibboleth-2.0-attribute-resolver.xsd
                                                urn:mace:shibboleth:2.0:resolver:pc classpath:/schema/shibboleth-2.0-attribute-resolver-pc.xsd
                                                urn:mace:shibboleth:2.0:resolver:ad classpath:/schema/shibboleth-2.0-attribute-resolver-ad.xsd
@@ -1254,7 +1254,7 @@ ShibUserPassAuth {
     <!-- ========================================== -->
 
     <!-- Schema: Core schema attributes-->
-    
+
     <resolver:AttributeDefinition xsi:type="ad:Simple" id="uid" sourceAttributeID="uid">
         <resolver:Dependency ref="myLDAP" />
         <resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:uid" />
@@ -1384,12 +1384,12 @@ ShibUserPassAuth {
         <resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:departmentNumber" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.16.840.1.113730.3.1.2" friendlyName="departmentNumber" />
     </resolver:AttributeDefinition>
-    
+
     <resolver:AttributeDefinition xsi:type="ad:Simple" id="displayName" sourceAttributeID="displayName">
         <resolver:Dependency ref="myLDAP" />
         <resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:displayName" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:2.16.840.1.113730.3.1.241" friendlyName="displayName" />
-    </resolver:AttributeDefinition> 
+    </resolver:AttributeDefinition>
 
     <resolver:AttributeDefinition xsi:type="ad:Simple" id="employeeNumber" sourceAttributeID="employeeNumber">
         <resolver:Dependency ref="myLDAP" />
@@ -1417,7 +1417,7 @@ ShibUserPassAuth {
     -->
 
     <!-- Schema: eduPerson attributes -->
-    
+
     <resolver:AttributeDefinition xsi:type="ad:Simple" id="eduPersonAffiliation" sourceAttributeID="eduPersonAffiliation">
         <resolver:Dependency ref="myLDAP" />
         <resolver:AttributeEncoder xsi:type="enc:SAML1String" name="urn:mace:dir:attribute-def:eduPersonAffiliation" />
@@ -1478,16 +1478,16 @@ ShibUserPassAuth {
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.11" friendlyName="eduPersonAssurance" />
     </resolver:AttributeDefinition>
     -->
-        
+
     <!--
-    <resolver:AttributeDefinition xsi:type="ad:SAML2NameID" id="eduPersonTargetedID" 
+    <resolver:AttributeDefinition xsi:type="ad:SAML2NameID" id="eduPersonTargetedID"
                                   nameIdFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" sourceAttributeID="computedID">
         <resolver:Dependency ref="computedID" />
         <resolver:AttributeEncoder xsi:type="enc:SAML1XMLObject" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" />
         <resolver:AttributeEncoder xsi:type="enc:SAML2XMLObject" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" friendlyName="eduPersonTargetedID" />
     </resolver:AttributeDefinition>
     -->
-    
+
     <!-- DFN Attribute -->
     <resolver:AttributeDefinition xsi:type="ad:Simple" id="dfnEduPersonCostCenter" sourceAttributeID="dfnEduPersonCostCenter">
         <resolver:Dependency ref="myLDAP" />
@@ -1555,7 +1555,7 @@ ShibUserPassAuth {
         <resolver:AttributeEncoder xsi:type="enc:SAML2String" name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.11" friendlyName="dfnEduPersonFeaturesOfStudy" />
     </resolver:AttributeDefinition>
     -->
-    <!-- Do NOT use the version of eduPersonTargetedID defined below unless you understand 
+    <!-- Do NOT use the version of eduPersonTargetedID defined below unless you understand
          why it was deprecated and know that this reason does not apply to you. -->
     <!--
     <resolver:AttributeDefinition xsi:type="ad:Scoped" id="eduPersonTargetedID.old" scope="shib.lan" sourceAttributeID="computedID">
@@ -1591,8 +1591,8 @@ ShibUserPassAuth {
     <!--
     <resolver:DataConnector id="mySIS" xsi:type="dc:RelationalDatabase">
         <dc:ApplicationManagedConnection jdbcDriver="oracle.jdbc.driver.OracleDriver"
-                                         jdbcURL="jdbc:oracle:thin:@db.example.org:1521:SomeDB" 
-                                         jdbcUserName="myid" 
+                                         jdbcURL="jdbc:oracle:thin:@db.example.org:1521:SomeDB"
+                                         jdbcUserName="myid"
                                          jdbcPassword="mypassword" />
         <dc:QueryTemplate>
             <![CDATA[
@@ -1606,10 +1606,10 @@ ShibUserPassAuth {
      -->
 
     <!-- Example LDAP Connector -->
-    
+
     <resolver:DataConnector id="myLDAP" xsi:type="dc:LDAPDirectory"
-        ldapURL="ldap://ldap.shib.lan" 
-        baseDN="dc=shib,dc=lan" 
+        ldapURL="ldap://ldap.shib.lan"
+        baseDN="dc=shib,dc=lan"
         principal="uid=shib_ldap,dc=shib,dc=lan"
         principalCredential="shib_ldap">
         <dc:FilterTemplate>
@@ -1618,8 +1618,8 @@ ShibUserPassAuth {
             ]]>
         </dc:FilterTemplate>
     </resolver:DataConnector>
-    
-    
+
+
     <!-- Computed targeted ID connector -->
     <!--
     <resolver:DataConnector xsi:type="dc:ComputedId"
@@ -1628,7 +1628,7 @@ ShibUserPassAuth {
                             sourceAttributeID="uid"
                             salt="your random string here">
         <resolver:Dependency ref="myLDAP" />
-    </resolver:DataConnector> 
+    </resolver:DataConnector>
     -->
 
     <!-- ========================================== -->
@@ -1644,16 +1644,16 @@ ShibUserPassAuth {
 \subsubsection{/opt/shibboleth-idp/conf/attribute-filter.xml}
 \begin{lstlisting}[language=xml]
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    This file is an EXAMPLE policy file.  While the policy presented in this 
+<!--
+    This file is an EXAMPLE policy file.  While the policy presented in this
     example file is functional, it isn't very interesting.
-    
-    Deployers should refer to the Shibboleth 2 documentation for a complete list of components 
+
+    Deployers should refer to the Shibboleth 2 documentation for a complete list of components
     and their options.
 -->
 <afp:AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
-                                xmlns:afp="urn:mace:shibboleth:2.0:afp" xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic" 
-                                xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                                xmlns:afp="urn:mace:shibboleth:2.0:afp" xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic"
+                                xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                 xsi:schemaLocation="urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd
                                                     urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd
                                                     urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd">
@@ -1697,7 +1697,7 @@ ShibUserPassAuth {
                 <basic:Rule xsi:type="basic:AttributeValueString" value="library-walk-in" ignoreCase="true" />
             </afp:PermitValueRule>
         </afp:AttributeRule>
-        
+
         <afp:AttributeRule attributeID="commonName">
             <afp:PermitValueRule xsi:type="basic:ANY" />
         </afp:AttributeRule>
@@ -1737,7 +1737,7 @@ ShibUserPassAuth {
 
     </afp:AttributeFilterPolicy>
 
-    <!-- 
+    <!--
         Release eduPersonEntitlement and the permissible values of eduPersonAffiliation
         to three specific SPs
     -->
@@ -1765,7 +1765,7 @@ ShibUserPassAuth {
     </afp:AttributeFilterPolicy>
     -->
 
-    <!-- 
+    <!--
         Release the given name of the user to our portal service provider
     -->
     <!--
@@ -1809,7 +1809,7 @@ ShibUserPassAuth {
             <!-- JDBC Storage, default -->
             <bean class="ch.SWITCH.aai.uApprove.tou.storage.JDBCStorage" init-method="initialize"
                 p:dataSource-ref="uApprove.dataSource" p:sqlStatements="classpath:/storage/sql-statements.properties" p:graceful="false" />
-            
+
             <!-- LDAP Storage, uncomment this bean and comment out above JDBC bean to activate LDAP -->
             <!--
             <bean class="ch.SWITCH.aai.uApprove.tou.storage.LDAPStorage"
@@ -1828,7 +1828,7 @@ ShibUserPassAuth {
             <!-- JDBC Storage, default -->
             <bean class="ch.SWITCH.aai.uApprove.ar.storage.JDBCStorage" init-method="initialize"
                 p:dataSource-ref="uApprove.dataSource" p:sqlStatements="classpath:/storage/sql-statements.properties" p:graceful="false" />
-            
+
             <!-- LDAP Storage, uncomment this bean and comment out above JDBC bean to activate LDAP -->
             <!--
             <bean class="ch.SWITCH.aai.uApprove.ar.storage.LDAPStorage"
@@ -1908,7 +1908,7 @@ database.password           = idp
 #---------------------------------------------------------------------#
 # LDAP configuration                                        	      #
 #---------------------------------------------------------------------#
-# Please consult the uApprove online manual for information on how to 
+# Please consult the uApprove online manual for information on how to
 # configure uApprove to store data via LDAP instead the default JDBC
 #ldap.url                    = ldap://ldap.example.org
 #ldap.username               = uid=uapprove_admin, o=userBranch
@@ -1952,11 +1952,11 @@ ar.attributes.order         = uid \
                               eduPersonAffiliation \
                               eduPersonEntitlement
 
-# Defines a list of blacklisted attributes.              
+# Defines a list of blacklisted attributes.
 ar.attributes.blacklist     = transientId \
                               persistentId \
                               eduPersonTargetedID
-                          
+
 \end{lstlisting}
 
 \subsubsection{/home/shib-idp/IdP/shibboleth-identityprovider-2.4.4/src/main/webapp/WEB-INF/web.xml}
@@ -1970,7 +1970,7 @@ ar.attributes.blacklist     = transientId \
         which means that the cookie will only ever be sent to the IdP host. -->
     <!-- <context-param> <param-name>cookieDomain</param-name> <param-value>example.org</param-value> </context-param> -->
 
-    <!-- Spring 2.0 application context files. Files are loaded in the order they appear with subsequent files overwriting 
+    <!-- Spring 2.0 application context files. Files are loaded in the order they appear with subsequent files overwriting
         same named beans in previous files. -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
@@ -2029,7 +2029,7 @@ ar.attributes.blacklist     = transientId \
         <url-pattern>/profile/SAML2/Unsolicited/SSO</url-pattern>
         <url-pattern>/Authn/UserPassword</url-pattern>
     </filter-mapping>
-    
+
     <servlet>
         <servlet-name>uApprove - Terms Of Use</servlet-name>
         <servlet-class>ch.SWITCH.aai.uApprove.tou.ToUServlet</servlet-class>
@@ -2148,16 +2148,16 @@ ar.attributes.blacklist     = transientId \
     </error-page>
 
     <!-- Uncomment to use container managed authentication -->
-    <!-- <security-constraint> <display-name>Shibboleth IdP</display-name> <web-resource-collection> <web-resource-name>user 
-        authentication</web-resource-name> <url-pattern>/Authn/RemoteUser</url-pattern> <http-method>GET</http-method> <http-method>POST</http-method> 
-        </web-resource-collection> <auth-constraint> <role-name>user</role-name> </auth-constraint> <user-data-constraint> <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
+    <!-- <security-constraint> <display-name>Shibboleth IdP</display-name> <web-resource-collection> <web-resource-name>user
+        authentication</web-resource-name> <url-pattern>/Authn/RemoteUser</url-pattern> <http-method>GET</http-method> <http-method>POST</http-method>
+        </web-resource-collection> <auth-constraint> <role-name>user</role-name> </auth-constraint> <user-data-constraint> <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint> </security-constraint> <security-role> <role-name>user</role-name> </security-role> -->
 
     <!-- Uncomment if you want BASIC auth managed by the container -->
     <!-- <login-config> <auth-method>BASIC</auth-method> <realm-name>IdP Password Authentication</realm-name> </login-config> -->
 
     <!-- Uncomment if you want form-based auth managed by the container -->
-    <!-- <login-config> <auth-method>FORM</auth-method> <realm-name>IdP Password Authentication</realm-name> <form-login-config> 
+    <!-- <login-config> <auth-method>FORM</auth-method> <realm-name>IdP Password Authentication</realm-name> <form-login-config>
         <form-login-page>/login.jsp</form-login-page> <form-error-page>/login-error.jsp</form-error-page> </form-login-config> </login-config> -->
 
 </web-app>
@@ -2247,9 +2247,9 @@ request subnet-mask, broadcast-address, time-offset, routers,
   SSLEngine on
   SSLCertificateFile      /etc/ssl/certs/sp.shib.lan_cert.pem
   SSLCertificateKeyFile   /etc/ssl/private/sp.shib.lan_key.pem
- 
+
   SSLCertificateChainFile /etc/ssl/certs/shib.lan.pem
- 
+
   SSLProtocol All -SSLv2 -SSLv3
   SSLHonorCipherOrder On
   SSLCipherSuite 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:ECDH+3DES:DH+3DES:RSA+3DES:!aNULL:!eNULL:!LOW:!RC4:!MD5:!EXP:!PSK:!DSS:!SEED:!ECDSA:!CAMELLIA'
@@ -2263,16 +2263,16 @@ request subnet-mask, broadcast-address, time-offset, routers,
     require valid-user
     DirectoryIndex shib-info.php
   </Location>
- 
+
   # optional (Metadata-Access at entityID-URL)
   Redirect seeother /shibboleth https://sp.shib.lan/Shibboleth.sso/Metadata
- 
+
 </VirtualHost>
 
 <VirtualHost *:80>
   ServerAdmin admin@shib.lan
   ServerName sp.shib.lan
-  ServerAlias sp.shib.lan 
+  ServerAlias sp.shib.lan
   Redirect 301 / https://sp.shib.lan/
   ErrorLog ${APACHE_LOG_DIR}/error.log
   CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -2289,7 +2289,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
 <SPConfig xmlns="urn:mace:shibboleth:2.0:native:sp:config"
     xmlns:conf="urn:mace:shibboleth:2.0:native:sp:config"
     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
-    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"    
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
     xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
     clockSkew="180">
 
@@ -2302,7 +2302,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
     To customize behavior for specific resources on Apache, and to link vhosts or
     resources to ApplicationOverride settings below, use web server options/commands.
     See https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPConfigurationElements for help.
-    
+
     For examples with the RequestMap XML syntax instead, see the example-shibboleth2.xml
     file, and the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapHowTo topic.
     -->
@@ -2331,12 +2331,12 @@ request subnet-mask, broadcast-address, time-offset, routers,
             You can also override entityID on /Login query string, or in RequestMap/htaccess.
             -->
             <SSO entityID="https://idp.shib.lan/idp/shibboleth">
-                SAML2 
+                SAML2
             </SSO>
 
             <!-- SAML and local-only logout. -->
             <Logout>SAML2 Local</Logout>
-            
+
             <!-- Extension service that generates "approximate" metadata based on SP configuration. -->
             <Handler type="MetadataGenerator" Location="/Metadata" signing="false"/>
 
@@ -2357,7 +2357,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
         <Errors supportContact="root@localhost"
             helpLocation="/about.html"
             styleSheet="/shibboleth-sp/main.css"/>
-        
+
         <MetadataProvider type="XML" url="https://idp.shib.lan/idp/shibboleth" />
 
         <!-- Example of remotely supplied batch of signed metadata. -->
@@ -2376,7 +2376,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
 
         <!-- Map to extract attributes from SAML assertions. -->
         <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
-        
+
         <!-- Use a SAML query if no attributes are supplied during SSO. -->
         <AttributeResolver type="Query" subjectMatch="true"/>
 
@@ -2391,7 +2391,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
         the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplicationOverride topic).
         Resource requests are mapped by web server commands, or the RequestMapper, to an
         applicationId setting.
-        
+
         Example of a second application (for a second vhost) that has a different entityID.
         Resources on the vhost would map to an applicationId of "admin":
         -->
@@ -2399,7 +2399,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
         <ApplicationOverride id="admin" entityID="https://admin.example.org/shibboleth"/>
         -->
     </ApplicationDefaults>
-    
+
     <!-- Policies that determine how to process and authenticate runtime messages. -->
     <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
 
@@ -2419,48 +2419,48 @@ request subnet-mask, broadcast-address, time-offset, routers,
     few exceptions for newer attributes where the name is the same for both versions. You will
     usually want to uncomment or map the names for both SAML versions as a unit.
     -->
-    
+
     <!-- First some useful eduPerson attributes that many sites might use. -->
-    
+
     <Attribute name="urn:mace:dir:attribute-def:eduPersonPrincipalName" id="eppn">
         <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.6" id="eppn">
         <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" id="affiliation">
         <AttributeDecoder xsi:type="ScopedAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.9" id="affiliation">
         <AttributeDecoder xsi:type="ScopedAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:eduPersonAffiliation" id="unscoped-affiliation">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.1" id="unscoped-affiliation">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:eduPersonEntitlement" id="entitlement"/>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.7" id="entitlement"/>
 
     <!-- A persistent id attribute that supports personalized anonymous access. -->
-    
+
     <!-- First, the deprecated/incorrect version, decoded as a scoped string: -->
     <Attribute name="urn:mace:dir:attribute-def:eduPersonTargetedID" id="targeted-id">
         <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
         <!-- <AttributeDecoder xsi:type="NameIDFromScopedAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/> -->
     </Attribute>
-    
+
     <!-- Second, an alternate decoder that will decode the incorrect form into the newer form. -->
     <!--
     <Attribute name="urn:mace:dir:attribute-def:eduPersonTargetedID" id="persistent-id">
         <AttributeDecoder xsi:type="NameIDFromScopedAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
     </Attribute>
     -->
-    
+
     <!-- Third, the new version (note the OID-style name): -->
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" id="persistent-id">
         <AttributeDecoder xsi:type="NameIDAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
@@ -2470,9 +2470,9 @@ request subnet-mask, broadcast-address, time-offset, routers,
     <Attribute name="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" id="persistent-id">
         <AttributeDecoder xsi:type="NameIDAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
     </Attribute>
-    
+
     <!-- Some more eduPerson attributes, uncomment these to use them... -->
-    
+
     <Attribute name="urn:mace:dir:attribute-def:eduPersonPrimaryAffiliation" id="primary-affiliation">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
@@ -2494,9 +2494,9 @@ request subnet-mask, broadcast-address, time-offset, routers,
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.3" id="org-dn"/>
 
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.11" id="assurance"/>
-    
+
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.5.1.1" id="member"/>
-    
+
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.6.1.1" id="eduCourseOffering"/>
     <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.6.1.2" id="eduCourseMember"/>
     -->
@@ -2508,35 +2508,35 @@ request subnet-mask, broadcast-address, time-offset, routers,
     <Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.1" id="dfnEduPersonCostCenter">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch1" id="dfnEduPersonStudyBranch1">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.2" id="dfnEduPersonStudyBranch1">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch2" id="dfnEduPersonStudyBranch2">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.3" id="dfnEduPersonStudyBranch2">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:dfnEduPersonStudyBranch3" id="dfnEduPersonStudyBranch3">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.4" id="dfnEduPersonStudyBranch3">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <Attribute name="urn:mace:dir:attribute-def:dfnEduPersonFieldOfStudyString" id="dfnEduPersonFieldOfStudyString">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
     <Attribute name="urn:oid:1.3.6.1.4.1.22177.400.1.1.3.5" id="dfnEduPersonFieldOfStudyString">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
     </Attribute>
-    
+
     <!--
     <Attribute name="urn:mace:dir:attribute-def:dfnEduPersonFinalDegree" id="dfnEduPersonFinalDegree">
         <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
@@ -2582,7 +2582,7 @@ request subnet-mask, broadcast-address, time-offset, routers,
     -->
 
     <!-- Examples of LDAP-based attributes, uncomment to use these... -->
-    
+
     <Attribute name="urn:mace:dir:attribute-def:cn" id="cn"/>
     <Attribute name="urn:mace:dir:attribute-def:sn" id="sn"/>
     <Attribute name="urn:mace:dir:attribute-def:givenName" id="givenName"/>

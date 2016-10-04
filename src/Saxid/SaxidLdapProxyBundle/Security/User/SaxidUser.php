@@ -79,9 +79,9 @@ class SaxidUser implements UserInterface, EquatableInterface
     public function __construct($attributes)
     {
         // Map SAML2 attributes into class properties
-        foreach($attributes as $key => $attribute) 
+        foreach($attributes as $key => $attribute)
         {
-            if(in_array($key, array_keys(self::$attributeMapping))) 
+            if(in_array($key, array_keys(self::$attributeMapping)))
             {
                 $key = self::$attributeMapping[$key];
             }
@@ -101,7 +101,7 @@ class SaxidUser implements UserInterface, EquatableInterface
 
         $this->setAcademyDomain();
         $this->setAcademy();
-        
+
         //TMP, festes Passwort
         $this->setPassword('knack');
 
@@ -116,7 +116,7 @@ class SaxidUser implements UserInterface, EquatableInterface
             $displayName = $this->givenName . " " . $this->surname;
             $this->setDisplayName($displayName);
         }
-        
+
         //TestGitNetbeans
     }
     public function getRoles() {
@@ -282,12 +282,12 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $this;
     }
 
-    public function getOrganizationalUnitName($asArray = false) 
+    public function getOrganizationalUnitName($asArray = false)
     {
         $return = null;
 
 
-        if(!empty($this->organizationalUnitName)) 
+        if(!empty($this->organizationalUnitName))
         {
         	//wenn array, aber rückgabe nicht als array -> zu string konvertieren
         	if(is_array($this->organizationalUnitName) and !$asArray)
@@ -325,11 +325,11 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $this;
     }
 
-    public function getEduPersonOrgUnitDN($asArray = false) 
+    public function getEduPersonOrgUnitDN($asArray = false)
     {
     	$return = null;
-    	
-        if(!empty($this->eduPersonOrgUnitDN)) 
+
+        if(!empty($this->eduPersonOrgUnitDN))
         {
         	//wenn array, aber rückgabe nicht als array -> zu string konvertieren
         	if(is_array($this->eduPersonOrgUnitDN) and !$asArray)

@@ -4,7 +4,7 @@ namespace Saxid\SaxidLdapProxyBundle\Exception;
 
 /**
  * UserIsNoMemberOfSaxonAcademyException
- * 
+ *
  * thrown if User tries to perform an action that is restricted
  * to members of Saxon academies
  *
