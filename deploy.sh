@@ -19,7 +19,7 @@ uploadfile="saxidprox_depl.tgz"
 echo "Creating Archive ..."
 rm -f $uploadfile
 # alternative: composer archive | gzip > $uploadfile
-tar --exclude='.git' -cf - . | pv -s $(($(du -sk . | awk '{print $1}') * 1024)) | gzip > $uploadfile
+tar --exclude='.git' --exclude='*.DS_Store' -cf - . | pv -s $(($(du -sk . | awk '{print $1}') * 1024)) | gzip > $uploadfile
 du -h $uploadfile
 #bzip2 saxidprox_depl.tar
 #tar uf saxidprox_depl.tar *
