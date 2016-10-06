@@ -23,12 +23,13 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 ### <a name="pakete"></a>Installation benötigter Pakete ###
 
 1. Apache2 installieren: `zypper in apache2`
-1. PHP5 installieren: `zypper in php5`
+1. PHP7 installieren: `zypper in php7`
 1. Apache2 als Service einrichten und Port(s) in Firewall freigeben
 1. [`mod_rewrite` auf Apache2 aktivieren](http://askubuntu.com/questions/48362/how-to-enable-mod-rewrite-in-apache)
-1. ZLIB-Library installieren: `zypper in php-zlib`
+1. ZLIB-Library installieren: `zypper in php7-zlib`
+1. intl-Library installieren: `zypper in php7-intl`
 1. LDAP installieren: `zypper in openldap2`
-1. OpenLDAP Pakete für PHP5 installieren: `zypper in php-ldap`
+1. OpenLDAP Pakete für PHP7 installieren: `zypper in php7-ldap`
 
 ### <a name="apache"></a>Apache-Konfiguration ###
 
@@ -37,10 +38,10 @@ Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
 
 1. Virtual Host einrichten: die Environment-Variablen `SIMPLESAMLPHP_*_DIR`/`SAXIDLDAPPROXY_LOG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp sind obligatorisch.
 
-        Alias /simplesaml /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp/www
+        Alias /simplesamlphp /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp
         <VirtualHost /n*:443>
             ServerName saxid.zih.tu-dresden.de
-            DocumentRoot /srv/www/htdocs/saxid-ldap-proxy
+            DocumentRoot /srv/www/htdocs/saxid-ldap-proxy/web
 
             SSLEngine on
             SSLCertificateKeyFile /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.key.pem
@@ -51,7 +52,7 @@ Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
             SetEnv SIMPLESAMLPHP_METADATA_DIR /var/simplesamlphp/metadata
             SetEnv SIMPLESAMLPHP_CERT_DIR /var/simplesamlphp/cert
             SetEnv SIMPLESAMLPHP_LOG_DIR /var/log/simplesamlphp
-            SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/saxid-ldap-proxy
+            SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/www/saxid-ldap-proxy
         </VirtualHost>
 
 #### Hinweise ####
@@ -104,7 +105,7 @@ Ich (Moritz) habe stets lokal entwickelt, und dann per (P)SCP auf die VM übertr
 
 Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeichnis vor der Übertragung komprimiert wird und auf dem Server wieder entpackt wird.
 
-* `deploy.sh` : Deployment zipped (bz2) Folder
+* `deploy.sh` : Deployment zipped (gz) Folder
 
 # Composer
 

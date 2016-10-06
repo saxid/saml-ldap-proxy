@@ -77,9 +77,9 @@ $config = array(
      * This password must be kept secret, and modified from the default value 123.
      * This password will give access to the installation page of simpleSAMLphp with
      * metadata listing and diagnostics pages.
-     * You can also put a hash here; run "bin/pwgen.php" to generate one.
+     * You can also put a hash here; run "bin/pwgen.php" to generate one. saxidsaxid
      */
-    'auth.adminpassword' => '{SSHA256}mADZuwtDHaPlnwoduzQ6+yM0CisCo9nWe8/VgRUlPnJDG+SMWxdDMQ==',
+    'auth.adminpassword' => '{SSHA256}krLAg6Kb4HeBq5gBmM0icWmNin83iOpWoGUcc+7EnCnqV9lCRS/Q7g==',
     'admin.protectindexpage' => false,
     'admin.protectmetadata' => false,
 
