@@ -42,6 +42,7 @@ composer.phar
 
 ### NetBeans ###
 /nbproject/*
+nbproject/*
 nbproject/private/
 build/
 nbbuild/
