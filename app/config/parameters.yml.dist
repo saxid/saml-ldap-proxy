@@ -23,3 +23,4 @@ parameters:
     ldap_port:         389
     ldap_user:         'cn=admin,dc=sax-id,dc=de'
     ldap_pass:         saxidsaxid
+    baseDN:            'dc=sax-id,dc=de'
