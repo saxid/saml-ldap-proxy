@@ -111,10 +111,10 @@ class SaxidLdapProxy
 
         return $this->getUserData($seachParam, $returnFilter);
     }
-    
+
     /**
      * Check if organization exists in LDAP
-     * 
+     *
      * @param string $organizationDN DN of the organization
      * @return bool Return True if exists ir false when not
      */
@@ -179,13 +179,13 @@ class SaxidLdapProxy
             return false;
         }
     }
-    
+
     public function addOrganization($organizationDN)
     {
         $data = array();
         $data['objectclass'][] = 'top';
         $data['objectclass'][] = 'organization';
-        
+
         if($this->addUser($organizationDN, $data))
         {
             $message = "addOrganization - Organization '" . $organizationDN . "' successfully added.";
@@ -383,7 +383,7 @@ class SaxidLdapProxy
         }
 
         //TODO, ggf. Logik um Passwort zu verifizieren; Algorithmus auf min SSHA einstellen
-        $dataToModify["userPassword"] = '{MD5}' . base64_encode(md5($newPassword, TRUE));
+        $dataToModify["userPassword"] = $newPassword;
 
         //Deleting the object
         if ($this->modifyUser($dn, $dataToModify))

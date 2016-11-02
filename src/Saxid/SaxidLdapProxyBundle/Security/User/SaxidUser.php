@@ -104,7 +104,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
-        $this->uid = substr(strstr($this->getEduPersonPrincipalName(), '@'), 0);
+        $this->uid = $this->setUid(substr(strstr($this->getEppn(), '@'), 0));
         $this->username = $this->getEppn();
 
         //########## PASSWORD #######
@@ -516,7 +516,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     {
         return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
     }
-    
+
     public function createLdapOrganizationDN()
     {
         return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
