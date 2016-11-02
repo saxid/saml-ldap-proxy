@@ -104,6 +104,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
+        $this->uid = substr(strstr($this->getEduPersonPrincipalName(), '@'), 0);
         $this->username = $this->getEppn();
 
         //########## PASSWORD #######
