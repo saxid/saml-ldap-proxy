@@ -58,19 +58,19 @@ class SaxidUser implements UserInterface, EquatableInterface
             //'urn:oid:1.3.6.1.1.1.2.1' => 'shadowAccount',
     );
     private static $uidPrefixMapping = array(
-        'tu-dresden.de' => '10',
-        'uni-leipzig.de' => '11',
-        'tu-chemnitz.de' => '12',
-        'htw-dresden.de' => '13',
-        'tu-freiberg.de' => '14',
-        'hszg.de' => '15',
-        'htwk-leipzig.de' => '16',
-        'fh-zwickau.de' => '17',
-        'hs-mittweida.de' => '18',
-        'hfbk-dresden.de' => '19',
-        'hfmdd.de' => '20',
-        'hgb-leipzig.de' => '21',
-        'hmt-leipzig.de' => '22',
+        'tu-dresden.de' => 'tud',
+        'uni-leipzig.de' => 'ul',
+        'tu-chemnitz.de' => 'tuc',
+        'htw-dresden.de' => 'htwdd',
+        'tu-freiberg.de' => 'tubaf',
+        'hszg.de' => 'hszg',
+        'htwk-leipzig.de' => 'htwkl',
+        'fh-zwickau.de' => 'hsz',
+        'hs-mittweida.de' => 'hsmw',
+        'hfbk-dresden.de' => 'hfbk',
+        'hfmdd.de' => 'hfmdd',
+        'hgb-leipzig.de' => 'hgbl',
+        'hmt-leipzig.de' => 'hmtl',
             // 'rnd.feide.no'    => '40',
     );
 
@@ -100,11 +100,11 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
 
         //Generate missing attributes from IdP
-        $this->username = $this->getEppn();
         $this->roles = array("User");
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
+        $this->username = $this->getEppn();
 
         //########## PASSWORD #######
         //TMP, festes Passwort
@@ -123,7 +123,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     {
         return $this->username;
     }
-    
+
     public function getSalt() {
         return $this->salt;
     }
@@ -160,7 +160,7 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function setUid($uid)
     {
-        $this->uid = $uid;
+        $this->uid = self::$uidPrefixMapping[$this->getAcademyDomain()] . "_" . $uid;
         return $this;
     }
 
@@ -173,7 +173,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     public function setPassword($password)
     {
         #$this->password = '{CRYPT}' . password_hash($password, PASSWORD_BCRYPT);
-        $salt = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)), 0, 4);
+        #$salt = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)), 0, 4);
         #$this->password = '{SSHA}' . base64_encode(sha1( $password.$salt, TRUE ) . $salt);
         $this->password = '{MD5}' . base64_encode(md5($password, TRUE));
         return $this;
@@ -413,6 +413,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $this->academy;
     }
 
+    /**
+    * Sets the Academy Domain for a user using his or her ePPN
+    *
+    */
     public function setAcademyDomain()
     {
         $this->academyDomain = substr(strstr($this->getEduPersonPrincipalName(), '@'), 1);
@@ -440,8 +444,9 @@ class SaxidUser implements UserInterface, EquatableInterface
             // Generate random number
             $randomID = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
 
-            // Set academy prefix
-            $prefix = self::$uidPrefixMapping[$this->getAcademyDomain()];
+            // Set academy prefix; start with 30 for compatibility resons with local IDM
+            // former setup: used 2 num digits starting with 10 for each uni
+            $prefix = 30;
 
             // Determine required 0s to fill up
             $numberNulls = 10 - strlen($prefix) - strlen($randomID);
@@ -475,7 +480,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['o'] = $this->getAcademy();
         $data['displayName'] = $this->getDisplayName();
         //$data['userPassword'] = $this->getPassword();
-        
+
         // eduPerson
         $data['eduPersonAffiliation'] = $this->getEduPersonAffiliation(true);
         $data['eduPersonEntitlement'] = $this->getEduPersonEntitlement();
