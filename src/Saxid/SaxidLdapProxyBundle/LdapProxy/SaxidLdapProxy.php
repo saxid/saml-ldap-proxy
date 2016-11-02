@@ -23,6 +23,7 @@ class SaxidLdapProxy
 
     /**
      * Creates LDAP access object
+     *
      * @param string $ldap_host The ldap host address
      * @param string $ldap_port The ldap port
      * @param string $ldap_user The ldap user to bind
@@ -42,8 +43,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Connect to LDAP and tries anonymous bind to check if connection successfully
-     * 
+     * Connect to LDAP and tries anonymous bind to check if connection is successful
+     *
      */
     public function connect()
     {
@@ -90,8 +91,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Check if user exists in LDAP
-     * 
+     * Check if user already exists in LDAP
+     *
      * @param string $seachParam Search parameter in following form: 'uid=norman'
      * @return bool Return object if user was found or false when not
      */
@@ -146,8 +147,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Add a user to LDAP
-     * 
+     * Adds a user to LDAP
+     *
      * @param string $dn The distinguished name for the new user
      * @param array $data Data array with userdata
      * @return bool True if successfully or false when not
@@ -202,8 +203,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Modify a user in LDAP
-     * 
+     * Modifys a user in LDAP
+     *
      * @param string $dn The distinguished name for the user
      * @param array $data Data array with userdata
      * @return bool True if successfully or false when not
@@ -236,8 +237,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Delete a user in LDAP
-     * 
+     * Deletes a user in LDAP
+     *
      * @param string $dn The distinguished name for the user
      * @return bool True if successfully or false when not
      */
@@ -269,8 +270,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Get userdata from a user
-     * 
+     * Gets attributes of a user
+     *
      * @param string $seachParam search paramter in following form: 'uid=norman'
      * @param array $returnAttributesFilter Filters the return values, default everything is shown. Example: array("dn, sn, mail, ...")
      *
@@ -331,7 +332,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Get specific attribute from a user
+     * Gets a specific attribute from a user
+     *
      * @param type $searchResult Result from getUserData
      * @param type $attributeKey The attribute name to look for
      * @return type The found attribute or false when nothing is found
@@ -363,8 +365,8 @@ class SaxidLdapProxy
     }
 
     /**
-     * Set the password from a user
-     * 
+     * Sets the password for a user
+     *
      * @param string $dn The distinguished name for the user
      * @param string $newPassword The new password
      * @return bool Return true if successfully or false when not
@@ -380,7 +382,8 @@ class SaxidLdapProxy
             return;
         }
 
-        $dataToModify["userPassword"] = $newPassword;
+        //TODO, ggf. Logik um Passwort zu verifizieren; Algorithmus auf min SSHA einstellen
+        $dataToModify["userPassword"] = '{MD5}' . base64_encode(md5($newPassword, TRUE));
 
         //Deleting the object
         if ($this->modifyUser($dn, $dataToModify))
@@ -412,7 +415,7 @@ class SaxidLdapProxy
 
     /**
      * Returns the last occured LDAP error
-     * 
+     *
      * @param string $message A additional message
      */
     private function getLdapError($message = null)
@@ -483,7 +486,7 @@ class SaxidLdapProxy
 
     /**
      * Log an entry
-     * 
+     *
      */
     private function logEvent($event)
     {
