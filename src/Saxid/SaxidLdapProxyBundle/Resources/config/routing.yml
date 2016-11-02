@@ -15,4 +15,4 @@ saxid_ldap_proxy_password:
     path: /chpwd
     defaults:
         _controller: SaxidLdapProxyBundle:Password:chPassword
-        template:    SaxidLdapProxyBundle::password.html.twig
+        template:    SaxidLdapProxyBundle:password.html.twig

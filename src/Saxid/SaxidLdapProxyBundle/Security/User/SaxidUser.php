@@ -495,7 +495,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         // Only create UidNumber for new user
         if ($isAdd)
         {
-            $data['uidNumber'] = $this->generateSaxIDUIDNumber();
+            $data['uidNumber'] = $this->getUidNumber();
         }
         $data['gecos'] = $this->getGecos();
         $data['gidNumber'] = 0;
@@ -515,6 +515,11 @@ class SaxidUser implements UserInterface, EquatableInterface
     public function createLdapUserDN()
     {
         return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
+    }
+    
+    public function createLdapOrganizationDN()
+    {
+        return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
     }
 
     public function dump()
