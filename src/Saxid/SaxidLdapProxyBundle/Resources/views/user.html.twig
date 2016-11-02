@@ -2,33 +2,38 @@
 
 {% block body %}
 			<div class="page-header">
-				<h1>Benutzerdaten für {{ user.displayName }}</h1>
+				<h1>Benutzerdaten für {{ app.user.displayName }}</h1>
 			</div>
 
 			<section id="userdata">
 				<ul>
-					<li>uid: <code>{{ user.uid }}</code></li>
-					<li>uidNumber: <code>{{ user.uidNumber }}</code></li>
-					<li>eppn: <code>{{ user.eppn }}</code></li>
-					<li>eduPersonAffiliation: <code>{{ user.eduPersonAffiliation }}</code></li>
-					<li>eduPersonPrimaryAffiliation: <code>{{ user.eduPersonPrimaryAffiliation }}</code></li>
-					<li>eduPersonScopedAffiliation: <code>{{ user.eduPersonScopedAffiliation }}</code></li>
-					<li>surname: <code>{{ user.surname }}</code></li>
-					<li>givenName: <code>{{ user.givenName }}</code></li>
-					<li>eduPersonEntitlement: <code>{{ user.eduPersonEntitlement }}</code></li>
-					<li>organizationalUnitName: <code>{{ user.organizationalUnitName }}</code></li>
-					<li>commonName: <code>{{ user.commonName }}</code></li>
-					<li>email: <code>{{ user.email }}</code></li>
-					<li>eduPersonOrgUnitDN: <code>{{ user.eduPersonOrgUnitDN }}</code></li>
-					<li>displayName: <code>{{ user.displayName }}</code></li>
-					<li>academy: <code>{{ user.academy }}</code></li>
-					<li>academyDomain: <code>{{ user.academyDomain }}</code></li>
+					<li>uid: <code>{{ app.user.uid }}</code></li>
+					<li>uidNumber: <code>{{ app.user.uidNumber }}</code></li>
+					<li>eppn: <code>{{ app.user.eppn }}</code></li>
+					<li>eduPersonAffiliation: <code>{{ app.user.eduPersonAffiliation }}</code></li>
+					<li>eduPersonPrimaryAffiliation: <code>{{ app.user.eduPersonPrimaryAffiliation }}</code></li>
+					<li>eduPersonScopedAffiliation: <code>{{ app.user.eduPersonScopedAffiliation }}</code></li>
+					<li>surname: <code>{{ app.user.surname }}</code></li>
+					<li>givenName: <code>{{ app.user.givenName }}</code></li>
+					<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
+					<li>organizationalUnitName: <code>{{ app.user.organizationalUnitName }}</code></li>
+					<li>commonName: <code>{{ app.user.commonName }}</code></li>
+					<li>email: <code>{{ app.user.email }}</code></li>
+					<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN }}</code></li>
+					<li>displayName: <code>{{ app.user.displayName }}</code></li>
+					<li>academy: <code>{{ app.user.academy }}</code></li>
+					<li>academyDomain: <code>{{ app.user.academyDomain }}</code></li>
+					<li>Password: <code>{{ app.user.password }}</code></li>
+					<li>uncryptPassword: <code>{{ app.user.uncryptPassword }}</code></li>
 				</ul>
 
+				{% if app.environment == 'dev' %}
 				<h2>Object SaxIDUser</h2>
-				<pre>{{ dump(user) }}</pre>
+				<pre>{{ dump(app.user) }}</pre>
 
 				<h2>LDAP Data Array</h2>
-				<pre>{{ dump(user.createLdapDataArray()) }}</pre>
+				<pre>{{ dump(app.user.createLdapDataArray()) }}</pre>
+				{% endif %}
+
 			</section>
 {% endblock body %}

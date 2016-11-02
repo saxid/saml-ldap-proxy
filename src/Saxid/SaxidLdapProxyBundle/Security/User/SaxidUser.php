@@ -104,7 +104,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
-        $this->uid = $this->setUid(substr(strstr($this->getEppn(), '@'), 0));
+        $this->setUid(strstr($this->getEppn(), '@', true));
         $this->username = $this->getEppn();
 
         //########## PASSWORD #######
@@ -435,6 +435,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         return array_key_exists($domain, self::$academies);
     }
 
+    /**
+    * TODO: Adapt this Function to fit your local IDM needs
+    * check for local IDM uidnumber collision
+    */
     public function generateSaxIDUIDNumber()
     {
         if ($this->isFromSaxonAcademy())
@@ -472,6 +476,13 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function createLdapDataArray($isAdd = false)
     {
+        // objectClasses
+        $data['objectclass'][] = 'top';
+        $data['objectclass'][] = 'inetOrgPerson';
+        $data['objectclass'][] = 'posixAccount';
+        $data['objectclass'][] = 'shadowAccount';
+        $data['objectclass'][] = 'eduPerson';
+
         // Set basic user information
         $data['givenName'] = $this->getGivenName();
         $data['sn'] = $this->getSurname();
@@ -501,13 +512,6 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['gidNumber'] = 0;
         $data['homeDirectory'] = "/home/" . $this->getUid();
         $data['loginShell'] = '/bin/bash';
-
-        // objectClasses
-        $data['objectclass'][] = 'top';
-        $data['objectclass'][] = 'inetOrgPerson';
-        $data['objectclass'][] = 'posixAccount';
-        $data['objectclass'][] = 'shadowAccount';
-        $data['objectclass'][] = 'eduPerson';
 
         return $data;
     }
