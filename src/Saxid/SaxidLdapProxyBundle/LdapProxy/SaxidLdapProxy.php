@@ -110,6 +110,40 @@ class SaxidLdapProxy
 
         return $this->getUserData($seachParam, $returnFilter);
     }
+    
+    /**
+     * Check if organization exists in LDAP
+     * 
+     * @param string $organizationDN DN of the organization
+     * @return bool Return True if exists ir false when not
+     */
+    public function existsOrganization($organizationDN)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "existsOrganization - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return;
+        }
+
+        $filter = "objectClass=organization";
+
+        if (($searchResult = @ldap_search($this->ldapConnection, $organizationDN, $filter)) == false)
+        {
+            $message = "existsOrganization - Organization '" . $organizationDN . "' doesn't exists.";
+            $this->logEvent($message);
+            $this->setStatus($message, LOGLEVEL::INFO);
+            return false;
+        }
+        else
+        {
+            $message = "existsOrganization - Organization '" . $organizationDN . "' exists.";
+            $this->logEvent($message);
+            $this->setStatus($message, LOGLEVEL::INFO);
+            return true;
+        }
+    }
 
     /**
      * Add a user to LDAP
@@ -139,6 +173,28 @@ class SaxidLdapProxy
         else
         {
             $errorMessage = $this->getLdapError("addUser - Error: Failed to add user.");
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+    
+    public function addOrganization($organizationDN)
+    {
+        $data = array();
+        $data['objectclass'][] = 'top';
+        $data['objectclass'][] = 'organization';
+        
+        if($this->addUser($organizationDN, $data))
+        {
+            $message = "addOrganization - Organization '" . $organizationDN . "' successfully added.";
+            $this->logEvent($message);
+            $this->setStatus($message, LOGLEVEL::INFO);
+            return true;
+        }
+        else
+        {
+            $errorMessage = $this->getLdapError("addOrganization - Error: Failed to add organization.");
             $this->logEvent($errorMessage);
             $this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
@@ -324,7 +380,6 @@ class SaxidLdapProxy
             return;
         }
 
-        //TODO, ggf. Logik um Passwort zu verifizieren
         $dataToModify["userPassword"] = $newPassword;
 
         //Deleting the object
