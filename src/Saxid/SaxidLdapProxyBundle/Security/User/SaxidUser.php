@@ -105,13 +105,6 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
         $this->username = $this->getEppn();
-
-        //########## PASSWORD #######
-        //TMP, festes Passwort
-        //$this->setPassword('knack');
-        //$this->setUncryptPassword('knack');
-
-        //###########################
     }
 
     public function getRoles()
