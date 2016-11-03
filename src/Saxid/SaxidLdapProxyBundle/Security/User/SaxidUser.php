@@ -38,7 +38,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         'tu-freiberg.de' => 'Technische Universität Freiberg',
             // 'rnd.feide.no'  => 'Feide NO',
     );
-    private static $attributeMapping = array(
+    private static $attributeMapping = array( // SAML 2
         'urn:oid:0.9.2342.19200300.100.1.1' => 'uid',
         'urn:oid:2.5.4.4' => 'surname',
         'urn:oid:2.5.4.42' => 'givenName',
@@ -52,10 +52,17 @@ class SaxidUser implements UserInterface, EquatableInterface
         'urn:oid:1.3.6.1.4.1.5923.1.1.1.9' => 'eduPersonScopedAffiliation',
         'urn:oid:1.3.6.1.4.1.5923.1.1.1.4' => 'eduPersonOrgUnitDN',
         'urn:oid:1.3.6.1.4.1.5923.1.1.1.7' => 'eduPersonEntitlement',
-            //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
-            //'urn:oid:2.5.6.0' => 'top',
-            //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
-            //'urn:oid:1.3.6.1.1.1.2.1' => 'shadowAccount',
+// SAML 1
+        'urn:mace:dir:attribute-def:sn' => 'surname',
+        'urn:mace:dir:attribute-def:givenName' => 'givenName',
+        'urn:mace:dir:attribute-def:cn' => 'commonName',
+        'urn:mace:dir:attribute-def:mail' => 'email',
+        'urn:mace:dir:attribute-def:eduPersonPrincipalName' => 'eduPersonPrincipalName',
+        'urn:mace:dir:attribute-def:eduPersonAffiliation' => 'eduPersonAffiliation',
+        'urn:mace:dir:attribute-def:eduPersonScopedAffiliation' => 'eduPersonScopedAffiliation',
+        'urn:mace:dir:attribute-def:eduPersonEntitlement' => 'eduPersonEntitlement',
+        //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
+        //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
     );
     private static $uidPrefixMapping = array(
         'tu-dresden.de' => 'tud',
@@ -80,7 +87,7 @@ class SaxidUser implements UserInterface, EquatableInterface
      */
     public function __construct($attributes)
     {
-        // Map SAML2 attributes into class properties
+        // Map SAML2 & 1 attributes into class properties
         foreach ($attributes as $key => $attribute)
         {
             if (in_array($key, array_keys(self::$attributeMapping)))
@@ -449,9 +456,9 @@ class SaxidUser implements UserInterface, EquatableInterface
             // Generate random number
             $randomID = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
 
-            // Set academy prefix; start with 30 for compatibility resons with local IDM
+            // Set academy prefix; start with 20 for compatibility resons with local IDM
             // former setup: used 2 num digits starting with 10 for each uni
-            $prefix = 30;
+            $prefix = 20;
 
             // Determine required 0s to fill up
             $numberNulls = 10 - strlen($prefix) - strlen($randomID);

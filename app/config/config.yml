@@ -85,3 +85,4 @@ swiftmailer:
 # SimplesamlphpBundle Configuration
 saxid_simplesamlphp:
     sp: saxid-ldap-proxy
+    authentication_attribute: eduPersonPrincipalName
