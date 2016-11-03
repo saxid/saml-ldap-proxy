@@ -383,7 +383,7 @@ class SaxidLdapProxy
         }
 
         //TODO, ggf. Logik um Passwort zu verifizieren; Algorithmus auf min SSHA einstellen
-        $dataToModify["userPassword"] = '{MD5}' . base64_encode(md5($newPassword, TRUE));
+        $dataToModify["userPassword"] = $newPassword;
 
         //Deleting the object
         if ($this->modifyUser($dn, $dataToModify))
