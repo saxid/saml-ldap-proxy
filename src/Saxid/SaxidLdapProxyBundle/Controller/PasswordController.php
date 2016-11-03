@@ -59,6 +59,16 @@ class PasswordController extends Controller
         
         //$value = $request->query->get("newPassword");
         //print "Password: " . $value;
+        
+        /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
+        $saxidUser = $this->getUser();
+        
+        print "Test SaxID Attribute:</br>";
+        print $saxidUser->getDisplayName() . "</br>";
+        
+        
+        
+        
         $zeit = time();
         print "</br>MY PASSWORD PAGE TEST" . $zeit;
 

@@ -13,8 +13,6 @@ class DefaultController extends Controller
     {
         $session = $request->getSession();
 
-        print "Session Status: " . $session->get('status') . "</br>";
-
         if ($session->get('status'))
         {
             if (!$this->getUser()->isFromSaxonAcademy())
@@ -64,7 +62,7 @@ class DefaultController extends Controller
             }
 
             // When organization doesn't exists -> create
-            if($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()))
+            if($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
             {
                 $saxLdap->addOrganization($saxidUser->createLdapOrganizationDN());
             }
