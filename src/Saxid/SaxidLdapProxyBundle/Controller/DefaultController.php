@@ -60,19 +60,21 @@ class DefaultController extends Controller
                     break;
                 }
             }
-            
+
             // When organization doesn't exists -> create
             if($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
             {
                 $saxLdap->addOrganization($saxidUser->createLdapOrganizationDN());
             }
-            
+
             // Add
             $saxLdap->addUser($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
 
             //TODO
             $tmpPassword = "knack";
+            $saxidUser->setUncryptPassword($tmpPassword);
             $tmpPassword = "{SHA}" . base64_encode(pack("H*", sha1($tmpPassword)));
+            $saxidUser->setPassword($tmpPassword);
             $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $tmpPassword);
         }
 

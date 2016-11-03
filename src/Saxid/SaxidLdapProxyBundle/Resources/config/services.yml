@@ -1,6 +1,3 @@
-imports:
-    - { resource: parameters.yml }
-
 services:
 #    saxid_ldap_proxy.example:
 #        class:     Saxid\SaxidLdapProxyBundle\Example
@@ -12,8 +9,3 @@ services:
     saxid_ldap_proxy.pwdm:
         class:      Saxid\SaxidLdapProxyBundle\Security\Password\SaxidPasswordManager
         arguments:
-
-
-    saxid_ldap_proxy.proxy:
-        class:      Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy
-        arguments:  ['%ldap_host%', '%ldap_port%', '%ldap_user%', '%ldap_pass%']

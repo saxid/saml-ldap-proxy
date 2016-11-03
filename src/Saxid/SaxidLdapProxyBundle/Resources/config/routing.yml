@@ -2,6 +2,12 @@ saxid_ldap_proxy_homepage:
     path:     /
     defaults: { _controller: SaxidLdapProxyBundle:Default:index }
 
+saxid_ldap_proxy_user:
+    path: /user
+    defaults:
+        _controller: FrameworkBundle:Template:template
+        template:    SaxidLdapProxyBundle::user.html.twig
+
 saxid_ldap_proxy_imprint:
     path: /imprint
     defaults:

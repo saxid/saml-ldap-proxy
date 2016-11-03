@@ -104,7 +104,15 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
+        $this->setUid(strstr($this->getEppn(), '@', true));
         $this->username = $this->getEppn();
+
+        //########## PASSWORD #######
+        //TMP, festes Passwort
+        //$this->setPassword('knack');
+        //$this->setUncryptPassword('knack');
+
+        //###########################
     }
 
     public function getRoles()
@@ -427,6 +435,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         return array_key_exists($domain, self::$academies);
     }
 
+    /**
+    * TODO: Adapt this Function to fit your local IDM needs
+    * check for local IDM uidnumber collision
+    */
     public function generateSaxIDUIDNumber()
     {
         if ($this->isFromSaxonAcademy())
@@ -464,6 +476,13 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function createLdapDataArray($isAdd = false)
     {
+        // objectClasses
+        $data['objectclass'][] = 'top';
+        $data['objectclass'][] = 'inetOrgPerson';
+        $data['objectclass'][] = 'posixAccount';
+        $data['objectclass'][] = 'shadowAccount';
+        $data['objectclass'][] = 'eduPerson';
+
         // Set basic user information
         $data['givenName'] = $this->getGivenName();
         $data['sn'] = $this->getSurname();
@@ -494,13 +513,6 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['homeDirectory'] = "/home/" . $this->getUid();
         $data['loginShell'] = '/bin/bash';
 
-        // objectClasses
-        $data['objectclass'][] = 'top';
-        $data['objectclass'][] = 'inetOrgPerson';
-        $data['objectclass'][] = 'posixAccount';
-        $data['objectclass'][] = 'shadowAccount';
-        $data['objectclass'][] = 'eduPerson';
-
         return $data;
     }
 
@@ -508,7 +520,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     {
         return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
     }
-    
+
     public function createLdapOrganizationDN()
     {
         return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
