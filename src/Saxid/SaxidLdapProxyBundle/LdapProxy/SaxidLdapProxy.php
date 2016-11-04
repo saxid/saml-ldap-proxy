@@ -186,7 +186,7 @@ class SaxidLdapProxy
         $data['objectclass'][] = 'top';
         $data['objectclass'][] = 'organization';
 
-        if($this->addUser($organizationDN, $data))
+        if ($this->addUser($organizationDN, $data))
         {
             $message = "addOrganization - Organization '" . $organizationDN . "' successfully added.";
             $this->logEvent($message);
@@ -382,8 +382,9 @@ class SaxidLdapProxy
             return;
         }
 
-        //TODO, ggf. Logik um Passwort zu verifizieren; Algorithmus auf min SSHA einstellen
-        $dataToModify["userPassword"] = $newPassword;
+        //TODO: besserer Algo - SHA512
+        $passwordEncoded = "{SHA}" . base64_encode(pack("H*", sha1($newPassword)));
+        $dataToModify["userPassword"] = $passwordEncoded;
 
         //Deleting the object
         if ($this->modifyUser($dn, $dataToModify))

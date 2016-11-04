@@ -72,7 +72,6 @@ class DefaultController extends Controller
 
             //TODO
             $tmpPassword = "knack";
-            $tmpPassword = "{SHA}" . base64_encode(pack("H*", sha1($tmpPassword)));
             $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $tmpPassword);
         }
 
