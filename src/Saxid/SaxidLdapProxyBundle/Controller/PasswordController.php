@@ -37,7 +37,7 @@ class PasswordController extends Controller
                 $this->addFlash("danger", "Error - Passwords are empty.");
                 return $this->render('SaxidLdapProxyBundle::password.html.twig');
             }
-            
+
             if ($request->get('newPassword') != $request->get('newPasswordCheck'))
             {
                 $this->addFlash("danger", "Error - Passwords are different.");
@@ -49,10 +49,8 @@ class PasswordController extends Controller
         // Generate new password
         else if (!is_null($request->get('btnGenerate')))
         {
-            $this->addFlash("danger", "NOT IMPLEMENTED YET");
-            return $this->render('SaxidLdapProxyBundle::password.html.twig');
-
-            //TODO: Routine zum Passwort generieren
+            $passwordToChange = $this->generateRandomPassword();
+            $this->addFlash("info", "Generated password: " . $passwordToChange);
         }
 
         // Obtain LDAP credentials
@@ -85,5 +83,12 @@ class PasswordController extends Controller
         $this->addFlash($status['type'], $status['message']);
 
         return $this->render('SaxidLdapProxyBundle::password.html.twig');
+    }
+
+    function generateRandomPassword($length = 8)
+    {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()_-=+?";
+        $password = substr(str_shuffle($chars), 0, $length);
+        return $password;
     }
 }
