@@ -27,13 +27,5 @@
 					<li>uncryptPassword: <code>{{ app.user.uncryptPassword }}</code></li>
 				</ul>
 
-				{% if app.environment == 'dev' %}
-				<h2>Object SaxIDUser</h2>
-				<pre>{{ dump(app.user) }}</pre>
-
-				<h2>LDAP Data Array</h2>
-				<pre>{{ dump(app.user.createLdapDataArray()) }}</pre>
-				{% endif %}
-
 			</section>
 {% endblock body %}

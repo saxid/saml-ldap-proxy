@@ -5,5 +5,13 @@
 
 <p>... added to LDAP!</p>
 
+{% if app.environment == 'dev' %}
+  <h2>Object SaxIDUser</h2>
+  <pre>{{ dump(app.user) }}</pre>
+
+  <h2>LDAP Data Array</h2>
+  <pre>{{ dump(app.user.createLdapDataArray()) }}</pre>
+{% endif %}
+
 {{ parent() }}
 {% endblock body %}
