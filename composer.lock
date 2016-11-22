@@ -1150,7 +1150,7 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hrz.tu-chemnitz.de:saxid-federated-resource-management/simplesamlphp-bundle.git",
-                "reference": "045c86f6d2de7c35d980c4f6511874572db33449"
+                "reference": "b209220bebbb22a6c6550ee2377e277b1a8bb217"
             },
             "require": {
                 "simplesamlphp/simplesamlphp": "~1.14",
@@ -1177,7 +1177,7 @@
                 "saml",
                 "simplesamlphp"
             ],
-            "time": "2016-11-03 16:38:44"
+            "time": "2016-11-03 17:03:12"
         },
         {
             "name": "sensio/distribution-bundle",

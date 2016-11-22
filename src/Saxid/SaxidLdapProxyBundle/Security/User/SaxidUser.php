@@ -458,7 +458,7 @@ class SaxidUser implements UserInterface, EquatableInterface
 
             // Set academy prefix; start with 20 for compatibility resons with local IDM
             // former setup: used 2 num digits starting with 10 for each uni
-            $prefix = 20;
+            $prefix = 10;
 
             // Determine required 0s to fill up
             $numberNulls = 10 - strlen($prefix) - strlen($randomID);
