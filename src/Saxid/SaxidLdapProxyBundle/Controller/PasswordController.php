@@ -28,6 +28,23 @@ class PasswordController extends Controller
             return $this->render('SaxidLdapProxyBundle::password.html.twig');
         }
 
+        // Obtain LDAP credentials
+        $ldapHost = $this->container->getParameter('ldap_host');
+        $ldapPort = $this->container->getParameter('ldap_port');
+        $ldapUser = $this->container->getParameter('ldap_user');
+        $ldapPass = $this->container->getParameter('ldap_pass');
+        $baseDN = $this->container->getParameter('baseDN');
+
+        // Get User Object
+        /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
+        $saxidUser = $this->getUser();
+
+        // Create LDAP Access Object
+        $saxLdap = new SaxidLdapProxy($ldapHost, $ldapPort, $ldapUser, $ldapPass, $baseDN);
+
+        // Connect to LDAP
+        $saxLdap->connect();
+
         $passwordToChange;
         // Set new password
         if (!is_null($request->get('btnChange')))
@@ -49,26 +66,9 @@ class PasswordController extends Controller
         // Generate new password
         else if (!is_null($request->get('btnGenerate')))
         {
-            $passwordToChange = $this->generateRandomPassword();
-            $this->addFlash("info", "Generated password: " . $passwordToChange);
+            $passwordToChange = $saxidUser->generateRandomPassword();
+            $this->addFlash("info", "Generated service password: " . $passwordToChange);
         }
-
-        // Obtain LDAP credentials
-        $ldapHost = $this->container->getParameter('ldap_host');
-        $ldapPort = $this->container->getParameter('ldap_port');
-        $ldapUser = $this->container->getParameter('ldap_user');
-        $ldapPass = $this->container->getParameter('ldap_pass');
-        $baseDN = $this->container->getParameter('baseDN');
-
-        // Get User Object
-        /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
-        $saxidUser = $this->getUser();
-
-        // Create LDAP Access Object
-        $saxLdap = new SaxidLdapProxy($ldapHost, $ldapPort, $ldapUser, $ldapPass, $baseDN);
-
-        // Connect to LDAP
-        $saxLdap->connect();
 
         // Set password
         $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $passwordToChange);
@@ -83,12 +83,5 @@ class PasswordController extends Controller
         $this->addFlash($status['type'], $status['message']);
 
         return $this->render('SaxidLdapProxyBundle::password.html.twig');
-    }
-
-    function generateRandomPassword($length = 8)
-    {
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()_-=+?";
-        $password = substr(str_shuffle($chars), 0, $length);
-        return $password;
     }
 }

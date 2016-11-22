@@ -71,8 +71,9 @@ class DefaultController extends Controller
             $saxLdap->addUser($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
 
             //TODO
-            $tmpPassword = "knack";
-            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $tmpPassword);
+            $initialPassword = $saxidUser->generateRandomPassword();
+            $this->addFlash("info", "Initial service password: " . $initialPassword);
+            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
         }
 
         // Get status

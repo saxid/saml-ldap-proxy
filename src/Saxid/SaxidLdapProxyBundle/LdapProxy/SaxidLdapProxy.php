@@ -382,8 +382,7 @@ class SaxidLdapProxy
             return;
         }
 
-        //TODO: besserer Algo - SHA512
-        $passwordEncoded = "{SHA}" . base64_encode(pack("H*", sha1($newPassword)));
+        $passwordEncoded = "{CRYPT}" . crypt($newPassword, "$6$". bin2hex(openssl_random_pseudo_bytes(16)));
         $dataToModify["userPassword"] = $passwordEncoded;
 
         //Deleting the object
