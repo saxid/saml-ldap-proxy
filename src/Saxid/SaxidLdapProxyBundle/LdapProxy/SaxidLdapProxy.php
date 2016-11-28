@@ -364,6 +364,72 @@ class SaxidLdapProxy
         }
     }
 
+    public function setLastUserUIDNumber($dn, $data)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+
+    public function getLastUserUIDNumber($dn)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+    
+    public function setLastAcademyUIDNumber($dn, $data)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+
+    public function getLastAcademyUIDNumber($dn)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+    
+    public function setUIDNumberPrefix($dn, $data)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+
+    public function getUIDNumberPrefix($dn)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
+            $this->logEvent($errorMessage);
+            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+    }
+
     /**
      * Sets the password for a user
      *
@@ -382,7 +448,7 @@ class SaxidLdapProxy
             return;
         }
 
-        $passwordEncoded = "{CRYPT}" . crypt($newPassword, "$6$". bin2hex(openssl_random_pseudo_bytes(16)));
+        $passwordEncoded = "{CRYPT}" . crypt($newPassword, "$6$" . bin2hex(openssl_random_pseudo_bytes(16)));
         $dataToModify["userPassword"] = $passwordEncoded;
 
         //Deleting the object

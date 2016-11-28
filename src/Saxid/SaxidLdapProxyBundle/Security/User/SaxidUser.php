@@ -38,7 +38,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         'tu-freiberg.de' => 'Technische Universität Freiberg',
             // 'rnd.feide.no'  => 'Feide NO',
     );
-    private static $attributeMapping = array( // SAML 2
+    private static $attributeMapping = array(// SAML 2
         'urn:oid:0.9.2342.19200300.100.1.1' => 'uid',
         'urn:oid:2.5.4.4' => 'surname',
         'urn:oid:2.5.4.42' => 'givenName',
@@ -61,8 +61,8 @@ class SaxidUser implements UserInterface, EquatableInterface
         'urn:mace:dir:attribute-def:eduPersonAffiliation' => 'eduPersonAffiliation',
         'urn:mace:dir:attribute-def:eduPersonScopedAffiliation' => 'eduPersonScopedAffiliation',
         'urn:mace:dir:attribute-def:eduPersonEntitlement' => 'eduPersonEntitlement',
-        //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
-        //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
+            //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
+            //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
     );
     private static $uidPrefixMapping = array(
         'tu-dresden.de' => 'tud',
@@ -111,14 +111,13 @@ class SaxidUser implements UserInterface, EquatableInterface
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);
-        $this->setUid(strstr($this->getEppn(), '@', true));
-        $this->username = $this->getEppn();
+        $this->setUid(strstr($this->getEduPersonPrincipalName(), '@', true));
+        $this->username = $this->getEduPersonPrincipalName();
 
         //########## PASSWORD #######
         //TMP, festes Passwort
         //$this->setPassword('knack');
         //$this->setUncryptPassword('knack');
-
         //###########################
     }
 
@@ -129,10 +128,18 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getUsername()
     {
-        return $this->username;
+        if (isset($this->username))
+        {
+            return $this->username;
+        }
+        else
+        {
+            return "DefaultUsername";
+        }
     }
 
-    public function getSalt() {
+    public function getSalt()
+    {
         return $this->salt;
     }
 
@@ -174,7 +181,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getUid()
     {
-        return $this->uid;
+        if (isset($this->uid))
+        {
+            return $this->uid;
+        }
+        else
+        {
+            return "DefaultUid";
+        }
     }
 
     // SSHA with random 4-character salt TODO: later set PW to bcrypt!! if LDAP support this
@@ -211,13 +225,15 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getEduPersonPrincipalName()
     {
-        return $this->eduPersonPrincipalName;
-    }
 
-    //Alias for getEduPersonPrincipalName();
-    public function getEppn()
-    {
-        return $this->getEduPersonPrincipalName();
+        if (isset($this->eduPersonPrincipalName))
+        {
+            return $this->eduPersonPrincipalName;
+        }
+        else
+        {
+            return "DefaultEduPersonPrincipalName";
+        }
     }
 
     public function setEduPersonAffiliation($eduPersonAffiliation)
@@ -233,6 +249,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         {
             $return = $asArray ? $this->eduPersonAffiliation : implode(', ', $this->eduPersonAffiliation);
         }
+        else
+        {
+            return "DefaultEduPersonAffiliation";
+        }
         return $return;
     }
 
@@ -244,7 +264,15 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getEduPersonPrimaryAffiliation()
     {
-        return $this->eduPersonPrimaryAffiliation;
+
+        if (isset($this->eduPersonPrimaryAffiliation))
+        {
+            return $this->eduPersonPrimaryAffiliation;
+        }
+        else
+        {
+            return "DefaultEduPersonPrimaryAffiliation";
+        }
     }
 
     public function setEduPersonScopedAffiliation($eduPersonScopedAffiliation)
@@ -260,6 +288,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         {
             $return = $asArray ? $this->eduPersonScopedAffiliation : implode(', ', $this->eduPersonScopedAffiliation);
         }
+        else
+        {
+            return "DefaultEduPersonScopedAffiliation";
+        }
         return $return;
     }
 
@@ -271,7 +303,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getSurname()
     {
-        return $this->surname;
+        if (isset($this->surname))
+        {
+            return $this->surname;
+        }
+        else
+        {
+            return "DefaultSurname";
+        }
     }
 
     public function setGivenName($givenName)
@@ -282,7 +321,15 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getGivenName()
     {
-        return $this->givenName;
+
+        if (isset($this->givenName))
+        {
+            return $this->givenName;
+        }
+        else
+        {
+            return "DefaultGivenName";
+        }
     }
 
     public function setUidNumber($uidNumber)
@@ -293,7 +340,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getUidNumber()
     {
-        return $this->uidNumber;
+        if (isset($this->uidNumber))
+        {
+            return $this->uidNumber;
+        }
+        else
+        {
+            return "DefaultUidNumber";
+        }
     }
 
     public function setEduPersonEntitlement($eduPersonEntitlement)
@@ -304,7 +358,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getEduPersonEntitlement()
     {
-        return $this->eduPersonEntitlement;
+        if (isset($this->eduPersonEntitlement))
+        {
+            return $this->eduPersonEntitlement;
+        }
+        else
+        {
+            return "DefaultEduPersonEntitlement";
+        }
     }
 
     public function setOrganizationalUnitName($organizationalUnitName)
@@ -319,7 +380,7 @@ class SaxidUser implements UserInterface, EquatableInterface
 
         if (!empty($this->organizationalUnitName))
         {
-            if (is_array($this->organizationalUnitName) and !$asArray)
+            if (is_array($this->organizationalUnitName) and ! $asArray)
             {
                 $return = implode(', ', $this->organizationalUnitName);
             }
@@ -327,6 +388,10 @@ class SaxidUser implements UserInterface, EquatableInterface
             {
                 $return = $this->organizationalUnitName;
             }
+        }
+        else
+        {
+            return "DefaultOrganizationalUnitName";
         }
         return $return;
     }
@@ -339,7 +404,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getCommonName()
     {
-        return $this->commonName;
+        if (isset($this->commonName))
+        {
+            return $this->commonName;
+        }
+        else
+        {
+            return "DefaultCommonName";
+        }
     }
 
     public function setEmail($email)
@@ -350,7 +422,15 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getEmail()
     {
-        return $this->email;
+
+        if (isset($this->email))
+        {
+            return $this->email;
+        }
+        else
+        {
+            return "DefaultEmail";
+        }
     }
 
     public function setEduPersonOrgUnitDN($eduPersonOrgUnitDN)
@@ -374,6 +454,10 @@ class SaxidUser implements UserInterface, EquatableInterface
                 $return = $this->eduPersonOrgUnitDN;
             }
         }
+        else
+        {
+            return "dc=sax-id,dc=de";
+        }
         return $return;
     }
 
@@ -391,7 +475,15 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getDisplayName()
     {
-        return $this->displayName;
+
+        if (isset($this->displayName))
+        {
+            return $this->displayName;
+        }
+        else
+        {
+            return "DefaultDisplayName";
+        }
     }
 
     public function getGecos()
@@ -418,13 +510,20 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getAcademy()
     {
-        return $this->academy;
+        if (isset($this->academy))
+        {
+            return $this->academy;
+        }
+        else
+        {
+            return "DefaultAcademy";
+        }
     }
 
     /**
-    * Sets the Academy Domain for a user using his or her ePPN
-    *
-    */
+     * Sets the Academy Domain for a user using his or her ePPN
+     *
+     */
     public function setAcademyDomain()
     {
         $this->academyDomain = substr(strstr($this->getEduPersonPrincipalName(), '@'), 1);
@@ -433,7 +532,14 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     public function getAcademyDomain()
     {
-        return $this->academyDomain;
+        if (isset($this->academyDomain))
+        {
+            return $this->academyDomain;
+        }
+        else
+        {
+            return "DefaultAcademyDomain";
+        }
     }
 
     public function isFromSaxonAcademy()
@@ -443,9 +549,9 @@ class SaxidUser implements UserInterface, EquatableInterface
     }
 
     /**
-    * TODO: Adapt this Function to fit your local IDM needs
-    * check for local IDM uidnumber collision
-    */
+     * TODO: Adapt this Function to fit your local IDM needs
+     * check for local IDM uidnumber collision
+     */
     public function generateSaxIDUIDNumber()
     {
         if ($this->isFromSaxonAcademy())
@@ -480,7 +586,7 @@ class SaxidUser implements UserInterface, EquatableInterface
 
         return $saxidUid;
     }
-    
+
     public function generateRandomPassword($length = 8)
     {
         $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()_-=+?";
@@ -496,9 +602,10 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['objectclass'][] = 'posixAccount';
         $data['objectclass'][] = 'shadowAccount';
         $data['objectclass'][] = 'eduPerson';
+        $data['objectclass'][] = 'saxID';
 
         // Set basic user information
-        $data['givenName'] = $this->getGivenName();
+        //$data['givenName'] = $this->getGivenName();
         $data['sn'] = $this->getSurname();
         $data['cn'] = $this->getCommonName();
         $data['mail'] = $this->getEmail();
@@ -506,14 +613,14 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['o'] = $this->getAcademy();
         $data['displayName'] = $this->getDisplayName();
         //$data['userPassword'] = $this->getPassword();
-
+        
         // eduPerson
-        $data['eduPersonAffiliation'] = $this->getEduPersonAffiliation(true);
+        //$data['eduPersonAffiliation'] = $this->getEduPersonAffiliation(true);
         $data['eduPersonEntitlement'] = $this->getEduPersonEntitlement();
-        $data['eduPersonOrgUnitDN'] = $this->getEduPersonOrgUnitDN(true);
-        $data['eduPersonPrimaryAffiliation'] = $this->getEduPersonPrimaryAffiliation();
-        $data['eduPersonPrincipalName'] = $this->getEppn();
-        $data['eduPersonScopedAffiliation'] = $this->getEduPersonScopedAffiliation(true);
+        //$data['eduPersonOrgUnitDN'] = $this->getEduPersonOrgUnitDN(true);
+        //$data['eduPersonPrimaryAffiliation'] = $this->getEduPersonPrimaryAffiliation();
+        $data['eduPersonPrincipalName'] = $this->getEduPersonPrincipalName();
+        //$data['eduPersonScopedAffiliation'] = $this->getEduPersonScopedAffiliation(true);
 
         // nis/posixAccount
         $data['uid'] = $this->getUid();
@@ -522,14 +629,17 @@ class SaxidUser implements UserInterface, EquatableInterface
         {
             $data['uidNumber'] = $this->getUidNumber();
         }
-        $data['gecos'] = $this->getGecos();
+        //$data['gecos'] = $this->getGecos();
         $data['gidNumber'] = 0;
         $data['homeDirectory'] = "/home/" . $this->getUid();
         $data['loginShell'] = '/bin/bash';
+        
+        //saxID
+        $data['userServices'] = "hpc";
 
         return $data;
     }
-
+    
     public function createLdapUserDN()
     {
         return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";

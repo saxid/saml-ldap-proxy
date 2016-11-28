@@ -62,7 +62,7 @@ class DefaultController extends Controller
             }
 
             // When organization doesn't exists -> create
-            if($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
+            if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
             {
                 $saxLdap->addOrganization($saxidUser->createLdapOrganizationDN());
             }
