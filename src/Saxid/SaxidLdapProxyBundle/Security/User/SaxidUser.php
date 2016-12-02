@@ -552,32 +552,33 @@ class SaxidUser implements UserInterface, EquatableInterface
      * TODO: Adapt this Function to fit your local IDM needs
      * check for local IDM uidnumber collision
      */
-    public function generateSaxIDUIDNumber()
+    //UidNumber max length 2.147.483.648
+    public function generateSaxIDUIDNumber($uidNumberPrefix, $uidNumber)
     {
         if ($this->isFromSaxonAcademy())
         {
-            // Length of random number
-            $digits = 8;
-
-            // Generate random number
-            $randomID = str_pad(rand(0, pow(10, $digits) - 1), $digits, '0', STR_PAD_LEFT);
-
-            // Set academy prefix; start with 20 for compatibility resons with local IDM
-            // former setup: used 2 num digits starting with 10 for each uni
-            $prefix = 10;
-
-            // Determine required 0s to fill up
-            $numberNulls = 10 - strlen($prefix) - strlen($randomID);
+            // Determine required 0s to fill up the UIDNumber
+            $numberNullUIDNumber = 6 - strlen($uidNumber);
 
             // Fill with 0s
-            $nulls = '';
-            for ($i = 1; $i <= $numberNulls; $i++)
+            $nullsUIDNumber = '';
+            for ($i = 1; $i <= $numberNullUIDNumber; $i++)
             {
-                $nulls .= '0';
+                $nullsUIDNumber .= '0';
+            }
+            
+            // Determine required 0s to fill up the UIDPrefix
+            $numberNullUIDPrefix = 3 - strlen($uidNumberPrefix);
+
+            // Fill with 0s
+            $nullsUIDPrefix = '';
+            for ($i = 1; $i <= $numberNullUIDPrefix; $i++)
+            {
+                $nullsUIDPrefix .= '0';
             }
 
-            // Append UID
-            $saxidUid = $prefix . $nulls . $randomID;
+            // Append UID, UIDNumbers start with 1 to avoid conflicts with local IDM
+            $saxidUid = '1' . $nullsUIDPrefix . $uidNumberPrefix . $nullsUIDNumber . $uidNumber;
         }
         else
         {
@@ -615,11 +616,11 @@ class SaxidUser implements UserInterface, EquatableInterface
         //$data['userPassword'] = $this->getPassword();
         
         // eduPerson
-        //$data['eduPersonAffiliation'] = $this->getEduPersonAffiliation(true);
         $data['eduPersonEntitlement'] = $this->getEduPersonEntitlement();
+        $data['eduPersonPrincipalName'] = $this->getEduPersonPrincipalName();
+        //$data['eduPersonAffiliation'] = $this->getEduPersonAffiliation(true);
         //$data['eduPersonOrgUnitDN'] = $this->getEduPersonOrgUnitDN(true);
         //$data['eduPersonPrimaryAffiliation'] = $this->getEduPersonPrimaryAffiliation();
-        $data['eduPersonPrincipalName'] = $this->getEduPersonPrincipalName();
         //$data['eduPersonScopedAffiliation'] = $this->getEduPersonScopedAffiliation(true);
 
         // nis/posixAccount

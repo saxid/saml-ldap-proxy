@@ -43,15 +43,38 @@ class DefaultController extends Controller
         if ($saxLdap->existsUser("uid=" . $saxidUser->getUid()))
         {
             // Modify entry
-            $saxLdap->modifyUser($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
+            $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
         }
         else
         {
             // Add new entry
-            // Create unique UIDNumber
+            // When organization doesn't exists -> create
+            if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
+            {
+                //objectclasses
+                $organizationData['objectclass'][] = 'organization';
+                $organizationData['objectclass'][] = 'saxID';
+                $organizationData['objectclass'][] = 'top';
+
+                //attributes
+                $organizationData["lastUserUIDNumber"] = "1";
+                $uidNumberPrefix = $saxLdap->getLastAcademyUIDNumber("dc=sax-id,dc=de") + 1;
+                $organizationData["uidNumberPrefix"] = $uidNumberPrefix;
+
+                //add organization
+                $saxLdap->addLDAPObject($saxidUser->createLdapOrganizationDN(), $organizationData);
+
+                //set last uidNumber at top domain
+                $saxLdap->setLastAcademyUIDNumber("dc=sax-id,dc=de", $uidNumberPrefix);
+            }
+
+            $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN());           
+            $tmpAcademyPrefix = $saxLdap->getUIDNumberPrefix($saxidUser->createLdapOrganizationDN());
+               
+            // Create unique UIDNumber for user
             for ($index = 0; $index < 100; $index++)
             {
-                $tmpUidNumber = $saxidUser->generateSaxIDUIDNumber();
+                $tmpUidNumber = $saxidUser->generateSaxIDUIDNumber($tmpAcademyPrefix, $tmpLastUserUIDNumber + 1);
 
                 if ($saxLdap->existsUser("uidNumber=" . $tmpUidNumber) == FALSE)
                 {
@@ -61,19 +84,16 @@ class DefaultController extends Controller
                 }
             }
 
-            // When organization doesn't exists -> create
-            if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
-            {
-                $saxLdap->addOrganization($saxidUser->createLdapOrganizationDN());
-            }
-
             // Add
-            $saxLdap->addUser($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
+            $saxLdap->addLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
+            
+            // modify lastUserUIDNumber
+            $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
 
             //TODO
             $initialPassword = $saxidUser->generateRandomPassword();
             $this->addFlash("info", "Initial service password: " . $initialPassword);
-            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
+            //$saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
         }
 
         // Get status
@@ -87,5 +107,21 @@ class DefaultController extends Controller
         $session->set('status', 'DONE');
 
         return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+    }
+
+    private function FillWithZeros($value)
+    {
+        if (count_chars($value) == 1)
+        {
+            return "00" . $value;
+        }
+        else if (count_chars($value) == 2)
+        {
+            return "0" . $value;
+        }
+        else
+        {
+            return $value;
+        }
     }
 }
