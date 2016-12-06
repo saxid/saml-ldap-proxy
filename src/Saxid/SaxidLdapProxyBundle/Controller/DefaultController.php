@@ -93,7 +93,7 @@ class DefaultController extends Controller
             //TODO
             $initialPassword = $saxidUser->generateRandomPassword();
             $this->addFlash("info", "Initial service password: " . $initialPassword);
-            //$saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
+            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
         }
 
         // Get status
