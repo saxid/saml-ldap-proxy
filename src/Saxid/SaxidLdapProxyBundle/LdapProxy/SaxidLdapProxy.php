@@ -52,9 +52,8 @@ class SaxidLdapProxy
         //ldap_connect always has return value, even if LDAP not reachable
         $this->ldapConnection = ldap_connect($this->ldapHost);
 
-        //Set LDAP version
+        //Set options
         ldap_set_option($this->ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
-        // Refferrals
         ldap_set_option($this->ldapConnection, LDAP_OPT_REFERRALS, 0);
         
         //StartTLS
