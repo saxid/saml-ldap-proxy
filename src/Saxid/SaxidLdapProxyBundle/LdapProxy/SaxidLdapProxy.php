@@ -54,6 +54,11 @@ class SaxidLdapProxy
 
         //Set LDAP version
         ldap_set_option($this->ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
+        // Refferrals
+        ldap_set_option($this->ldapConnection, LDAP_OPT_REFERRALS, 0);
+        
+        //StartTLS
+        ldap_start_tls($this->ldapConnection);
 
         //Check trough anonymous bind if LDAP is reachable
         if (ldap_bind($this->ldapConnection))
