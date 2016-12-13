@@ -2,29 +2,26 @@
 
 {% block body %}
 			<div class="page-header">
-				<h1>Benutzerdaten für {{ app.user.displayName }}</h1>
+				<h1>Benutzerdaten für {{ data.displayName[0] }}</h1>
 			</div>
 
 			<section id="userdata">
 				<ul>
-					<li>uid: <code>{{ app.user.uid }}</code></li>
-					<li>uidNumber: <code>{{ app.user.uidNumber }}</code></li>
-					<li>eppn: <code>{{ app.user.eppn }}</code></li>
-					<li>eduPersonAffiliation: <code>{{ app.user.eduPersonAffiliation }}</code></li>
-					<li>eduPersonPrimaryAffiliation: <code>{{ app.user.eduPersonPrimaryAffiliation }}</code></li>
-					<li>eduPersonScopedAffiliation: <code>{{ app.user.eduPersonScopedAffiliation }}</code></li>
-					<li>surname: <code>{{ app.user.surname }}</code></li>
-					<li>givenName: <code>{{ app.user.givenName }}</code></li>
-					<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
-					<li>organizationalUnitName: <code>{{ app.user.organizationalUnitName }}</code></li>
-					<li>commonName: <code>{{ app.user.commonName }}</code></li>
-					<li>email: <code>{{ app.user.email }}</code></li>
-					<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN }}</code></li>
-					<li>displayName: <code>{{ app.user.displayName }}</code></li>
-					<li>academy: <code>{{ app.user.academy }}</code></li>
-					<li>academyDomain: <code>{{ app.user.academyDomain }}</code></li>
-					<li>Password: <code>{{ app.user.password }}</code></li>
-					<li>uncryptPassword: <code>{{ app.user.uncryptPassword }}</code></li>
+					<li>uid: <code>{{ data.uid[0] }}</code></li>
+					<li>uidNumber: <code>{{ data.uidNumber[0] }}</code></li>
+					<li>gidNumber: <code>{{ data.gidNumber[0] }}</code></li>
+					<li>eppn: <code>{{ data.eduPersonPrincipalName[0] }}</code></li>
+					<li>surname: <code>{{ data.sn[0] }}</code></li>
+					<li>eduPersonEntitlement: <code>{{ data.eduPersonEntitlement[0] }}</code></li>
+					<li>commonName: <code>{{ data.cn[0] }}</code></li>
+					<li>email: <code>{{ data.mail[0] }}</code></li>
+					<li>displayName: <code>{{ data.displayName[0] }}</code></li>
+					<li>academy: <code>{{ data.o[0] }}</code></li>
+					<li>academyDomain: <code>{{ data.ou[0] }}</code></li>
+					<li>Password: <code>{{ data.userPassword[0] }}</code></li>
+					<li>Login_Shell: <code>{{ data.loginShell[0] }}</code></li>
+					<li>home_Directory: <code>{{ data.homeDirectory[0] }}</code></li>
+					<li>User_Services: <code>{{ data.userServices[0] }}</code></li>
 				</ul>
 
 			</section>

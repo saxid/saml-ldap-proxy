@@ -566,7 +566,7 @@ class SaxidUser implements UserInterface, EquatableInterface
             {
                 $nullsUIDNumber .= '0';
             }
-            
+
             // Determine required 0s to fill up the UIDPrefix
             $numberNullUIDPrefix = 3 - strlen($uidNumberPrefix);
 
@@ -614,7 +614,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['o'] = $this->getAcademy();
         $data['displayName'] = $this->getDisplayName();
         //$data['userPassword'] = $this->getPassword();
-        
+
         // eduPerson
         $data['eduPersonEntitlement'] = $this->getEduPersonEntitlement();
         $data['eduPersonPrincipalName'] = $this->getEduPersonPrincipalName();
@@ -631,16 +631,16 @@ class SaxidUser implements UserInterface, EquatableInterface
             $data['uidNumber'] = $this->getUidNumber();
         }
         //$data['gecos'] = $this->getGecos();
-        $data['gidNumber'] = 0;
+        $data['gidNumber'] = 1000;
         $data['homeDirectory'] = "/home/" . $this->getUid();
         $data['loginShell'] = '/bin/bash';
-        
+
         //saxID
         $data['userServices'] = "hpc";
 
         return $data;
     }
-    
+
     public function createLdapUserDN()
     {
         return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";

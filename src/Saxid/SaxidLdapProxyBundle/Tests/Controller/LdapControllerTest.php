@@ -10,7 +10,9 @@ class LdapControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $crawler = $client->request('GET', '/adduser');
+        $crawler = $client->request('GET', '/user');
+
+        $this->assertTrue($crawler->filter('html:contains("Benutzerdaten für")')->count() > 0);
     }
 
 }

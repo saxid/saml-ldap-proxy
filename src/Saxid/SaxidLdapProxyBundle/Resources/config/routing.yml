@@ -5,7 +5,7 @@ saxid_ldap_proxy_homepage:
 saxid_ldap_proxy_user:
     path: /user
     defaults:
-        _controller: FrameworkBundle:Template:template
+        _controller: SaxidLdapProxyBundle:Ldap:readuser
         template:    SaxidLdapProxyBundle::user.html.twig
 
 saxid_ldap_proxy_imprint:
@@ -20,5 +20,5 @@ saxid_ldap_proxy_imprint:
 saxid_ldap_proxy_password:
     path: /chpwd
     defaults:
-        _controller: SaxidLdapProxyBundle:Password:chPassword
+        _controller: SaxidLdapProxyBundle:Password:new
         template:    SaxidLdapProxyBundle:password.html.twig

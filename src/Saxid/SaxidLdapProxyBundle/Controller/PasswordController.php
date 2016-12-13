@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class PasswordController extends Controller
 {
@@ -28,19 +31,12 @@ class PasswordController extends Controller
             return $this->render('SaxidLdapProxyBundle::password.html.twig');
         }
 
-        // Obtain LDAP credentials
-        $ldapHost = $this->container->getParameter('ldap_host');
-        $ldapPort = $this->container->getParameter('ldap_port');
-        $ldapUser = $this->container->getParameter('ldap_user');
-        $ldapPass = $this->container->getParameter('ldap_pass');
-        $baseDN = $this->container->getParameter('baseDN');
-
         // Get User Object
         /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
         $saxidUser = $this->getUser();
 
-        // Create LDAP Access Object
-        $saxLdap = new SaxidLdapProxy($ldapHost, $ldapPort, $ldapUser, $ldapPass, $baseDN);
+        // get LDAP Access Object
+        $saxLdap = $this->get('saxid_ldap_proxy');
 
         // Connect to LDAP
         $saxLdap->connect();
@@ -83,5 +79,76 @@ class PasswordController extends Controller
         $this->addFlash($status['type'], $status['message']);
 
         return $this->render('SaxidLdapProxyBundle::password.html.twig');
+    }
+
+    public function newAction(Request $request)
+    {
+
+        // Get User Object
+        /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
+        $saxidUser = $this->getUser();
+
+        $form = $this->createFormBuilder($saxidUser)
+            ->add('password', RepeatedType::class, array(
+              'type' => PasswordType::class,
+              'invalid_message' => 'Die Passwörter müssen übereinstimmen.',
+              'options' => array('attr' => array('class' => 'form-control')),
+              'required' => true,
+              'first_options'  => array('label' => 'Passwort'),
+              'second_options' => array('label' => 'Passwort wiederholen')
+            ))
+            ->add('save', SubmitType::class, array(
+                'label' => 'Password ändern',
+                'attr' => array(
+                  'class' => 'btn btn-primary'
+                )
+            ))
+            ->add('generate', SubmitType::class, array(
+                'label' => 'Password erzeugen',
+                'attr' => array(
+                  'class' => 'btn btn-default'
+                )
+            ))
+            ->getForm();
+
+            $form->handleRequest($request);
+
+            // Create LDAP Access Object
+            $saxLdap = $this->get('saxid_ldap_proxy');
+            // Connect to LDAP
+            $saxLdap->connect();
+
+            if ($form->get('generate')->isClicked()) {
+
+              $newPass = $saxidUser->generateRandomPassword();
+              $this->addFlash("info", "Generated service password: " . $newPass);
+              $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $newPass );
+              $status = $saxLdap->getStatus();
+              $saxLdap->disconnect();
+              $this->addFlash($status['type'], $status['message']);
+
+            }
+
+            if ($form->get('save')->isClicked() && $form->isValid()) {
+                $data = $form->getData();
+
+                // Set password
+                $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $data->getPassword() );
+
+                // Get status
+                $status = $saxLdap->getStatus();
+
+                // Close connection
+                $saxLdap->disconnect();
+
+                // Add status message to Symfony flashbag
+                $this->addFlash($status['type'], $status['message']);
+
+                return $this->redirectToRoute('saxid_ldap_proxy_password');
+              }
+
+        return $this->render('SaxidLdapProxyBundle::password.html.twig', array(
+            'hpcform' => $form->createView(),
+        ));
     }
 }

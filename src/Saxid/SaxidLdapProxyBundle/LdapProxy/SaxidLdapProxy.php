@@ -17,7 +17,7 @@ class SaxidLdapProxy
     private $baseDN;
     //Other
     private $connected = false;
-    private $debug = true;
+    private $debug = false;
     private $logger;
     private $status;
 
@@ -49,13 +49,14 @@ class SaxidLdapProxy
     public function connect()
     {
         //Connection to LDAP
-        //ldap_connect always has return value, even if LDAP not reachable
+        //ldap_connect always has a return value, even if LDAP is not reachable
         $this->ldapConnection = ldap_connect($this->ldapHost);
 
         //Set options
         ldap_set_option($this->ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->ldapConnection, LDAP_OPT_REFERRALS, 0);
-        
+        //ldap_set_option($this->ldapConnection, LDAP_OPT_DEBUG_LEVEL, 7);
+
         //StartTLS
         ldap_start_tls($this->ldapConnection);
 

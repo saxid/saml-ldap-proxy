@@ -22,19 +22,12 @@ class DefaultController extends Controller
             return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
         }
 
-        // Obtain LDAP credentials
-        $ldapHost = $this->container->getParameter('ldap_host');
-        $ldapPort = $this->container->getParameter('ldap_port');
-        $ldapUser = $this->container->getParameter('ldap_user');
-        $ldapPass = $this->container->getParameter('ldap_pass');
-        $baseDN = $this->container->getParameter('baseDN');
-
         // Get User Object
         /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
         $saxidUser = $this->getUser();
 
         //Create LDAP Access Object
-        $saxLdap = new SaxidLdapProxy($ldapHost, $ldapPort, $ldapUser, $ldapPass, $baseDN);
+        $saxLdap = $this->get('saxid_ldap_proxy');
 
         // Connect to LDAP
         $saxLdap->connect();
@@ -68,9 +61,9 @@ class DefaultController extends Controller
                 $saxLdap->setLastAcademyUIDNumber("dc=sax-id,dc=de", $uidNumberPrefix);
             }
 
-            $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN());           
+            $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN());
             $tmpAcademyPrefix = $saxLdap->getUIDNumberPrefix($saxidUser->createLdapOrganizationDN());
-               
+
             // Create unique UIDNumber for user
             for ($index = 0; $index < 100; $index++)
             {
@@ -86,7 +79,7 @@ class DefaultController extends Controller
 
             // Add
             $saxLdap->addLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
-            
+
             // modify lastUserUIDNumber
             $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
 
@@ -107,6 +100,28 @@ class DefaultController extends Controller
         $session->set('status', 'DONE');
 
         return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+    }
+
+    public function startAction(Request $request)
+    {
+        $session = $request->getSession();
+
+        if ($session->get('status'))
+        {
+            if (!$this->getUser()->isFromSaxonAcademy())
+            {
+                $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP');
+            }
+
+            if ($form->get('agree')->isClicked())
+            {
+              return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+
+            } elseif($form->get('decline')->isClicked()){
+              // Logout
+            }
+        }
+
     }
 
     private function FillWithZeros($value)

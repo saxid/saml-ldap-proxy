@@ -6,8 +6,8 @@ $academies = array(
 		'long'    => 'Technische Universität Dresden',
 		'url'     => 'http://tu-dresden.de',
 		'logo'    => 'tu-dresden.png',
-		'contact' => 'Moritz Hesse',
-		'email'   => 'moritz.hesse(ett)tu-dresden.de',
+		'contact' => 'Jan Frömberg',
+		'email'   => 'jan.froemberg(ett)tu-dresden.de',
 	),
 	array(
 		'name'    => 'Uni Leipzig',
@@ -62,8 +62,8 @@ $academies = array(
 		'long'    => 'Westsächsische Hochschule Zwickau',
 		'url'     => 'https://www.fh-zwickau.de/',
 		'logo'    => 'hochschule-zwickau.png',
-		'contact' => 'Sebastian Thier',
-		'email'   => 'Sebastian.Thier(ett)fh-zwickau.de',
+		'contact' => 'Roman Pioch',
+		'email'   => 'roman.pioch(ett)fh-zwickau.de',
 	),
 	array(
 		'name'    => 'HS Mittweida',

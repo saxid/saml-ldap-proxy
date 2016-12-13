@@ -20,13 +20,10 @@ class SaxidUserProvider implements UserProviderInterface
     private $ldapUser;
     private $ldapPass;
 
-    public function __construct(SimpleSAML_Auth_Simple $auth, Session $session, $ldap_host, $ldap_port, $ldap_user, $ldap_pass) {
+    public function __construct(SimpleSAML_Auth_Simple $auth, Session $session) {
         $this->auth     = $auth;
         $this->session  = $session;
-        $this->ldapHost = $ldap_host;
-        $this->ldapPort = $ldap_port;
-        $this->ldapUser = $ldap_user;
-        $this->ldapPass = $ldap_pass;
+
     }
 
     public function loadUserByUsername($username) {
