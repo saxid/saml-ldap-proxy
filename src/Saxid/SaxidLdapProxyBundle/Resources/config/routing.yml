@@ -22,3 +22,9 @@ saxid_ldap_proxy_password:
     defaults:
         _controller: SaxidLdapProxyBundle:Password:new
         template:    SaxidLdapProxyBundle:password.html.twig
+        
+saxid_ldap_proxy_testAPI:
+    path: /testAPI
+    defaults:
+        _controller: SaxidLdapProxyBundle:TestAPI:Api
+        template:    SaxidLdapProxyBundle:testAPI.html.twig
