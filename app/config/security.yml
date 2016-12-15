@@ -19,6 +19,6 @@ security:
                 success_handler: simplesamlphp.logout_handler
 
     access_control:
-        - { path: ^/,         roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/,         roles: ROLE_USER }
         # Make imprint accessible for anonymous access
         - { path: ^/imprint$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -191,13 +191,14 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
     }
 
-    // SSHA with random 4-character salt TODO: later set PW to bcrypt!! if LDAP support this
+    // uncrypted PW, pass is crypted and stored in SLP-Class/Service
     public function setPassword($password)
     {
         #$this->password = '{CRYPT}' . password_hash($password, PASSWORD_BCRYPT);
         #$salt = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)), 0, 4);
         #$this->password = '{SSHA}' . base64_encode(sha1( $password.$salt, TRUE ) . $salt);
-        $this->password = '{MD5}' . base64_encode(md5($password, TRUE));
+        #$this->password = '{MD5}' . base64_encode(md5($password, TRUE));
+        $this->password = $password;
         return $this;
     }
 

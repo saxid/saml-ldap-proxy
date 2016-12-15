@@ -2,26 +2,26 @@
 
 {% block body %}
 			<div class="page-header">
-				<h1>Benutzerdaten für {{ data.displayName[0] }}</h1>
+				<h1>Benutzerdaten für {{ ldapuser.displayName }}</h1>
 			</div>
 
 			<section id="userdata">
 				<ul>
-					<li>uid: <code>{{ data.uid[0] }}</code></li>
-					<li>uidNumber: <code>{{ data.uidNumber[0] }}</code></li>
-					<li>gidNumber: <code>{{ data.gidNumber[0] }}</code></li>
-					<li>eppn: <code>{{ data.eduPersonPrincipalName[0] }}</code></li>
-					<li>surname: <code>{{ data.sn[0] }}</code></li>
-					<li>eduPersonEntitlement: <code>{{ data.eduPersonEntitlement[0] }}</code></li>
-					<li>commonName: <code>{{ data.cn[0] }}</code></li>
-					<li>email: <code>{{ data.mail[0] }}</code></li>
-					<li>displayName: <code>{{ data.displayName[0] }}</code></li>
-					<li>academy: <code>{{ data.o[0] }}</code></li>
-					<li>academyDomain: <code>{{ data.ou[0] }}</code></li>
-					<li>Password: <code>{{ data.userPassword[0] }}</code></li>
-					<li>Login_Shell: <code>{{ data.loginShell[0] }}</code></li>
-					<li>home_Directory: <code>{{ data.homeDirectory[0] }}</code></li>
-					<li>User_Services: <code>{{ data.userServices[0] }}</code></li>
+					<li>uid: <code>{{ ldapuser.uid }}</code></li>
+					<li>uidNumber: <code>{{ ldapuser.uidNumber }}</code></li>
+					<li>gidNumber: <code>{{ ldapuser.gidNumber }}</code></li>
+					<li>eppn: <code>{{ ldapuser.eduPersonPrincipalName }}</code></li>
+					<li>surname: <code>{{ ldapuser.sn }}</code></li>
+					<li>eduPersonEntitlement: <code>{{ ldapuser.eduPersonEntitlement }}</code></li>
+					<li>commonName: <code>{{ ldapuser.cn }}</code></li>
+					<li>email: <code>{{ ldapuser.mail }}</code></li>
+					<li>displayName: <code>{{ ldapuser.displayName }}</code></li>
+					<li>academy: <code>{{ ldapuser.o }}</code></li>
+					<li>academyDomain: <code>{{ ldapuser.ou }}</code></li>
+					<li>Password: <code>{{ ldapuser.userPassword }}</code></li>
+					<li>Login_Shell: <code>{{ ldapuser.loginShell }}</code></li>
+					<li>home_Directory: <code>{{ ldapuser.homeDirectory }}</code></li>
+					<li>User_Services: <code>{{ ldapuser.userServices }}</code></li>
 				</ul>
 
 			</section>

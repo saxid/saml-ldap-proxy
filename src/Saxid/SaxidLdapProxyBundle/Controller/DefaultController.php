@@ -115,7 +115,7 @@ class DefaultController extends Controller
 
             if ($form->get('agree')->isClicked())
             {
-              return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+              return $this->forward('SaxidLdapProxyBundle:Default:index.html.twig');
 
             } elseif($form->get('decline')->isClicked()){
               // Logout

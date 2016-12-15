@@ -6,9 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Saxid\SaxidLdapProxyBundle\Form\PasswordType;
 
 class PasswordController extends Controller
 {
@@ -87,65 +85,43 @@ class PasswordController extends Controller
         // Get User Object
         /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
         $saxidUser = $this->getUser();
+        // create the user password-form of type userpassword
+        // and take the saxidUser class as data_class to map attributes via getters/setters
+        $form = $this->createForm(UserPasswordType::class, $saxidUser);
 
-        $form = $this->createFormBuilder($saxidUser)
-            ->add('password', RepeatedType::class, array(
-              'type' => PasswordType::class,
-              'invalid_message' => 'Die Passwörter müssen übereinstimmen.',
-              'options' => array('attr' => array('class' => 'form-control')),
-              'required' => true,
-              'first_options'  => array('label' => 'Passwort'),
-              'second_options' => array('label' => 'Passwort wiederholen')
-            ))
-            ->add('save', SubmitType::class, array(
-                'label' => 'Password ändern',
-                'attr' => array(
-                  'class' => 'btn btn-primary'
-                )
-            ))
-            ->add('generate', SubmitType::class, array(
-                'label' => 'Password erzeugen',
-                'attr' => array(
-                  'class' => 'btn btn-default'
-                )
-            ))
-            ->getForm();
+        $form->handleRequest($request);
 
-            $form->handleRequest($request);
+        // Create LDAP Access Object
+        $saxLdap = $this->get('saxid_ldap_proxy');
 
-            // Create LDAP Access Object
-            $saxLdap = $this->get('saxid_ldap_proxy');
-            // Connect to LDAP
-            $saxLdap->connect();
+        // Connect to LDAP
+        $saxLdap->connect();
 
-            if ($form->get('generate')->isClicked()) {
+        if ($form->get('generate')->isClicked()) {
 
-              $newPass = $saxidUser->generateRandomPassword();
-              $this->addFlash("info", "Generated service password: " . $newPass);
-              $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $newPass );
-              $status = $saxLdap->getStatus();
-              $saxLdap->disconnect();
-              $this->addFlash($status['type'], $status['message']);
+            $newPass = $saxidUser->generateRandomPassword();
+            $this->addFlash("info", "Generated service password: " . $newPass);
+            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $newPass );
+            $status = $saxLdap->getStatus();
+            $this->addFlash($status['type'], $status['message']);
 
-            }
+        }
 
-            if ($form->get('save')->isClicked() && $form->isValid()) {
-                $data = $form->getData();
+        if ($form->get('save')->isClicked() && $form->isValid()) {
 
-                // Set password
-                $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $data->getPassword() );
+            $data = $form->getData();
+            // Set password
+            $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $data->getPassword() );
+            // Get ldap-status
+            $status = $saxLdap->getStatus();
+            // Add status message to Symfony flashbag
+            $this->addFlash($status['type'], $status['message']);
 
-                // Get status
-                $status = $saxLdap->getStatus();
+            return $this->redirectToRoute('saxid_ldap_proxy_password');
+        }
 
-                // Close connection
-                $saxLdap->disconnect();
-
-                // Add status message to Symfony flashbag
-                $this->addFlash($status['type'], $status['message']);
-
-                return $this->redirectToRoute('saxid_ldap_proxy_password');
-              }
+        // Close connection
+        $saxLdap->disconnect();
 
         return $this->render('SaxidLdapProxyBundle::password.html.twig', array(
             'hpcform' => $form->createView(),

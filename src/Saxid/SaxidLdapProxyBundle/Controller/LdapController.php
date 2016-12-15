@@ -42,8 +42,8 @@ class LdapController extends Controller
 
             $slp->connect();
 
-            $data = $slp->getUserData("uid=" . $saxidUser->getUid());
-            dump($data);
+            $ldapuser = $slp->getLdapUser("uid=" . $saxidUser->getUid());
+
             $status = $slp->getStatus();
 
             $slp->disconnect();
@@ -54,6 +54,6 @@ class LdapController extends Controller
             );
         }
 
-        return $this->render('SaxidLdapProxyBundle::user.html.twig', array('data' => $data));
+        return $this->render('SaxidLdapProxyBundle::user.html.twig', array('ldapuser' => $ldapuser));
     }
 }

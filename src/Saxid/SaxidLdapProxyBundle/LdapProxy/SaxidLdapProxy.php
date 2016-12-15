@@ -2,6 +2,8 @@
 
 namespace Saxid\SaxidLdapProxyBundle\LdapProxy;
 
+use Saxid\SaxidLdapProxyBundle\Security\User;
+
 /**
  * Fetches data from an SAML2 IdP and passes them through to an LDAP server
  */
@@ -312,6 +314,20 @@ class SaxidLdapProxy
         $attributes = ldap_get_attributes($this->ldapConnection, $entry);
 
         return $attributes;
+    }
+
+    /**
+     * Gets an ldap-user of class-type LdapUser
+     *
+     * @param string $seachParam search paramter of form: 'uid=norman'
+     *
+     * @return class Return LdapUser-Class
+     */
+    public function getLdapUser($seachParam)
+    {
+        $attrs = $this->getUserData($seachParam);
+
+        return new LdapUser($attrs);
     }
 
     /**
