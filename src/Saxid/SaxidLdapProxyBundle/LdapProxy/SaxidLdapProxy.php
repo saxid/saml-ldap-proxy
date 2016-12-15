@@ -260,7 +260,7 @@ class SaxidLdapProxy
      * @param string $seachParam search paramter in following form: 'uid=norman'
      * @param array $returnAttributesFilter Filters the return values, default everything is shown. Example: array("dn, sn, mail, ...")
      *
-     * @return array Return array with userdata from user
+     * @return array Return an array with userdata of a ldapuser
      */
     public function getUserData($seachParam, $returnAttributesFilter = array("*"))
     {

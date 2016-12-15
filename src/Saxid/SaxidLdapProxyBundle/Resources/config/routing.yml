@@ -1,15 +1,18 @@
-saxid_ldap_proxy_homepage:
+saxid_ldap_proxy_tos:
     path:     /
+    defaults: { _controller: SaxidLdapProxyBundle:Default:start }
+
+saxid_ldap_proxy_homepage:
+    path:     /slp
     defaults: { _controller: SaxidLdapProxyBundle:Default:index }
 
 saxid_ldap_proxy_user:
-    path: /user
+    path:     /user
     defaults:
         _controller: SaxidLdapProxyBundle:Ldap:readuser
-        template:    SaxidLdapProxyBundle::user.html.twig
 
 saxid_ldap_proxy_imprint:
-    path: /imprint
+    path:     /imprint
     defaults:
         _controller: FrameworkBundle:Template:template
         template:    SaxidLdapProxyBundle:Static:imprint.html.twig
@@ -21,8 +24,7 @@ saxid_ldap_proxy_password:
     path: /chpwd
     defaults:
         _controller: SaxidLdapProxyBundle:Password:new
-        template:    SaxidLdapProxyBundle:password.html.twig
-        
+
 saxid_ldap_proxy_testAPI:
     path: /testAPI
     defaults:

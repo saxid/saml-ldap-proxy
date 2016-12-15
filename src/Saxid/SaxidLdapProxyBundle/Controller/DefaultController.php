@@ -97,6 +97,7 @@ class DefaultController extends Controller
 
         // Add status message to Symfony flashbag
         $this->addFlash($status['type'], $status['message']);
+        // set init user check and write to do this only once per page load
         $session->set('status', 'DONE');
 
         return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
@@ -112,18 +113,42 @@ class DefaultController extends Controller
             {
                 $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP');
             }
-
-            if ($form->get('agree')->isClicked())
-            {
-
-              return $this->forward('SaxidLdapProxyBundle:Default:index.html.twig');
-
-            }
-            elseif ($form->get('decline')->isClicked())
-            {
-                // Logout
-                logout_path();
-            }
+            return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
         }
+
+        $form = $this->createFormBuilder()
+            ->add('ok', SubmitType::class, array(
+                'label' => 'Zustimmen und Weiter',
+                'attr' => array(
+                  'class' => 'btn btn-default'
+                )
+            ))
+            ->add('cancel', SubmitType::class, array(
+                'label' => 'Ablehnen und Verlassen',
+                'attr' => array(
+                  'class' => 'btn btn-primary'
+                )
+            ))
+            ->getForm()
+        ;
+
+        $form->handleRequest($request);
+
+        if ($form->get('ok')->isClicked())
+        {
+          $session->set('status', 'DONE');
+          return $this->redirectToRoute('saxid_ldap_proxy_homepage');
+
+        }
+        elseif ($form->get('cancel')->isClicked())
+        {
+          // Logout
+          return $this->redirectToRoute('logout');
+        }
+
+        return $this->render('SaxidLdapProxyBundle:Default:termsofservice.html.twig', array(
+            'tosform' => $form->createView(),
+        ));
+
     }
 }

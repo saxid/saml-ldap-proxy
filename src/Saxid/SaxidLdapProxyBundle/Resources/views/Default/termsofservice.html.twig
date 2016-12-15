@@ -1,0 +1,39 @@
+{% extends "SaxidLdapProxyBundle::base.html.twig" %}
+
+{% block body %}
+	<div class="page-header">
+		<h1>Terms of Service</h1>
+	</div>
+
+	<div class="media">
+		<div class="media-left media-middle">
+			<a href="http://www.tu-dresden.de/zih">
+				<img class="media-object" src="img/zih-logo-70x70.png" alt="Zentrum für Informationsdienste und Hochleistungsrechnen (ZIH)">
+			</a>
+		</div>
+		<div class="media-body">
+			<p>
+				Terms of Service ... do you agree:
+
+				for using HPC at TU Dresden, your usercredetials from IdP will be stored. They whon't be analysed or given to third party.
+
+				With clicking ok you agree to this terms of service. Otherwise please click cancel.
+
+				Thank You!
+
+				{{ form_start(tosform) }}
+				    {{ form_errors(tosform) }}
+
+				    {{ form_widget(tosform.ok) }}
+
+				    {{ form_widget(tosform.cancel) }}
+
+				{{ form_end(tosform) }}
+
+			</p>
+		</div>
+	</div>
+
+
+
+{% endblock body %}

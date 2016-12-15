@@ -1,6 +1,3 @@
 saxid_ldap_proxy:
     resource: "@SaxidLdapProxyBundle/Resources/config/routing.yml"
     prefix:   /
-
-logout:
-    path: /logout
