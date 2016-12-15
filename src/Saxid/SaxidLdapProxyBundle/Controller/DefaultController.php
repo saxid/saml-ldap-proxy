@@ -10,7 +10,7 @@ class DefaultController extends Controller
 {
 
     public function indexAction(Request $request)
-    {
+    {       
         $session = $request->getSession();
 
         if ($session->get('status'))
@@ -83,7 +83,7 @@ class DefaultController extends Controller
             // modify lastUserUIDNumber
             $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
 
-            //TODO
+            // generate user password
             $initialPassword = $saxidUser->generateRandomPassword();
             $this->addFlash("info", "Initial service password: " . $initialPassword);
             $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
@@ -115,28 +115,12 @@ class DefaultController extends Controller
 
             if ($form->get('agree')->isClicked())
             {
-              return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
-
-            } elseif($form->get('decline')->isClicked()){
-              // Logout
+                return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
             }
-        }
-
-    }
-
-    private function FillWithZeros($value)
-    {
-        if (count_chars($value) == 1)
-        {
-            return "00" . $value;
-        }
-        else if (count_chars($value) == 2)
-        {
-            return "0" . $value;
-        }
-        else
-        {
-            return $value;
+            elseif ($form->get('decline')->isClicked())
+            {
+                // Logout
+            }
         }
     }
 }
