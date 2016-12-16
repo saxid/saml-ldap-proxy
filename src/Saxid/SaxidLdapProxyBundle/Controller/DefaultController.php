@@ -5,6 +5,7 @@ namespace Saxid\SaxidLdapProxyBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy;
 use Symfony\Component\HttpFoundation\Request;
+use \Saxid\SaxidLdapProxyBundle\Services\SaxIDAPI;
 
 class DefaultController extends Controller
 {
@@ -87,6 +88,15 @@ class DefaultController extends Controller
             $initialPassword = $saxidUser->generateRandomPassword();
             $this->addFlash("info", "Initial service password: " . $initialPassword);
             $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
+
+            // Add user to SaxIDAPI
+            $SaxIDApiAccess = new SaxIDAPI("https://saxid-api.zih.tu-dresden.de/api/", "9fb68218567edb66a7f5ce5e2f916da89b7fc7e5");
+
+            $format = 'Y-m-d\TH:i:s\Z';
+            $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
+            $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365 + 30));
+
+            $SaxIDApiAccess->createAPIEntry($saxidUser->getEduPersonPrincipalName(), "076f2d546d034c8f923c9bb76aa37c9e", $deletionDate, $expiryDate);
         }
 
         // Get status
@@ -117,38 +127,36 @@ class DefaultController extends Controller
         }
 
         $form = $this->createFormBuilder()
-            ->add('ok', SubmitType::class, array(
-                'label' => 'Zustimmen und Weiter',
-                'attr' => array(
-                  'class' => 'btn btn-default'
-                )
-            ))
-            ->add('cancel', SubmitType::class, array(
-                'label' => 'Ablehnen und Verlassen',
-                'attr' => array(
-                  'class' => 'btn btn-primary'
-                )
-            ))
-            ->getForm()
+                ->add('ok', SubmitType::class, array(
+                    'label' => 'Zustimmen und Weiter',
+                    'attr' => array(
+                        'class' => 'btn btn-default'
+                    )
+                ))
+                ->add('cancel', SubmitType::class, array(
+                    'label' => 'Ablehnen und Verlassen',
+                    'attr' => array(
+                        'class' => 'btn btn-primary'
+                    )
+                ))
+                ->getForm()
         ;
 
         $form->handleRequest($request);
 
         if ($form->get('ok')->isClicked())
         {
-          $session->set('status', 'DONE');
-          return $this->redirectToRoute('saxid_ldap_proxy_homepage');
-
+            $session->set('status', 'DONE');
+            return $this->redirectToRoute('saxid_ldap_proxy_homepage');
         }
         elseif ($form->get('cancel')->isClicked())
         {
-          // Logout
-          return $this->redirectToRoute('logout');
+            // Logout
+            return $this->redirectToRoute('logout');
         }
 
         return $this->render('SaxidLdapProxyBundle:Default:termsofservice.html.twig', array(
-            'tosform' => $form->createView(),
+                    'tosform' => $form->createView(),
         ));
-
     }
 }
