@@ -107,7 +107,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
 
         //Generate missing attributes from IdP
-        $this->roles = array("User");
+        $this->roles = array("SAXIDUSER");
         $this->setAcademyDomain();
         $this->setAcademy();
         $this->setDisplayName($this->displayName);

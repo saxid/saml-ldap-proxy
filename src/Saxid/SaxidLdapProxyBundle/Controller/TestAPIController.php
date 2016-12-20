@@ -11,15 +11,12 @@ class TestAPIController extends Controller
 
     public function ApiAction()
     {
-        $SaxIDApiAccess = new SaxIDAPI("https://saxid-api.zih.tu-dresden.de/api/", "9fb68218567edb66a7f5ce5e2f916da89b7fc7e5");
+        $SaxIDApiAccess = $this->get('saxid_ldap_proxy.saxapi');
 
-        $format = 'Y-m-d\TH:i:s\Z';
-        $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
-        $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365 + 30));
-
-        //$SaxIDApiAccess->createAPIEntry("TUDUSER@tu-dresden.de", "076f2d546d034c8f923c9bb76aa37c9e", $deletionDate, $expiryDate);
-        $SaxIDApiAccess->getServices();
-        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig');
+        $as = $SaxIDApiAccess->getServices();
+        //json_decode($SaxIDApiAccess, true)
+        
+        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as ) );
     }
 
     //TEST

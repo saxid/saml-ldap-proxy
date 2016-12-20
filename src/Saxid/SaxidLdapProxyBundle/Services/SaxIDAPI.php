@@ -79,9 +79,9 @@ class SaxIDAPI
      * @param string $spUUID uuid for the sp in the api
      * @param string $deleteDate delete Date
      * @param string $expirationDate expiry date
-     * 
+     *
      */
-    public function createAPIEntry($eppn, $spUUID, $deleteDate, $expirationDate)
+    public function createAPIEntry($eppn, $spUUID = '076f2d546d034c8f923c9bb76aa37c9e', $deleteDate, $expirationDate)
     {
         $apiurl = $this->apiBaseURL . "res/";
         //$format = 'Y-m-d\TH:i:s\Z';

@@ -8,17 +8,17 @@
 	<div class="media">
 		<div class="media-left media-middle">
 			<a href="http://www.tu-dresden.de/zih">
-				<img class="media-object" src="img/zih-logo-70x70.png" alt="Zentrum für Informationsdienste und Hochleistungsrechnen (ZIH)">
+				<img class="media-object" src="{{ asset('bundles/saxidldapproxy/images/zih-logo-70x70.png') }}" alt="Zentrum für Informationsdienste und Hochleistungsrechnen (ZIH)">
 			</a>
 		</div>
 		<div class="media-body">
 			<p>
 				Terms of Service ... do you agree:
-
+				<br><br>
 				for using HPC at TU Dresden, your usercredetials from IdP will be stored. They whon't be analysed or given to third party.
-
+				<br>
 				With clicking ok you agree to this terms of service. Otherwise please click cancel.
-
+				<br>
 				Thank You!
 
 				{{ form_start(tosform) }}

@@ -25,6 +25,9 @@ du -h $uploadfile
 #tar uf saxidprox_depl.tar *
 if [ "$UPLOAD" = true ]; then
   echo "Deploying Archive to VM ..."
+  echo "Backing up old Content on VM"
+  echo "... creating backup"
+  ssh root@saxid.zih.tu-dresden.de /root/BackupSaxProxy.sh
   echo "... deleting old content on server"
   ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/*
   # -r recursive and -p preserve -> time...

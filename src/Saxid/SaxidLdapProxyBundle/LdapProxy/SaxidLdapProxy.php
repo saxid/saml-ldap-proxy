@@ -2,7 +2,7 @@
 
 namespace Saxid\SaxidLdapProxyBundle\LdapProxy;
 
-use Saxid\SaxidLdapProxyBundle\Security\User;
+use Saxid\SaxidLdapProxyBundle\Security\User\LdapUser;
 
 /**
  * Fetches data from an SAML2 IdP and passes them through to an LDAP server

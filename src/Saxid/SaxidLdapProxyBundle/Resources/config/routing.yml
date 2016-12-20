@@ -3,7 +3,7 @@ saxid_ldap_proxy_tos:
     defaults: { _controller: SaxidLdapProxyBundle:Default:start }
 
 saxid_ldap_proxy_homepage:
-    path:     /slp
+    path:     /home
     defaults: { _controller: SaxidLdapProxyBundle:Default:index }
 
 saxid_ldap_proxy_user:
@@ -29,4 +29,3 @@ saxid_ldap_proxy_testAPI:
     path: /testAPI
     defaults:
         _controller: SaxidLdapProxyBundle:TestAPI:Api
-        template:    SaxidLdapProxyBundle:testAPI.html.twig

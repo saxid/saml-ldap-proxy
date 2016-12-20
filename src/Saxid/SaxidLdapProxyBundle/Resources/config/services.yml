@@ -5,7 +5,11 @@ services:
     saxid_ldap_proxy.hpc:
         class:      Saxid\SaxidLdapProxyBundle\Services\SaxidServiceHPC
 
-
     saxid_ldap_proxy.pwdm:
         class:      Saxid\SaxidLdapProxyBundle\Security\Password\SaxidPasswordManager
         arguments:
+
+    saxid_ldap_proxy.saxapi:
+       class:       Saxid\SaxidLdapProxyBundle\Services\SaxIDAPI
+    #   arguments: [ '@security.context' ]
+       arguments: [ '%api_baseURL%', '%api_auth_Token%' ]

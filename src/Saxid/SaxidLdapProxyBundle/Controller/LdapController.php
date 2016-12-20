@@ -3,57 +3,73 @@
 namespace Saxid\SaxidLdapProxyBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser;
 use Saxid\SaxidLdapProxyBundle\Exception\UserIsNoMemberOfSaxonAcademyException;
 
 class LdapController extends Controller
 {
-    public function adduserAction()
+    public function adduserAction(Request $request)
     {
-        if(!$this->getUser()->isFromSaxonAcademy()) {
-            $this->addFlash(
-                'danger',
-                'You have to be a member of a Saxon academy in order to persist User to LDAP'
-            );
-        } else {
-            $slp = $this->get('saxid_ldap_proxy');
-            $status = $slp->getStatus();
+      $session = $request->getSession();
+      if ($session->get('tosyes') != 'DONE' )
+      {
+        // redirect to the "homepage" route
+        return $this->redirectToRoute('saxid_ldap_proxy_tos');
+      }
 
-            $this->addFlash(
-                $status['type'],
-                $status['message']
-            );
-        }
+      if(!$this->getUser()->isFromSaxonAcademy()) {
+          $this->addFlash(
+              'danger',
+              'You have to be a member of a Saxon academy in order to persist User to LDAP'
+          );
+      } else {
+          $slp = $this->get('saxid_ldap_proxy');
+          $status = $slp->getStatus();
 
-        return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+          $this->addFlash(
+              $status['type'],
+              $status['message']
+          );
+      }
+
+      return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
     }
 
-    public function readuserAction()
+    public function readuserAction(Request $request)
     {
-        if(!$this->getUser()->isFromSaxonAcademy()) {
-            $this->addFlash(
-                'danger',
-                'You have to be a member of a Saxon academy in order to persist User to LDAP'
-            );
-        } else {
-            $slp = $this->get('saxid_ldap_proxy');
+      $session = $request->getSession();
+      if ($session->get('tosyes') != 'DONE' )
+      {
+        // redirect to the "homepage" route
+        return $this->redirectToRoute('saxid_ldap_proxy_tos');
+      }
 
-            $saxidUser = $this->getUser();
+      if(!$this->getUser()->isFromSaxonAcademy()) {
+          $this->addFlash(
+              'danger',
+              'You have to be a member of a Saxon academy in order to persist User to LDAP'
+          );
+      } else {
+          $slp = $this->get('saxid_ldap_proxy');
 
-            $slp->connect();
+          $saxidUser = $this->getUser();
 
-            $ldapuser = $slp->getLdapUser("uid=" . $saxidUser->getUid());
+          $slp->connect();
 
-            $status = $slp->getStatus();
+          // gets user-data from LDAP and returns the LdapUser-Class
+          $ldapuser = $slp->getLdapUser("uid=" . $saxidUser->getUid());
 
-            $slp->disconnect();
+          $status = $slp->getStatus();
 
-            $this->addFlash(
-                $status['type'],
-                $status['message']
-            );
-        }
+          $slp->disconnect();
 
-        return $this->render('SaxidLdapProxyBundle::user.html.twig', array('ldapuser' => $ldapuser));
+          $this->addFlash(
+              $status['type'],
+              $status['message']
+          );
+      }
+
+      return $this->render('SaxidLdapProxyBundle::user.html.twig', array('ldapuser' => $ldapuser));
     }
 }
