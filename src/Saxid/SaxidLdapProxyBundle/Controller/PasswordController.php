@@ -18,7 +18,7 @@ class PasswordController extends Controller
     {
       $session = $request->getSession();
       //redirect if user didn't accept tos
-      if ($session->get('tosyes') != 'DONE' )
+      if (empty($session->get('tosyes')) && empty($session->get('Ldapuser')) )
       {
         // redirect to the "homepage" route
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
@@ -90,10 +90,12 @@ class PasswordController extends Controller
     public function newAction(Request $request)
     {
       $session = $request->getSession();
-      if ($session->get('tosyes') != 'DONE' )
+      if ( empty($session->get('tosyes')) && empty($session->get('Ldapuser')))
       {
         // redirect to the "homepage" route
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
+      } else {
+
       }
       // Get User Object
       /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */

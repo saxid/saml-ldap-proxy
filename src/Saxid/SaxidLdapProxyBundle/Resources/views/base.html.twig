@@ -47,12 +47,12 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Mein Konto <span class="caret"></span></a>
 								<ul class="dropdown-menu dropdown-menu-right" role="menu">
-									{% if app.session.get('tosyes') == 'DONE' %}
+									{% if app.session.get('tosyes') == 'DONE' or app.session.get('Ldapuser') == 1 %}
 										<li><a href="{{ path('saxid_ldap_proxy_user') }}">Meine Daten anzeigen</a></li>
 										<li><a href="{{ path('saxid_ldap_proxy_password') }}">Passwörter verwalten</a></li>
-		                <li><a href="{{ path('saxid_ldap_proxy_testAPI') }}">TestAPI</a></li>
-									{% endif %}
+		                <li class="{% if app.environment == 'prod' %}disabled{% endif %}"><a href="{{ path('saxid_ldap_proxy_testAPI') }}">TestAPI</a></li>
 									<li class="divider"></li>
+									{% endif %}
 									<!-- <li class="dropdown-header">Nav header</li> -->
 									<li><a href="{{ getLogoutURL() }}">Logout</a></li>
 								</ul>

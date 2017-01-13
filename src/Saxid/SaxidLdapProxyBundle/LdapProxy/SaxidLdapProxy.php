@@ -6,6 +6,8 @@ use Saxid\SaxidLdapProxyBundle\Security\User\LdapUser;
 
 /**
  * Fetches data from an SAML2 IdP and passes them through to an LDAP server
+ * Authors: Norman Walther (ZIH), Jan Frömberg (ZIH)
+ * Date: 2016 - 2017
  */
 class SaxidLdapProxy
 {
@@ -326,7 +328,6 @@ class SaxidLdapProxy
     public function getLdapUser($seachParam)
     {
         $attrs = $this->getUserData($seachParam);
-
         return new LdapUser($attrs);
     }
 
@@ -459,8 +460,8 @@ class SaxidLdapProxy
         $ldaplogdir = getenv('SAXIDLDAPPROXY_LOG_DIR');
         if ($ldaplogdir === false)
         {
-            //$ldaplogdir = '/var/log/www/saxid-ldap-proxy';
-            $ldaplogdir = 'C:/tmp';
+            $ldaplogdir = '/var/log/www/saxid-ldap-proxy';
+            //$ldaplogdir = 'C:/tmp';
             //C:\TMP
         }
 

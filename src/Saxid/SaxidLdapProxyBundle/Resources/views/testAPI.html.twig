@@ -2,6 +2,25 @@
 
 {% block body %}
 
-  {{ dump(apiservices) }}
+<ul>
+{% for service in apiservices %}
+ <li><code><b> {{ service.name }} </b></code></li>
+ <li><code> {{ service.realm }} </code></li>
+ <li><code> {{ service.expiry_date }} </code></li>
+ <br>
+{% endfor %}
+</ul>
+
+<hr>
+
+<ul>
+{% for res in apiresources %}
+ <li><code><b> {{ res.eppn }} </b></code></li>
+ <li><code> {{ res.added }} </code></li>
+ <li><code> {{ res.realm_idp }} </code></li>
+ <li><code> {{ res.expiry_date }} </code></li>
+ <br>
+{% endfor %}
+</ul>
 
 {% endblock body %}

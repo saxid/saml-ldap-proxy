@@ -17,15 +17,21 @@ class DefaultController extends Controller
         //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $session = $request->getSession();
+        $logger = $this->get('logger');
 
         if (!$this->getUser()->isFromSaxonAcademy())
         {
             $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP');
         }
-        return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
 
+        // redirect if TOS not yet accepted
+        if ( empty($session->get('tosyes')) )
+        {
+          // redirect to the "homepage" route
+          return $this->redirectToRoute('saxid_ldap_proxy_tos');
+        }
 
-        if ($session->get('status') != 'DONE' && $session->get('tosyes') == 'DONE')
+        if (empty($session->get('status')) && $session->get('tosyes') == 'DONE')
         {
           // Get User Object
           /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
@@ -42,6 +48,7 @@ class DefaultController extends Controller
           {
               // Modify entry
               $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
+              $logger->info('User Modified in LDAP: '. $saxLdap);
           }
           else
           {
@@ -85,7 +92,7 @@ class DefaultController extends Controller
 
               // Add
               $saxLdap->addLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
-
+              $logger->info('User Added to LDAP: '. $saxLdap);
               // modify lastUserUIDNumber
               $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
 
@@ -95,13 +102,20 @@ class DefaultController extends Controller
               $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
 
               // Add user to SaxIDAPI
-              $SaxIDApiAccess = $this->get('saxid_ldap_proxy.saxapi');
+              $sa = $this->get('saxid_ldap_proxy.saxapi');
 
               $format = 'Y-m-d\TH:i:s\Z';
               $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
               $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365 + 30));
 
-              $SaxIDApiAccess->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
+              $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), '', $deletionDate, $expiryDate);
+
+              $logger->info('API Entry Info: '. $sa);
+              //$logger->error('An error occurred');
+              //$logger->critical('I left the oven on!', array(
+                  // include extra "context" info in your logs
+              //    'cause' => 'in_hurry',
+              //));
           }
 
           // Get status
@@ -114,16 +128,30 @@ class DefaultController extends Controller
           $this->addFlash($status['type'], $status['message']);
           // set init user check and write to do this only once per page load
           $session->set('status', 'DONE');
-
-          return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
         }
+
+        return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
+
     }
 
     public function startAction(Request $request)
     {
         $session = $request->getSession();
+        //Create LDAP Access Object
+        $saxLdap = $this->get('saxid_ldap_proxy');
+        // Connect to LDAP
+        $saxLdap->connect();
 
-        if ($session->get('tosyes') == 'DONE' )
+        $userexists = $saxLdap->existsUser("uid=" . $this->getUser()->getUid());
+        // Close connection
+        $saxLdap->disconnect();
+
+        if ( !empty($userexists) ){
+          $session->set('Ldapuser', '1');
+        }
+
+        //check if user accepted TOS or User already persistend in LDAP DB
+        if ($session->get('tosyes') == 'DONE' || !empty($session->get('Ldapuser')) )
         {
             if (!$this->getUser()->isFromSaxonAcademy())
             {

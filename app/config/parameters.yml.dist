@@ -27,4 +27,4 @@ parameters:
 
     #SaxAPI Settings
     api_baseURL:      'https://saxid-api.zih.tu-dresden.de/api/'
-    api_auth_Token:       '9fb68218567edb66a7f5ce5e2f916da89b7fc7e5'
+    api_auth_Token:   '9fb68218567edb66a7f5ce5e2f916da89b7fc7e5'

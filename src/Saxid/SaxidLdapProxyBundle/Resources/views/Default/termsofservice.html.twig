@@ -2,25 +2,63 @@
 
 {% block body %}
 	<div class="page-header">
-		<h1>Terms of Service</h1>
-	</div>
-
-	<div class="media">
 		<div class="media-left media-middle">
 			<a href="http://www.tu-dresden.de/zih">
 				<img class="media-object" src="{{ asset('bundles/saxidldapproxy/images/zih-logo-70x70.png') }}" alt="Zentrum für Informationsdienste und Hochleistungsrechnen (ZIH)">
 			</a>
 		</div>
+
+		<h1>Terms of Service</h1>
+
+	</div>
+
+	<div class="media">
+
 		<div class="media-body">
+
+			<h2>Nutzungsbedingungen</h2>
+			Stand: 01. Januar 2017
+
+			<h3>Allgemeines</h3>
+			Der Dienst "HPC" wird vom ZIH der TU Dresden betrieben. Es gelten die Regeln der <a href="https://tu-dresden.de/zih/dienste/nutzungsbedingungen/benutzungsregeln_und_vorschriften" target="_blank">Benutzungsordnung des ZIH der TU Dresden</a> - insbesondere:
+			<ul>
+				<li>die Nutzung des Dienstes ist ausschließlich für Zwecke der Lehre, Forschung und des Studiums sowie für Zwecke der Universitätsbibliothek und der universitären Verwaltung zulässig.</li>
+				<li>Bestimmungen des Urheberrechts sind strikt einzuhalten.</li>
+			</ul>
+
+			<h3>Gültigkeit</h3>
+			Diese Nutzungsbedingungen gelten für den Dienst "HPC", der vom ZIH der TU Dresden betrieben wird.
+
+			<h3>Nutzungsberechtigung</h3>
+			<p>Der Dienst kann nur von registierten Personen genutzt werden. Für Mitarbeiter oder Studierende der TU Dresden erfolgt die Registrierung automatisch mit der Annahme dieser Nutzungsbedingungen. Angehörige anderer Einrichtungen werden ebenfalls automatisch mit Annahme dieser Nutzungsbedingungen automatisch registriert. Dabei wird die E-Mail-Adresse und der EPPN (Nutzerkennung der Einrichtung) übertragen und gespeichert.</p>
+
+			<p>Der Nutzer hat dafür Sorge zu tragen, dass er auf dem Loginknoten keine Daten persistiert. Ein Backup wird dafür nicht zur Verfügung gestellt.</p>
+
+			<h3>Kommunikation</h3>
+			<p>Die Kommunikation mit dem Nutzer findet über die bei der Registrierung übertragene E-Mail-Adresse statt. Der Dienst erfordert i.d.R monatliche Wartungsarbeiten, die ohne Vorankündigung durchgeführt werden.</p>
+
+			<h3>Verfügbarkeit</h3>
+			<p>Länger dauernde geplante Wartungsarbeiten werden auf der Webseite des ZIH angekündigt. Außerhalb des Wartungsfensters wird der Dienst kontinuierlich angeboten.</p>
+
+			<p>Die gespeicherten Daten des Servers werden nur komplett mit dem Ziel Desaster Recovery gesichert. Eine Widerherstellung einzelner Dateien ist nicht vorgesehen.</p>
+
+			<h3>Probleme und Reaktionszeiten</h3>
+			<p>Bei Fragen, Problemen oder Störungen wenden Sie sich bitte grundsätzlich an den ServiceDesk des ZIH. Bitte beschreiben Sie das Problem so exakt wie möglich. Auf diese Weise wird eine schnelle Zuordnung an die zuständigen Bearbeiter unterstützt.</p>
+
+			<p>Während der regulären Arbeitszeiten können Sie mit einer Reaktion auf eine Problemmeldung am selben Arbeitstag, spätestens am darauffolgenden Arbeitstag rechnen. Dabei wird in Abhängigkeit von der Komplexität des Problems entweder sofort für eine Lösung gesorgt, oder ein Weg aufgezeigt, wie es zu einer Problemlösung kommen kann.</p>
+
+			<hr>
+
 			<p>
-				Terms of Service ... do you agree:
+				... do you agree:
 				<br><br>
-				for using HPC at TU Dresden, your usercredetials from IdP will be stored. They whon't be analysed or given to third party.
+				for using HPC-Service at TU Dresden your Usercredetials provided by your Identityprovider (which you already accepted) will be stored for authetication and authorization purposes. They won't be analysed or given to third party.
 				<br>
-				With clicking ok you agree to this terms of service. Otherwise please click cancel.
+				By clicking 'OK' you agree to this terms of service. Otherwise please click cancel - you are not able to use this service and will be logged out.
 				<br>
 				Thank You!
-
+			</p>
+			<p>
 				{{ form_start(tosform) }}
 				    {{ form_errors(tosform) }}
 
@@ -29,8 +67,8 @@
 				    {{ form_widget(tosform.cancel) }}
 
 				{{ form_end(tosform) }}
-
 			</p>
+
 		</div>
 	</div>
 

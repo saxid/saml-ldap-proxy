@@ -7,21 +7,21 @@ namespace Saxid\SaxidLdapProxyBundle\Security\User;
  */
 class LdapUser
 {
-    protected $displayName;
-    protected $cn;
-    protected $sn;
-    protected $uid;
-    protected $uidNumber;
-    protected $gidNumber;
-    protected $mail;
-    protected $userPassword;
-    protected $o;
-    protected $ou;
-    protected $loginShell;
-    protected $homeDirectory;
-    protected $userServices;
-    protected $eduPersonPrincipalName;
-    protected $eduPersonEntitlement;
+    protected $displayName = "no Data";
+    protected $cn = "no Data";
+    protected $sn = "no Data";
+    protected $uid = "no Data";
+    protected $uidNumber = "no Data";
+    protected $gidNumber = "no Data";
+    protected $mail = "no Data";
+    protected $userPassword = "no Data";
+    protected $o = "no Data";
+    protected $ou = "no Data";
+    protected $loginShell = "no Data";
+    protected $homeDirectory = "no Data";
+    protected $userServices = "no Data";
+    protected $eduPersonPrincipalName = "no Data";
+    protected $eduPersonEntitlement = "no Data";
 //    protected $organizationalUnitName;
 //    protected $eduPersonAffiliation;
 //    protected $eduPersonPrimaryAffiliation;
@@ -29,24 +29,37 @@ class LdapUser
 //    protected $eduPersonOrgUnitDN;
 
     /**
+     * Initialize an emtpy user object
+     */
+    public function __construct(array $attributes)
+    {
+      if( !empty($attributes) ) {
+        // maps the LDAP Attrs to the class attrs
+        foreach ($attributes as $key => $value)
+        {
+            if (count($value) > 1)
+            {
+                $value = $value[0];
+            }
+
+            if (property_exists($this, $key))
+            {
+                $this->{$key} = $value;
+            }
+        }
+      }
+    }
+
+    /**
      * Initialize the user object with the values from LDAP
+     * this is not provided by static use
      * @param array $attributes Attributes from LDAP
      */
-    public function __construct($attributes)
+    public static function withData(array $attributes)
     {
-      // maps the LDAP Attrs to the class attrs
-      foreach ($attributes as $key => $value)
-      {
-          if (count($value) > 1)
-          {
-              $value = $value[0];
-          }
 
-          if (property_exists($this, $key))
-          {
-              $this->{$key} = $value;
-          }
-      }
+      echo "not yet implemented";
+
     }
 
     /**

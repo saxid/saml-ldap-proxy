@@ -11,12 +11,12 @@ class TestAPIController extends Controller
 
     public function ApiAction()
     {
-        $SaxIDApiAccess = $this->get('saxid_ldap_proxy.saxapi');
+        $sapi = $this->get('saxid_ldap_proxy.saxapi');
 
-        $as = $SaxIDApiAccess->getServices();
-        //json_decode($SaxIDApiAccess, true)
-        
-        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as ) );
+        $as = $sapi->getServices();
+        $ar = $sapi->getRessources();
+
+        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as, 'apiresources' => $ar ) );
     }
 
     //TEST
@@ -32,7 +32,7 @@ class TestAPIController extends Controller
         if (!$result = curl_exec($ch))
         {
             print "Error: </br>";
-            var_dump(curl_error($ch));
+            dump(curl_error($ch));
             //trigger_error(curl_error($ch));
         }
 
@@ -40,6 +40,6 @@ class TestAPIController extends Controller
 
         $myVar = json_decode($result);
         print "Result: </br>";
-        var_dump($myVar);
+        dump($myVar);
     }
 }

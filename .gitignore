@@ -15,6 +15,7 @@ saxidprox_depl.tgz
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
+/doc/
 
 # Created by https://www.gitignore.io/api/composer,symfony,netbeans,sublimetext,macos,vim,linux,windows,emacs,eclipse,osx
 
