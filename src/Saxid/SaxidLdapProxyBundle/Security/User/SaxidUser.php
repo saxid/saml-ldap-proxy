@@ -36,6 +36,8 @@ class SaxidUser implements UserInterface, EquatableInterface
         'tu-dresden.de' => 'Technische Universität Dresden',
         'tu-chemnitz.de' => 'Technische Universität Chemnitz',
         'tu-freiberg.de' => 'Technische Universität Freiberg',
+        'uni-leipzig.de' => 'Universität Leipzig',
+        'htw-dresden.de' => 'Hochschule für Technik und Wirtschaft Dresden',
             // 'rnd.feide.no'  => 'Feide NO',
     );
     private static $attributeMapping = array(// SAML 2
@@ -551,9 +553,9 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     /**
      * TODO: Adapt this Function to fit your local IDM needs
-     * check for local IDM uidnumber collision
+     * check for local IDM uidnumber collision.
+     * Unix UidNumber max length 2.147.483.648
      */
-    //UidNumber max length 2.147.483.648
     public function generateSaxIDUIDNumber($uidNumberPrefix, $uidNumber)
     {
         if ($this->isFromSaxonAcademy())
@@ -607,7 +609,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['objectclass'][] = 'saxID';
 
         // Set basic user information
-        //$data['givenName'] = $this->getGivenName();
+        $data['givenName'] = $this->getGivenName();
         $data['sn'] = $this->getSurname();
         $data['cn'] = $this->getCommonName();
         $data['mail'] = $this->getEmail();
@@ -652,7 +654,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
     }
 
-    public function dump()
+    public function mydump()
     {
         print_r(get_object_vars($this));
     }

@@ -32,7 +32,7 @@ class TestAPIController extends Controller
         if (!$result = curl_exec($ch))
         {
             print "Error: </br>";
-            dump(curl_error($ch));
+            //dump(curl_error($ch));
             //trigger_error(curl_error($ch));
         }
 
@@ -40,6 +40,6 @@ class TestAPIController extends Controller
 
         $myVar = json_decode($result);
         print "Result: </br>";
-        dump($myVar);
+        //dump($myVar);
     }
 }

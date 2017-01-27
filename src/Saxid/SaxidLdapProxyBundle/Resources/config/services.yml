@@ -12,4 +12,4 @@ services:
     saxid_ldap_proxy.saxapi:
        class:       Saxid\SaxidLdapProxyBundle\Services\SaxIDAPI
     #   arguments: [ '@security.context' ]
-       arguments: [ '%api_baseURL%', '%api_auth_Token%' ]
+       arguments: [ '%api_baseURL%', '%api_auth_Token%', '%api_sp_UUID%', '1234', '@logger' ]

@@ -3,6 +3,7 @@
 # Deploy Script
 # Zipping and Uploading Symfony Contents to Webserver. Setting up Owner, clearing cache
 # an installing Assets with symlink.
+# TODO: make host variable for easy deployment
 #
 # Author: Jan Frömberg
 # Date:   Mai 2016
@@ -43,12 +44,17 @@ if [ "$UPLOAD" = true ]; then
   echo "... set owner to wwwrun:www"
   ssh root@saxid.zih.tu-dresden.de chown -R wwwrun:www /srv/www/htdocs/saxid-ldap-proxy
   ssh root@saxid.zih.tu-dresden.de chmod u+x /srv/www/htdocs/saxid-ldap-proxy/app/console
-  echo "... removing logs and cache"
+  echo "... removing Logs and Cache"
   ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/app/logs/*
   ssh root@saxid.zih.tu-dresden.de rm -rf /srv/www/htdocs/saxid-ldap-proxy/app/cache/*
-  echo "... installing assets & clearing cache for prod + setting user wwwrun:www"
+  #echo "... installing Server Certificate for SimpleSAML"
+  #ssh root@saxid.zih.tu-dresden.de mkdir /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert
+  #ssh root@saxid.zih.tu-dresden.de cp /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.nocrypt.key.pem /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert/saml.pem.key
+  #ssh root@saxid.zih.tu-dresden.de cp /etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert/saml.crt
+  echo "... installing assets & clearing cache for prod,dev + setting user to wwwrun:www"
   ssh root@saxid.zih.tu-dresden.de php /srv/www/htdocs/saxid-ldap-proxy/app/console assets:install --symlink -- /srv/www/htdocs/saxid-ldap-proxy/web
   ssh root@saxid.zih.tu-dresden.de php /srv/www/htdocs/saxid-ldap-proxy/app/console cache:clear --env=prod
+  ssh root@saxid.zih.tu-dresden.de php /srv/www/htdocs/saxid-ldap-proxy/app/console cache:clear --env=dev
   ssh root@saxid.zih.tu-dresden.de chown -R wwwrun:www /srv/www/htdocs/saxid-ldap-proxy/
 
   rm -f $uploadfile

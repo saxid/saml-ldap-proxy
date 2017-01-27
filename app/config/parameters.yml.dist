@@ -19,12 +19,13 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # LDAP server settings
-    ldap_host:         'ldap://141.76.16.147'
+    ldap_host:         'ldap://ip.of.ldap.server'
     ldap_port:         389
     ldap_user:         'cn=admin,dc=sax-id,dc=de'
-    ldap_pass:         saxidsaxid
+    ldap_pass:         theldappass
     ldap_baseDN:       'dc=sax-id,dc=de'
 
     #SaxAPI Settings
-    api_baseURL:      'https://saxid-api.zih.tu-dresden.de/api/'
-    api_auth_Token:   '9fb68218567edb66a7f5ce5e2f916da89b7fc7e5'
+    api_baseURL:      'https://fqdn/api/'
+    api_auth_Token:   'yourauthtoken'
+    api_sp_UUID:      'yourspuuid'

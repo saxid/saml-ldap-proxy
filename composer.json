@@ -11,6 +11,10 @@
         {
             "name": "Jan Frömberg",
             "email": "jan.froemberg@tu-dresden.de"
+        },
+        {
+            "name": "Norman Walther",
+            "email": "norman.walther@tu-dresden.de"
         }
     ],
     "autoload": {
@@ -18,7 +22,8 @@
     },
     "require": {
         "php": ">=5.3.9",
-        "symfony/symfony": "2.8.*",
+        "symfony/symfony": "2.8.15",
+        "twig/twig": "1.28.2",
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.4",
@@ -28,7 +33,8 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "sax_id/simplesamlphp-bundle": "dev-master@dev"
+        "sax_id/simplesamlphp-bundle": "dev-master@dev",
+        "squizlabs/php_codesniffer": "^2.7"
     },
     "repositories": [
         {

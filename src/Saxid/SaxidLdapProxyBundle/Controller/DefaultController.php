@@ -48,7 +48,7 @@ class DefaultController extends Controller
           {
               // Modify entry
               $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
-              $logger->info('User Modified in LDAP: '. $saxLdap);
+              $logger->info('User Modified in LDAP: '. $saxidUser->getUid());
           }
           else
           {
@@ -90,9 +90,9 @@ class DefaultController extends Controller
                   }
               }
 
-              // Add
+              // Add user to ldap
               $saxLdap->addLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
-              $logger->info('User Added to LDAP: '. $saxLdap);
+              $logger->info('User Added to LDAP: '. $saxidUser->getUid());
               // modify lastUserUIDNumber
               $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
 
@@ -108,9 +108,9 @@ class DefaultController extends Controller
               $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
               $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365 + 30));
 
-              $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), '', $deletionDate, $expiryDate);
+              $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
 
-              $logger->info('API Entry Info: '. $sa);
+              $logger->info('API Entry Info for user: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
               //$logger->error('An error occurred');
               //$logger->critical('I left the oven on!', array(
                   // include extra "context" info in your logs

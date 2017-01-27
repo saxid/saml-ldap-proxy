@@ -15,7 +15,7 @@ $config = array(
     // and Shibboleth 1.3 IdPs.
     'saxid-ldap-proxy' => array(
         'saml:SP',
-        'privatekey' => 'saml.pem',
+        'privatekey' => 'saml.pem.key',
         'certificate' => 'saml.crt',
 
         // The entity ID of this SP.

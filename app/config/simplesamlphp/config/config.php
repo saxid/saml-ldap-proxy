@@ -5,8 +5,8 @@
  */
 
 $metadatadir = getenv('SIMPLESAMLPHP_METADATA_DIR');
-$certdir = getenv('SIMPLESAMLPHP_CERT_DIR');
-$logdir = getenv('SIMPLESAMLPHP_LOG_DIR');
+//$certdir = getenv('SIMPLESAMLPHP_CERT_DIR');
+//$logdir = getenv('SIMPLESAMLPHP_LOG_DIR');
 
 $config = array(
 
@@ -27,7 +27,7 @@ $config = array(
      */
     'baseurlpath' => 'simplesamlphp/www/',
     'certdir' => '/srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert',
-    'loggingdir' => 'log/',
+    'loggingdir' => '/srv/www/htdocs/saxid-ldap-proxy/app/logs/simplesamlphp',
     'datadir' => 'data/',
 
     /*
@@ -125,7 +125,7 @@ $config = array(
      * Options: [syslog,file,errorlog]
      *
      */
-    'logging.level' => SimpleSAML_Logger::DEBUG,
+    'logging.level' => SimpleSAML_Logger::NOTICE,
     'logging.handler' => 'syslog',
 
     /*
