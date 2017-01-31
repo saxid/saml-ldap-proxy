@@ -38,6 +38,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         'tu-freiberg.de' => 'Technische Universität Freiberg',
         'uni-leipzig.de' => 'Universität Leipzig',
         'htw-dresden.de' => 'Hochschule für Technik und Wirtschaft Dresden',
+        'hs-mittweida.de' => 'Hochschule Mittweida (FH)',
             // 'rnd.feide.no'  => 'Feide NO',
     );
     private static $attributeMapping = array(// SAML 2

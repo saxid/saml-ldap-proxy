@@ -75,8 +75,10 @@ class CleanupUsersCommand extends ContainerAwareCommand
 
         //$output->writeln('--- expired api users ---');
         //dump($expiredusers);
+        $logger->info(print_r($expiredusers));
         //$output->writeln('--- deletion marked api users ---');
         //dump($dmusers);
+        $logger->info(print_r($dmusers));
 
         // filter for eppn from api array
         unset($value);
@@ -99,6 +101,7 @@ class CleanupUsersCommand extends ContainerAwareCommand
         //$output->writeln('<info>Array Diff api vs ldap - remove entries from ldap data</info>');
         $diffresult = array_diff($tmparr2, $tmparr);
         //dump($diffresult);
+        $logger->info(print_r($diffresult));
 
         // merge diffresult (no api entry) with deletionmarked from api
         $deleteusers = array_merge($diffresult, $dmusers);
@@ -114,7 +117,18 @@ class CleanupUsersCommand extends ContainerAwareCommand
           }
         }
 
-        $output->writeln('<info>DN for users to delete</info>');
+        //get UUID from API to delete
+        // unset($value); unset($v1);
+        // $uuidtodel = [];
+        // foreach ($deleteusers as $key => $value) {
+        //   foreach ($apidata as $k1 => $v1) {
+        //     if($value === $v1["eppn"]) {
+        //       $uuidtodel[$key] = $v1["uuid"];
+        //     }
+        //   }
+        // }
+
+        $output->writeln('<info>DN / UUID for users to delete</info>');
         //dump($dntodel);
 
         //delete data from resultset
@@ -122,6 +136,7 @@ class CleanupUsersCommand extends ContainerAwareCommand
         foreach ($dntodel as $dn){
           $sldap->deleteLDAPObject($dn);
           $output->writeln('user ' . $dn . ' deleted from ldap...');
+          $output->writeln('<warning>Do something with the SSH Key of the user on Login-Node!</warning>');
         }
         $sldap->disconnect();
 
@@ -146,6 +161,7 @@ class CleanupUsersCommand extends ContainerAwareCommand
           $password = substr(str_shuffle($chars), 0, 16);
           $sldap->setUserPassword( $dn1, $password );
           $output->writeln('... pass for user ' . $dn1 . ' changed in ldap ...');
+          $output->writeln('Do something with the SSH Key of the user.');
         }
         $sldap->disconnect();
 

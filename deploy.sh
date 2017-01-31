@@ -15,7 +15,7 @@ else
     UPLOAD=false
 fi
 
-uploadfile="saxidprox_depl.tgz"
+uploadfile="saxidprox_depl_tmp.tgz"
 
 echo "Creating Archive ..."
 rm -f $uploadfile
