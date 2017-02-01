@@ -49,6 +49,7 @@ class DefaultController extends Controller
               // Modify entry
               $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
               $logger->info('User Modified in LDAP: '. $saxidUser->getUid());
+              $this->addFlash('info', 'Willkommen zurück' . $saxidUser->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert.');
           }
           else
           {
@@ -119,13 +120,14 @@ class DefaultController extends Controller
           }
 
           // Get status
-          $status = $saxLdap->getStatus();
+          //$status = $saxLdap->getStatus();
 
           // Close connection
           $saxLdap->disconnect();
 
           // Add status message to Symfony flashbag
-          $this->addFlash($status['type'], $status['message']);
+          //$this->addFlash($status['type'], $status['message']);
+          $this->addFlash('info', 'User Attribute vom Identityprovider erfolgreich übertragen.');
           // set init user check and write to do this only once per page load
           $session->set('status', 'DONE');
         }

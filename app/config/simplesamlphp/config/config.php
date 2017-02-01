@@ -80,7 +80,7 @@ $config = array(
      * You can also put a hash here; run "bin/pwgen.php" to generate one. saxidsaxid
      */
     'auth.adminpassword' => '{SSHA256}krLAg6Kb4HeBq5gBmM0icWmNin83iOpWoGUcc+7EnCnqV9lCRS/Q7g==',
-    'admin.protectindexpage' => false,
+    'admin.protectindexpage' => true,
     'admin.protectmetadata' => false,
 
     /**
@@ -355,10 +355,13 @@ $config = array(
     /*
      * Languages available, RTL languages, and what language is default
      */
+    // 'language.available' => array(
+    //     'en', 'no', 'nn', 'se', 'da', 'de', 'sv', 'fi', 'es', 'fr', 'it', 'nl', 'lb', 'cs',
+    //     'sl', 'lt', 'hr', 'hu', 'pl', 'pt', 'pt-br', 'tr', 'ja', 'zh', 'zh-tw', 'ru', 'et',
+    //     'he', 'id', 'sr', 'lv', 'ro', 'eu'
+    // ),
     'language.available' => array(
-        'en', 'no', 'nn', 'se', 'da', 'de', 'sv', 'fi', 'es', 'fr', 'it', 'nl', 'lb', 'cs',
-        'sl', 'lt', 'hr', 'hu', 'pl', 'pt', 'pt-br', 'tr', 'ja', 'zh', 'zh-tw', 'ru', 'et',
-        'he', 'id', 'sr', 'lv', 'ro', 'eu'
+        'en', 'de', 'es', 'fr', 'it'
     ),
     'language.rtl' => array('ar', 'dv', 'fa', 'ur', 'he'),
     'language.default' => 'en',

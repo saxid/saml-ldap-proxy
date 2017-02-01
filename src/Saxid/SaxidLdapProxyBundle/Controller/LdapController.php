@@ -66,7 +66,7 @@ class LdapController extends Controller
 
           $slp->disconnect();
 
-          $this->addFlash( "INFO", "User loaded successfully from LDAP."
+          $this->addFlash( "info", "User loaded successfully from Database and is shown below."
               //$status['type'],
               //$status['message']
           );

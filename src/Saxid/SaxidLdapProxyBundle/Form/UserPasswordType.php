@@ -22,14 +22,14 @@ class UserPasswordType extends AbstractType
               'second_options' => array('label' => 'Passwort wiederholen')
             ))
             ->add('save', SubmitType::class, array(
-                'label' => 'Password ändern',
+                'label' => 'Passwort ändern',
                 'attr' => array(
                   'class' => 'btn btn-primary'
                 )
             ))
             ->add('generate', SubmitType::class, array(
                 'validation_groups' => false,
-                'label' => 'Password erzeugen',
+                'label' => 'Passwort erzeugen',
                 'attr' => array(
                   'class' => 'btn btn-default'
                 )

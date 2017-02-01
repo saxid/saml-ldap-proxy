@@ -76,13 +76,14 @@ class PasswordController extends Controller
       $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $passwordToChange);
 
       // Get status
-      $status = $saxLdap->getStatus();
+      //$status = $saxLdap->getStatus();
 
       // Close connection
       $saxLdap->disconnect();
 
       // Add status message to Symfony flashbag
-      $this->addFlash($status['type'], $status['message']);
+      //$this->addFlash($status['type'], $status['message']);
+      $this->addFlash("info", "Password changed!");
 
       return $this->render('SaxidLdapProxyBundle::password.html.twig');
     }
@@ -117,9 +118,8 @@ class PasswordController extends Controller
           $newPass = $saxidUser->generateRandomPassword();
           $this->addFlash("info", "Generated service password: " . $newPass);
           $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $newPass );
-          $status = $saxLdap->getStatus();
-          $this->addFlash($status['type'], $status['message']);
-
+          //$status = $saxLdap->getStatus();
+          //$this->addFlash($status['type'], $status['message']);
       }
 
       if ($form->get('save')->isClicked() && $form->isValid()) {
@@ -130,7 +130,8 @@ class PasswordController extends Controller
           // Get ldap-status
           $status = $saxLdap->getStatus();
           // Add status message to Symfony flashbag
-          $this->addFlash($status['type'], $status['message']);
+          //$this->addFlash($status['type'], $status['message']);
+          $this->addFlash("info", "Passwort geändert!");
 
           return $this->redirectToRoute('saxid_ldap_proxy_password');
       }

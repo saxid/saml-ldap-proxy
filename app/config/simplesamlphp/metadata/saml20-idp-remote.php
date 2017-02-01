@@ -26,7 +26,7 @@
 
 $metadata['https://idp3-test.tu-dresden.de/idp/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP TU Dresden (Test v3)',
+		'de' => 'TU Dresden (Test v3)',
 	),
 	'description'          => 'Dies ist der v3 Test-Shibboleth-IdP der Technischen Universität Dresden.',
 	'SingleSignOnService'  => 'https://idp3-test.tu-dresden.de/idp/profile/SAML2/Redirect/SSO',
@@ -35,43 +35,43 @@ $metadata['https://idp3-test.tu-dresden.de/idp/shibboleth'] = array(
 
 $metadata['https://idp2.tu-dresden.de/idp/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP TU Dresden (TUD)',
+		'de' => 'TU Dresden (TUD)',
 	),
-	'description'          => 'Technischen Universität Dresden.',
+	'description'          => 'Technische Universität Dresden.',
 	'SingleSignOnService'  => 'https://idp2.tu-dresden.de/idp/profile/SAML2/Redirect/SSO',
 	'certData'             => 'MIIG/DCCBeSgAwIBAgIHGRazdg6GdzANBgkqhkiG9w0BAQsFADCBhTELMAkGA1UE BhMCREUxKDAmBgNVBAoTH1RlY2huaXNjaGUgVW5pdmVyc2l0YWV0IERyZXNkZW4x DDAKBgNVBAsTA1pJSDEcMBoGA1UEAxMTVFUgRHJlc2RlbiBDQSAtIEcwMjEgMB4G CSqGSIb3DQEJARYRcGtpQHR1LWRyZXNkZW4uZGUwHhcNMTUwMzA0MTY0MjE0WhcN MTgwMzAzMTY0MjE0WjCBhjELMAkGA1UEBhMCREUxEDAOBgNVBAgMB1NhY2hzZW4x EDAOBgNVBAcMB0RyZXNkZW4xKDAmBgNVBAoMH1RlY2huaXNjaGUgVW5pdmVyc2l0 YWV0IERyZXNkZW4xDDAKBgNVBAsMA1pJSDEbMBkGA1UEAwwSaWRwMi50dS1kcmVz ZGVuLmRlMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxz7IlP0oGS/K NeBScDSmY3AFiHTr9I2olxitDok2ak7IoxKb2HcyGlOGloHdhC2kXzrMwU4jDcwe WWW7ri3RM+6lkr/j4hR7VFoSq11+adRGRxKH/J5QvTxT/6myfkjglzzEEpgwFz73 OJ+q4mHHUpT6cGleQssjCvB7rU9HqqEy/CL22cesZt1lzk0WnGjkJ9dTrZYxil/2 uwMf8jXGIsgaekUT2ZRgXm7B7xpU4SpXt01yDIa4b0FhiFTkIglx/sDF9DbCg98S cNMCwuNYd6VNLSBygPkr81LEWUnlNXrhlu9NgWh+vxUMTXA5gntsKk9bdYhx6JVr Duzn/MmVqROVA+65cCZEPzvNvc3b3CV4acfF5DcxlIjDQpRhcQavXJ1iNR5kdF8F I36mzWvYwKkC0mAEQ1We0f1iCc4pzwo86Z1yztJUbYE+OrUBH7tm5AR3u9KqFJp2 SGaU8GBTzO7ROxDsqZgiyWUkeI05rlaLF5vLXTtFVFcbdlCqejG5qDahfue/oGKr iIWG5vM6Br/a27BrHglGwrTuYZnr+II/cPQdA4zfrhzkJ5yDSlOCCb5p1dy/5NKM 5PeRmHciQUZZgwgxYXNBTIBRTa0nXRv25LjE/jaGg+twrJXFrCDj1q5DTeXH/x6Y OLveYIa24xRY/KXm67tmVeyxXCjU+kMCAwEAAaOCAmwwggJoME8GA1UdIARIMEYw EQYPKwYBBAGBrSGCLAEBBAMDMBEGDysGAQQBga0hgiwCAQQDATAPBg0rBgEEAYGt IYIsAQEEMA0GCysGAQQBga0hgiweMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMDQG A1UdJQQtMCsGCCsGAQUFBwMCBggrBgEFBQcDAQYKKwYBBAGCNwoDAwYJYIZIAYb4 QgQBMB0GA1UdDgQWBBQD+XOPJFFbeVRZG8fxs+e0kvUygDAfBgNVHSMEGDAWgBTF K1OTF4PJ9UZC7UNq37aApkfy4DAdBgNVHREEFjAUghJpZHAyLnR1LWRyZXNkZW4u ZGUwgYsGA1UdHwSBgzCBgDA+oDygOoY4aHR0cDovL2NkcDEucGNhLmRmbi5kZS90 dS1kcmVzZGVuLWNhL3B1Yi9jcmwvZ19jYWNybC5jcmwwPqA8oDqGOGh0dHA6Ly9j ZHAyLnBjYS5kZm4uZGUvdHUtZHJlc2Rlbi1jYS9wdWIvY3JsL2dfY2FjcmwuY3Js MIHZBggrBgEFBQcBAQSBzDCByTAzBggrBgEFBQcwAYYnaHR0cDovL29jc3AucGNh LmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEgGCCsGAQUFBzAChjxodHRwOi8vY2Rw MS5wY2EuZGZuLmRlL3R1LWRyZXNkZW4tY2EvcHViL2NhY2VydC9nX2NhY2VydC5j cnQwSAYIKwYBBQUHMAKGPGh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvdHUtZHJlc2Rl bi1jYS9wdWIvY2FjZXJ0L2dfY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEA JtzGsiGXcrdej40gj+3SrmOrvwtAOEVLx9OXINArxNrZvugMV+kfKmL/FmF0FLjH 14/FWQuPrX/8TtJ7rrOUBdu49jcszjohZXAyf7ddkfWzLG1L4RZaewZaNpGXEvHv RfsVkY5zg5SJ1LSEmnJbSza9sTLJmthdbkEMPZPMQI1UJUF4v98SyEMBYesrnxD3 IkglWO5P+ZXAYMwMGwZFB8JjDI/HQOfT4GZVzIWfT3T3Xv6MVpPdJKzh/+OAptuu zdxsLImLP8uuiONpJNY8Cm/qXvgoR0BOwwslqJcdd7ojtbkA7hW02K0isfi0DwjS sXh0XvuURcJg8Fwjgn780Q==',
 );
 
 $metadata['https://test-idp.hrz.tu-chemnitz.de/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP TU Chemnitz (Test)',
+		'de' => 'TU Chemnitz (Test)',
 	),
-	'description'          => 'Technischen Universität Chemnitz',
+	'description'          => 'Technische Universität Chemnitz',
 	'SingleSignOnService'  => 'https://test-idp.hrz.tu-chemnitz.de/krb/saml2/idp/SSOService.php',
 	'certData'             => 'MIIGQzCCBSugAwIBAgIHGZYTHYvG9TANBgkqhkiG9w0BAQsFADCBvTELMAkGA1UE BhMCREUxKTAnBgNVBAoTIFRlY2huaXNjaGUgVW5pdmVyc2l0YWV0IENoZW1uaXR6 MSMwIQYDVQQLExpVbml2ZXJzaXRhZXRzcmVjaGVuemVudHJ1bTE8MDoGA1UEAxMz VFUgQ2hlbW5pdHogQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgLSBUVUMvVVJaIENB IEczMSAwHgYJKoZIhvcNAQkBFhFjYUB0dS1jaGVtbml0ei5kZTAeFw0xNTA2MDkw NzI4MTNaFw0xODA5MDUwNzI4MTNaMIGoMQswCQYDVQQGEwJERTEQMA4GA1UECAwH U2FjaHNlbjERMA8GA1UEBwwIQ2hlbW5pdHoxKTAnBgNVBAoMIFRlY2huaXNjaGUg VW5pdmVyc2l0YWV0IENoZW1uaXR6MSMwIQYDVQQLDBpVbml2ZXJzaXRhZXRzcmVj aGVuemVudHJ1bTEkMCIGA1UEAwwbdGVzdC1pZHAuaHJ6LnR1LWNoZW1uaXR6LmRl MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiqPC4MsKL+tJ6H2AClzF sOjaavyYHHLOdzNYyXKUQXick/FOTZeQdM9/gO61iQSdy7dog2EJ19G8umoMrCdt FVaLwFpIqqU2g3KCinwt0eSW8MedRR4PrLxgp7/r/+lT+u7fy9CNPzdTjGFeW1j1 UINxZxJbtOnhEFjqFL6JW5J++Flc5zQR7a5IB8yNya11P3++DIWZNaagqdt6KLKs qaPiaXMfnHZVAYFXk7ue4K+6vS83/rvxjZURV7ARNmUVCDGkf6R6x4CmKllZ5VAc ZmcfyO4dCB2rDKGHQJzvJCBP3tbEDXHYVYfJo1zZVx3QkaBz9CWF97VGrUF2gNEN fwIDAQABo4ICWTCCAlUwTwYDVR0gBEgwRjARBg8rBgEEAYGtIYIsAQEEAwMwEQYP KwYBBAGBrSGCLAIBBAMBMA8GDSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGCLB4w CQYDVR0TBAIwADALBgNVHQ8EBAMCBeAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsG AQUFBwMBMB0GA1UdDgQWBBRNjdGKP4xo/HaYDoNMTDrnlGTruDAfBgNVHSMEGDAW gBTo2rjyR96ZJH1nQIknZ3ENY9ijjjAmBgNVHREEHzAdght0ZXN0LWlkcC5ocnou dHUtY2hlbW5pdHouZGUwgYgGA1UdHwSBgDB+MD2gO6A5hjdodHRwOi8vY2RwMS5w Y2EuZGZuLmRlL3R1LWNoZW1uaXR6LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMD2gO6A5 hjdodHRwOi8vY2RwMi5wY2EuZGZuLmRlL3R1LWNoZW1uaXR6LWNhL3B1Yi9jcmwv Y2FjcmwuY3JsMIHXBggrBgEFBQcBAQSByjCBxzAzBggrBgEFBQcwAYYnaHR0cDov L29jc3AucGNhLmRmbi5kZS9PQ1NQLVNlcnZlci9PQ1NQMEcGCCsGAQUFBzAChjto dHRwOi8vY2RwMS5wY2EuZGZuLmRlL3R1LWNoZW1uaXR6LWNhL3B1Yi9jYWNlcnQv Y2FjZXJ0LmNydDBHBggrBgEFBQcwAoY7aHR0cDovL2NkcDIucGNhLmRmbi5kZS90 dS1jaGVtbml0ei1jYS9wdWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQEL BQADggEBAFfupAsu2EJdR0e1R0U4B1Qqk6qFCaOAbkkNbxshPfaSO+6188uwXrz+ YxuUa6dSU7E4ZeYr+RxfCjTLQf4nCdHsSey1hfXcRVLd65TSby26x6E8IFTXssKM heE40/LHBFioqbNBEBlOBi+a2Oo2DWz0M88I4RB5EgkyF/ffJG+XyVW91/qK1qrW EpO6m1xIBByElURZTVnGHMGARktLpOhb/7GJGfKkOQSow/D4kNoVDlrJsgiLS+vD GZz0j9awFqt04CsL091JOnUWBVd7mX9isddp4xM2uvX3PPP8GPn8VNlRjErw8cZv /AbLASenClYg24Od2p7wrATqBqqFNf0=',
 );
 
 $metadata['https://wtc.tu-chemnitz.de/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP TU Chemnitz (TUC)',
+		'de' => 'TU Chemnitz (TUC)',
 	),
-	'description'          => 'Technischen Universität Chemnitz',
+	'description'          => 'Technische Universität Chemnitz',
 	'SingleSignOnService'  => 'https://wtc.tu-chemnitz.de/krb/saml2/idp/SSOService.php',
 	'certData'             => 'MIIGGzCCBQOgAwIBAgIHF2USyCoALzANBgkqhkiG9w0BAQUFADCBvTELMAkGA1UE BhMCREUxKTAnBgNVBAoTIFRlY2huaXNjaGUgVW5pdmVyc2l0YWV0IENoZW1uaXR6 MSMwIQYDVQQLExpVbml2ZXJzaXRhZXRzcmVjaGVuemVudHJ1bTE8MDoGA1UEAxMz VFUgQ2hlbW5pdHogQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgLSBUVUMvVVJaIENB IEczMSAwHgYJKoZIhvcNAQkBFhFjYUB0dS1jaGVtbml0ei5kZTAeFw0xNDA0MDkx ODQ1MTJaFw0xOTAxMTUwMDAwMDBaMIGfMQswCQYDVQQGEwJERTEQMA4GA1UECBMH U2FjaHNlbjERMA8GA1UEBxMIQ2hlbW5pdHoxKTAnBgNVBAoTIFRlY2huaXNjaGUg VW5pdmVyc2l0YWV0IENoZW1uaXR6MSMwIQYDVQQLExpVbml2ZXJzaXRhZXRzcmVj aGVuemVudHJ1bTEbMBkGA1UEAxMSd3RjLnR1LWNoZW1uaXR6LmRlMIIBIjANBgkq hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxsrOFl9SzxyyVfSCWdL61bQiA3aUboZG zkHKli0GIQkd/ZfDejTlH9ZRyVLyuJ+wdZ7zz5Z/ggxEi67jqbEca63Mtv8wgZvO L1z3yY6C023Y0E0sdR3sawkX0EhGIgfSRv5jyKhmHn6QTp6BrIKFCPi/wTUrupCq B41BIWaFNJfFCFtXpPZ8Iv0qAdQDU9eSGw+ls1/Ah6zvVj/fWWobEK16N5nE1lsW 9VdyNmFwD8gL5mcZO/E5B/lPx+8uUMGKpOIkgAQZrntB/93Sr8DDrioAfC+BjSM/ 9FE9YFawPg27gtYOihV+oL5RQCkAt1RFubjc0NrDtkYXMC7IbETNhwIDAQABo4IC OjCCAjYwOQYDVR0gBDIwMDARBg8rBgEEAYGtIYIsAQEEAwEwEQYPKwYBBAGBrSGC LAIBBAMBMAgGBmeBDAECAjAJBgNVHRMEAjAAMAsGA1UdDwQEAwIF4DAdBgNVHSUE FjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwHQYDVR0OBBYEFNE2r5poT17aKl2v06PG BwmzRwSpMB8GA1UdIwQYMBaAFOjauPJH3pkkfWdAiSdncQ1j2KOOMB0GA1UdEQQW MBSCEnd0Yy50dS1jaGVtbml0ei5kZTCBiAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6 Ly9jZHAxLnBjYS5kZm4uZGUvdHUtY2hlbW5pdHotY2EvcHViL2NybC9jYWNybC5j cmwwPaA7oDmGN2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvdHUtY2hlbW5pdHotY2Ev cHViL2NybC9jYWNybC5jcmwwgdcGCCsGAQUFBwEBBIHKMIHHMDMGCCsGAQUFBzAB hidodHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1AtU2VydmVyL09DU1AwRwYIKwYB BQUHMAKGO2h0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvdHUtY2hlbW5pdHotY2EvcHVi L2NhY2VydC9jYWNlcnQuY3J0MEcGCCsGAQUFBzAChjtodHRwOi8vY2RwMi5wY2Eu ZGZuLmRlL3R1LWNoZW1uaXR6LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkq hkiG9w0BAQUFAAOCAQEAQKGzkt5ZcfWiq/EgKq2bTYgZZkosg10llXt9GOmmJxqY BcHopVag4pVuPTdpl9YENptWWvG0pDNyyQ6fiG1DDskrYDpD2kdvqkYdW6pdDQ0o oU7irxyxk9YNahfnP0A1HANSFZwl/CVI0ytoJl4lG+vfSeCZLU/GQQb6m7gSbURL Fjwt2q4157daqiLqtnP8Rcz+HTfes1AVpGgIa9dd/mAZzltRn74TQ/wBl6qV5Er7 JdBWfwSAUa4AjHo0NXLqv2idyjO6HXSNCwj6/FhKCRNiTE6od/tlQ5C8QXVVuNOL tw/9llp0kXTSjQ699yhIqDuPVHxaONr5Wo7tm59U1Q==',
 );
 
 $metadata['https://idp.hrz.tu-freiberg.de/idp/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP TU Freiberg (TUBAF)',
+		'de' => 'TU Freiberg (TUBAF)',
 	),
-	'description'          => 'Technischen Universität Freiberg',
+	'description'          => 'Technische Universität Freiberg',
 	'SingleSignOnService'  => 'https://idp.hrz.tu-freiberg.de/idp/profile/SAML2/Redirect/SSO',
 	'certData'             => 'MIIHWTCCBkGgAwIBAgIHGbHFboK0cDANBgkqhkiG9w0BAQsFADCBwzELMAkGA1UE BhMCREUxNjA0BgNVBAoTLVRlY2huaXNjaGUgVW5pdmVyc2l0YWV0IEJlcmdha2Fk ZW1pZSBGcmVpYmVyZzEjMCEGA1UECxMaVW5pdmVyc2l0YWV0c3JlY2hlbnplbnRy dW0xLzAtBgNVBAMTJlRVIEJlcmdha2FkZW1pZSBGcmVpYmVyZyBDQSAoVFVCQUYt Q0EpMSYwJAYJKoZIhvcNAQkBFhd0dWJhZi1jYUB0dS1mcmVpYmVyZy5kZTAeFw0x NTA2MzAwNzQwMTRaFw0xODA5MjYwNzQwMTRaMIGwMQswCQYDVQQGEwJERTEQMA4G A1UECAwHU2FjaHNlbjERMA8GA1UEBwwIRnJlaWJlcmcxNjA0BgNVBAoMLVRlY2hu aXNjaGUgVW5pdmVyc2l0YWV0IEJlcmdha2FkZW1pZSBGcmVpYmVyZzEjMCEGA1UE CwwaVW5pdmVyc2l0YWV0c3JlY2hlbnplbnRydW0xHzAdBgNVBAMMFmlkcC5ocnou dHUtZnJlaWJlcmcuZGUwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC7 5jPHerdCvissgxaRb1XxZGUCPlqNGdmf//zjLriH6i+oBirkrD5Jrl69voAyrBMs 9PaXxo8doyhfsNtHLXZKXqcqTKV0gMHOXH/x0Y8jR5T2+rludaf8VPEpZmr5cPh1 BWi7Uxa411EXnWzRA9WYUGZ6E33gQaGXztRzCmcKFZIM4fOKVEzav3uE7wedZNQh u0Gt4/ldc+Oz9DTf0ZEsrPnS2Bt5fABLAVe2+BdHjMhjzQR5Hfa7LNroZIpBNk80 dcIbQxxBuagEXG70OufPz3flHANfYEF/G4tcEqkBrIiRbMLYnrbRgw7qh4+eT50g oizGNtxc16PIzmH25meOwB+Mrb760TEl4M4gDgSoZncZEkPv0Ji07kKZuG+UvA6R v5dMuLLqb3XPj2ihrilryzSwoVpDE8zsWEQsFPIM+UqKn/xO4VEJrvtto5+mGIN2 hWyO0ebhhg74T2obPI9VeyLZWVvvRaklc+NA0dErGrxz2siWQNp27BcyTUPwV0/w fJlU64j5q6qUupQU3rrfJwnpE9BdnL+1LmO/gVGNNsi9oZDfe8YkWoBqa2lcgD4m QClzwpnl99/y4MT0ZDJJ54oRfmEEwCc9yFsYrWURXLUb5d3Lwkm3d+PMZHxNbPGI SHueiHWIVww6Rt6IhyyWYa+f767f3xvtvJSvTNh+HwIDAQABo4ICYTCCAl0wTwYD VR0gBEgwRjARBg8rBgEEAYGtIYIsAQEEAwMwEQYPKwYBBAGBrSGCLAIBBAMBMA8G DSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGCLB4wCQYDVR0TBAIwADALBgNVHQ8E BAMCBeAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMB0GA1UdDgQWBBQO Hpro9zNojuI+55ez100Ltf3KPjAfBgNVHSMEGDAWgBSfUZD3mAr0PxUPDrYKqX+3 NR0dLTAhBgNVHREEGjAYghZpZHAuaHJ6LnR1LWZyZWliZXJnLmRlMIGPBgNVHR8E gYcwgYQwQKA+oDyGOmh0dHA6Ly9jZHAxLnBjYS5kZm4uZGUvdHUtYmEtZnJlaWJl cmctY2EvcHViL2NybC9jYWNybC5jcmwwQKA+oDyGOmh0dHA6Ly9jZHAyLnBjYS5k Zm4uZGUvdHUtYmEtZnJlaWJlcmctY2EvcHViL2NybC9jYWNybC5jcmwwgd0GCCsG AQUFBwEBBIHQMIHNMDMGCCsGAQUFBzABhidodHRwOi8vb2NzcC5wY2EuZGZuLmRl L09DU1AtU2VydmVyL09DU1AwSgYIKwYBBQUHMAKGPmh0dHA6Ly9jZHAxLnBjYS5k Zm4uZGUvdHUtYmEtZnJlaWJlcmctY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MEoG CCsGAQUFBzAChj5odHRwOi8vY2RwMi5wY2EuZGZuLmRlL3R1LWJhLWZyZWliZXJn LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEAiL3X Jb1j/oM+U6OAUqtRmR7NGAU+cJmJ9RoyMK0vUfKM7875DPaoVdbfRxcvDsUPRkyb f5zFyLK1MOKO/z+weyZvHvQpXJSC2DrQ1rJpj3iLUUNSFkVMRhMm3BKgKo4xr9Gt SqbFEmQoRD6oPxUGdJzlFxrHh9usrztLb5TTsAMPdKSjnpNpoHg7GAgiLejil2rg Is+W7w4p+PqI3RqI9bZU8vwZjTtPv9J2iMp4t+q9PLW70mpmL6M3ZpUayXqLG8Z3 WnHZRQpuN9vhYpTbAq1dpMhDcGXYdG/USjPxMxcth99ETEPnxBRhqvga0G7go2A/ mEF9cF0ecUhR3uR0yw==',
 );
 
 $metadata['https://login3.hs-mittweida.de/idp/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP Universität Mittweida (HSMW)',
+		'de' => 'Universität Mittweida (HSMW)',
 	),
 	'description'          => 'Universität Mittweida (FH)',
 	'SingleSignOnService'  => 'https://login3.hs-mittweida.de/idp/profile/SAML2/Redirect/SSO',
@@ -80,7 +80,7 @@ $metadata['https://login3.hs-mittweida.de/idp/shibboleth'] = array(
 
 $metadata['https://idp2.htw-dresden.de/idp/shibboleth'] = array(
 	'name' => array(
-		'de' => 'Shibboleth-IdP Hochschule fuer Technik und Wirtschaft Dresden (HTWDD)',
+		'de' => 'HTW Dresden (HTWDD)',
 	),
 	'description'          => 'Hochschule fuer Technik und Wirtschaft Dresden (FH)',
 	'SingleSignOnService'  => 'https://idp2.htw-dresden.de/idp/profile/SAML2/Redirect/SSO',
