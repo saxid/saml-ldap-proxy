@@ -17,14 +17,15 @@ else
 fi
 
 # config to your needs, check for neccessary rights
+env=''
 server="saxid.zih.tu-dresden.de"
 serverusr='root'
-installpath="/srv/www/htdocs/saxid-ldap-proxy"
+installpath="/srv/www/htdocs/saxid-ldap-proxy"$env
 uploadfile="saxidprox_depl_tmp.tgz"
 pathtosamlkey="/etc/apache2/ssl.key/saxid.zih.tu-dresden.de.nocrypt.key.pem"
 pathtosamlcert="/etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem"
 mydatum=$(date +"%Y-%m-%d")
-serverbkup=saxprox_$mydatum.tar.bz2
+serverbkup=saxprox_$env_$mydatum.tar.bz2
 
 echo "Creating Archive ..."
 rm -f $uploadfile

@@ -104,14 +104,10 @@ class SaxidLdapProxy
     /**
      * Gets all LDAP Users
      * like this:
-     *  2 => array:4 [
-     *"edupersonprincipalname" => array:2 [
-     *  "count" => 1
-     *  0 => "def@tu-dresden.de"
-     *]
-     *0 => "edupersonprincipalname"
-     *"count" => 1
-     *  "dn" => "cn=def,o=tu-dresden.de,dc=sax-id,dc=de"
+     *     0 => array:3 [▼
+     *  "edupersonprincipalname" => array:1 [▶]
+     *  0 => "edupersonprincipalname"
+     *  "dn" => "cn=norman,o=tu-dresden.de,dc=sax-id,dc=de"
      *]
      *
      * will be transformed w/o count -> rCountRemover
@@ -145,11 +141,11 @@ class SaxidLdapProxy
      * @param string $seachParam Search parameter in following form: 'uid=norman'
      * @return bool Return object if user was found or false when not
      */
-    public function existsUser($seachParam)
+    public function userExist($seachParam)
     {
         if (!$this->connected)
         {
-            $errorMessage = "existsUser - Error: No valid LDAP-Connection.";
+            $errorMessage = "userExist - Error: No valid LDAP-Connection.";
             $this->logger->error($errorMessage);
             //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
@@ -181,14 +177,14 @@ class SaxidLdapProxy
 
         if (($searchResult = @ldap_search($this->ldapConnection, $organizationDN, $filter)) == false)
         {
-            $message = "existsOrganization - Organization '" . $organizationDN . "' doesn't exists.";
+            $message = "existsOrganization - Organization '" . $organizationDN . "' doesn't exist.";
             $this->logger->info($message);
             //$this->setStatus($message, LOGLEVEL::INFO);
             return false;
         }
         else
         {
-            $message = "existsOrganization - Organization '" . $organizationDN . "' exists.";
+            $message = "existsOrganization - Organization '" . $organizationDN . "' exist.";
             $this->logger->info($message);
             //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
@@ -369,6 +365,27 @@ class SaxidLdapProxy
     {
         $attrs = $this->getUserData($seachParam);
         return new LdapUser($attrs);
+    }
+
+    /**
+     * Gets an ldap-user of class-type LdapUser
+     *
+     * @param string $seachParam search paramter of form: 'uid=norman'
+     *
+     * @return array Return Array of LdapUser-Classes
+     */
+    public function getAllLdapUser()
+    {
+
+      $seachParam="eduPersonPrincipalName=";
+
+      $eppnusers = $this->getAllUsers();
+      $ldaparray = array();
+      foreach ($eppnusers as $usereppn){
+        $userattrs = $this->getUserData($seachParam . $usereppn['edupersonprincipalname'][0]);
+        $ldaparray[] = new LdapUser($userattrs);
+      }
+      return $ldaparray;
     }
 
     /**
@@ -577,6 +594,21 @@ class SaxidLdapProxy
         }
 
         $dataToModify['lastUserUIDNumber'] = $data;
+
+        $this->modifyLDAPObject($dn, $dataToModify);
+    }
+
+    public function setUserShell($dn, $shell)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "setUserShell - Error: No valid LDAP-Connection.";
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+
+        $dataToModify['loginShell'] = $shell;
 
         $this->modifyLDAPObject($dn, $dataToModify);
     }

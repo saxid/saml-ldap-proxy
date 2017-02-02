@@ -110,7 +110,9 @@ Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyB
 
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f saxid-organisations.ldif
 
-1. core-Schema um neue Attribute (userServices, lastAcademyUIDNumber, lastUserUIDNumber, uidNumberPrefix) erweitern: {55}( 2.6.0.5 NAME ( 'lastAcademyUIDNumber' ) DESC 'The last used UIDNumber for a academy' SUP name ) ...
+1. core-Schema um neue ObjektKlasse und neue Attribute erweitern :
+{55}( 2.6.0.5 NAME ( 'lastAcademyUIDNumber' ) DESC 'The last used UIDNumber for a academy' SUP name ) 
+{27}( 2.6.0.1 NAME 'saxID' DESC 'SaxID attributes' SUP top AUXILIARY MAY (uidNumberPrefix $ lastUserUIDNumber $ lastAcademyUIDNumber $ userServices))
 
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f new_attrs.ldif
 

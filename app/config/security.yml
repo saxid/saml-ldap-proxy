@@ -10,7 +10,7 @@ security:
         default:
             pattern: ^/imprint
             anonymous: ~
-            context: default
+            context: saml
         saml:
             pattern: ^/
             anonymous: true

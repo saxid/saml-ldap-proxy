@@ -44,18 +44,18 @@ class DefaultController extends Controller
           $saxLdap->connect();
 
           // Check if user already exists in LDAP
-          if ($saxLdap->existsUser("uid=" . $saxidUser->getUid()))
+          if ($saxLdap->userExist("uid=" . $saxidUser->getUid()))
           {
               // Modify entry
-              $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray());
+              $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray());
               $logger->info('User Modified in LDAP: '. $saxidUser->getUid());
-              $this->addFlash('info', 'Willkommen zurück' . $saxidUser->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert.');
+
           }
           else
           {
               // Add new entry
               // When organization doesn't exists -> create
-              if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN()) == FALSE)
+              if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN'))) == FALSE)
               {
                   //objectclasses
                   $organizationData['objectclass'][] = 'organization';
@@ -64,18 +64,18 @@ class DefaultController extends Controller
 
                   //attributes
                   $organizationData["lastUserUIDNumber"] = "1";
-                  $uidNumberPrefix = $saxLdap->getLastAcademyUIDNumber("dc=sax-id,dc=de") + 1;
+                  $uidNumberPrefix = $saxLdap->getLastAcademyUIDNumber($this->getParameter('ldap_baseDN')) + 1;
                   $organizationData["uidNumberPrefix"] = $uidNumberPrefix;
 
                   //add organization
-                  $saxLdap->addLDAPObject($saxidUser->createLdapOrganizationDN(), $organizationData);
+                  $saxLdap->addLDAPObject($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')), $organizationData);
 
                   //set last uidNumber at top domain
-                  $saxLdap->setLastAcademyUIDNumber("dc=sax-id,dc=de", $uidNumberPrefix);
+                  $saxLdap->setLastAcademyUIDNumber($this->getParameter('ldap_baseDN'), $uidNumberPrefix);
               }
 
-              $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN());
-              $tmpAcademyPrefix = $saxLdap->getUIDNumberPrefix($saxidUser->createLdapOrganizationDN());
+              $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')));
+              $tmpAcademyPrefix = $saxLdap->getUIDNumberPrefix($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')));
 
               // Create unique UIDNumber for user
               for ($index = 0; $index < 100; $index++)
@@ -83,7 +83,7 @@ class DefaultController extends Controller
                   $tmpUidNumber = $saxidUser->generateSaxIDUIDNumber($tmpAcademyPrefix, $tmpLastUserUIDNumber + 1);
 
                   // if user not exists in ldap set a new UID Num
-                  if ($saxLdap->existsUser("uidNumber=" . $tmpUidNumber) == FALSE)
+                  if ($saxLdap->userExist("uidNumber=" . $tmpUidNumber) == FALSE)
                   {
                       // Set UIDNumber
                       $saxidUser->setUidNumber($tmpUidNumber);
@@ -92,15 +92,15 @@ class DefaultController extends Controller
               }
 
               // Add user to ldap
-              $saxLdap->addLDAPObject($saxidUser->createLdapUserDN(), $saxidUser->createLdapDataArray(true));
+              $saxLdap->addLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray(true));
               $logger->info('User Added to LDAP: '. $saxidUser->getUid());
               // modify lastUserUIDNumber
-              $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN(), ($tmpLastUserUIDNumber + 1));
+              $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')), ($tmpLastUserUIDNumber + 1));
 
               // generate user password
               $initialPassword = $saxidUser->generateRandomPassword();
-              $this->addFlash("info", "Initial service password: " . $initialPassword);
-              $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $initialPassword);
+              $this->addFlash("info", "Dein initiales Service-Passwort (bitte merken): " . $initialPassword);
+              $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $initialPassword);
 
               // Add user to SaxIDAPI
               $sa = $this->get('saxid_ldap_proxy.saxapi');
@@ -111,7 +111,7 @@ class DefaultController extends Controller
 
               $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
 
-              $logger->info('API Entry Info for user: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
+              $logger->info('API Info: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
               //$logger->error('An error occurred');
               //$logger->critical('I left the oven on!', array(
                   // include extra "context" info in your logs
@@ -127,7 +127,7 @@ class DefaultController extends Controller
 
           // Add status message to Symfony flashbag
           //$this->addFlash($status['type'], $status['message']);
-          $this->addFlash('info', 'User Attribute vom Identityprovider erfolgreich übertragen.');
+          $this->addFlash('info', 'Hallo ' . $saxidUser->getSurname() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
           // set init user check and write to do this only once per page load
           $session->set('status', 'DONE');
         }
@@ -144,13 +144,17 @@ class DefaultController extends Controller
         // Connect to LDAP
         $saxLdap->connect();
 
-        $userexists = $saxLdap->existsUser("uid=" . $this->getUser()->getUid());
+        $userexist = $saxLdap->userExist("uid=" . $this->getUser()->getUid());
+
+        if ( !empty($userexist) ){
+          $session->set('Ldapuser', '1');
+          // Modify entry
+          $saxLdap->modifyLDAPObject($this->getUser()->createLdapUserDN($this->getParameter('ldap_baseDN')), $this->getUser()->createLdapDataArray());
+          $this->addFlash('info', 'Willkommen zurück ' . $this->getUser()->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert.');
+        }
+
         // Close connection
         $saxLdap->disconnect();
-
-        if ( !empty($userexists) ){
-          $session->set('Ldapuser', '1');
-        }
 
         //check if user accepted TOS or User already persistend in LDAP DB
         if ($session->get('tosyes') == 'DONE' || !empty($session->get('Ldapuser')) )

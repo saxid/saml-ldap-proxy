@@ -64,8 +64,8 @@ class SaxidUser implements UserInterface, EquatableInterface
         'urn:mace:dir:attribute-def:eduPersonAffiliation' => 'eduPersonAffiliation',
         'urn:mace:dir:attribute-def:eduPersonScopedAffiliation' => 'eduPersonScopedAffiliation',
         'urn:mace:dir:attribute-def:eduPersonEntitlement' => 'eduPersonEntitlement',
-            //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
-            //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
+        //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
+        //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
     );
     private static $uidPrefixMapping = array(
         'tu-dresden.de' => 'tud',
@@ -460,7 +460,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
         else
         {
-            return "dc=sax-id,dc=de";
+            return $this->getParameter('ldap_baseDN');
         }
         return $return;
     }
@@ -645,14 +645,14 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $data;
     }
 
-    public function createLdapUserDN()
+    public function createLdapUserDN($baseDN)
     {
-        return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
+        return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . "," . $baseDN;
     }
 
-    public function createLdapOrganizationDN()
+    public function createLdapOrganizationDN($baseDN)
     {
-        return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
+        return "o=" . $this->getAcademyDomain() . "," . $baseDN;
     }
 
     public function mydump()

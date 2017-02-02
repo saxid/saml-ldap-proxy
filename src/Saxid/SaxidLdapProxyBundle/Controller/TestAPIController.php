@@ -16,6 +16,11 @@ class TestAPIController extends Controller
         $as = $sapi->getServices();
         $ar = $sapi->getRessources();
 
+        $slp = $this->get('saxid_ldap_proxy');
+        $slp->connect();
+        dump( $slp->getAllLdapUser() );
+        $slp->disconnect();
+
         return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as, 'apiresources' => $ar ) );
     }
 
