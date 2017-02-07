@@ -201,6 +201,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         #$salt = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)), 0, 4);
         #$this->password = '{SSHA}' . base64_encode(sha1( $password.$salt, TRUE ) . $salt);
         #$this->password = '{MD5}' . base64_encode(md5($password, TRUE));
+        #$this->password = "{CRYPT}" . crypt($password, "$6$" . bin2hex(openssl_random_pseudo_bytes(16))); SHA-512
         $this->password = $password;
         return $this;
     }

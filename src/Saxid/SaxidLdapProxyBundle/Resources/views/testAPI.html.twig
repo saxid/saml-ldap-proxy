@@ -5,8 +5,8 @@
 <ul>
 {% for service in apiservices %}
  <li><code><b> {{ service.name }} </b></code></li>
- <li><code> {{ service.realm }} </code></li>
- <li><code> {{ service.expiry_date }} </code></li>
+ <li>realm: <code> {{ service.realm }} </code></li>
+ <li>expired: <code> {{ service.expiry_date }} </code></li>
  <br>
 {% endfor %}
 </ul>
@@ -15,10 +15,11 @@
 
 <ul>
 {% for res in apiresources %}
- <li><code><b> {{ res.eppn }} </b></code></li>
- <li><code> {{ res.added }} </code></li>
- <li><code> {{ res.realm_idp }} </code></li>
- <li><code> {{ res.expiry_date }} </code></li>
+ <li>eppn: <code><b> {{ res.eppn }} </b></code></li>
+ <li>realm: <code> {{ res.realm_idp }} </code></li>
+ <li>added: <code> {{ res.added }} </code></li>
+ <li>expired: <code> {{ res.expiry_date }} </code></li>
+ <li>deletion: <code> {{ res.deletion_date }} </code></li>
  <br>
 {% endfor %}
 </ul>

@@ -3,7 +3,7 @@
 namespace Saxid\SaxidLdapProxyBundle\Security\User;
 
 /**
- * User class with all necessary infos
+ * Represents a LdapUser with his/her Attributes including his/hers DN
  */
 class LdapUser
 {
@@ -22,6 +22,7 @@ class LdapUser
     protected $userServices = "no Data";
     protected $eduPersonPrincipalName = "no Data";
     protected $eduPersonEntitlement = "no Data";
+    protected $dn = 'no Data';
 //    protected $organizationalUnitName;
 //    protected $eduPersonAffiliation;
 //    protected $eduPersonPrimaryAffiliation;
@@ -275,6 +276,17 @@ class LdapUser
         $this->userPassword = $userPassword;
 
         return $this;
+    }
+
+
+    /**
+     * Get the value of Dn
+     *
+     * @return mixed
+     */
+    public function getDn()
+    {
+        return $this->dn;
     }
 
 }

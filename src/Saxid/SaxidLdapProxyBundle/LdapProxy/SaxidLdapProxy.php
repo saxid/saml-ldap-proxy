@@ -350,7 +350,7 @@ class SaxidLdapProxy
         //Get entry
         $entry = ldap_first_entry($this->ldapConnection, $searchResult);
         $attributes = ldap_get_attributes($this->ldapConnection, $entry);
-
+//TODO: there is a bug with the ldap user class and rCountRemover func
         return $attributes;
     }
 
@@ -383,6 +383,7 @@ class SaxidLdapProxy
       $ldaparray = array();
       foreach ($eppnusers as $usereppn){
         $userattrs = $this->getUserData($seachParam . $usereppn['edupersonprincipalname'][0]);
+        $userattrs['dn'] = $usereppn['dn'];
         $ldaparray[] = new LdapUser($userattrs);
       }
       return $ldaparray;

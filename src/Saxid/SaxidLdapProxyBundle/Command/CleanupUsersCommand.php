@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Psr\Log\LoggerInterface;
+use Saxid\SaxidLdapProxyBundle\Security\User\LdapUser;
 
 class CleanupUsersCommand extends ContainerAwareCommand
 {
@@ -44,15 +45,10 @@ class CleanupUsersCommand extends ContainerAwareCommand
 
         // Connect to LDAP and get Users
         $sldap->connect();
-        $ldapdata = $sldap->getAllUsers();
+        $ldapdata = $sldap->getAllLdapUser();
         $sldap->disconnect();
-
         // connect to API and get Users(Resources)
         $apidata = $sapi->getRessources();
-        //$output->writeln('--- api data ---');
-        //dump($apidata);
-        //$output->writeln('--- ldap data ---');
-        //dump($ldapdata);
 
         //filter expired and deletion marked Users of API
         $expiredusers = [];
@@ -82,26 +78,18 @@ class CleanupUsersCommand extends ContainerAwareCommand
 
         // filter for eppn from api array
         unset($value);
-        foreach ($apidata as $key => $value) {
-          $tmparr[$key] = $value['eppn'];
+        foreach ($apidata as $value) {
+          $tmparr[] = $value['eppn'];
         }
 
-        //$output->writeln('--- filtered api data ---');
-        //dump($tmparr);
-
-        // filter for eduperson..-value form api array
+        // filter for eduperson..-value
         unset($value);
-        foreach ($ldapdata as $key => $value) {
-          $tmparr2[$key] = $value["edupersonprincipalname"][0];
+        foreach ($ldapdata as $value) {
+          $tmparr2[] = $value->getEduPersonPrincipalName();
         }
-
-        //$output->writeln('--- filtered ldap data ---');
-        //dump($tmparr2);
 
         //$output->writeln('<info>Array Diff api vs ldap - remove entries from ldap data</info>');
         $diffresult = array_diff($tmparr2, $tmparr);
-        //dump($diffresult);
-        //$logger->info(print_r('diff between lfap and api ' . implode($diffresult)));
 
         // merge diffresult (no api entry) with deletionmarked from api
         $deleteusers = array_merge($diffresult, $dmusers);
@@ -111,8 +99,8 @@ class CleanupUsersCommand extends ContainerAwareCommand
         $dntodel = [];
         foreach ($deleteusers as $key => $value) {
           foreach ($ldapdata as $k1 => $v1) {
-            if($value == $v1["edupersonprincipalname"][0]) {
-              $dntodel[$key] = $v1["dn"];
+            if($value == $v1->getEduPersonPrincipalName()) {
+              $dntodel[$key] = $v1->getDn();
             }
           }
         }
@@ -129,24 +117,23 @@ class CleanupUsersCommand extends ContainerAwareCommand
         // }
 
         $output->writeln('<info>DN / UUID for users to delete</info>');
-        //dump($dntodel);
 
         //delete data from resultset
         $sldap->connect();
         foreach ($dntodel as $dn){
           //$sldap->deleteLDAPObject($dn);
-          $sldap->setUserShell( $dn1, '/sbin/nologin' );
+          $sldap->setUserShell( $dn, '/sbin/nologin' );
           $output->writeln('user ' . $dn . ' blocked in ldap for login...');
         }
         $sldap->disconnect();
 
         unset($value); unset($v1);
-        $expiredu = [];
+        $expiredusers = [];
         // get dn (ldap) for expired users
         foreach ($expiredusers as $key => $value) {
           foreach ($ldapdata as $k1 => $v1) {
-            if($value == $v1["edupersonprincipalname"][0]) {
-              $expiredu[$key] = $v1["dn"];
+            if($value == $v1->getEduPersonPrincipalName()) {
+              $expiredu[$key] = $v1->getDn();
             }
           }
         }
@@ -154,7 +141,7 @@ class CleanupUsersCommand extends ContainerAwareCommand
         $output->writeln('<info>DN for users who are expired -> block them</info>');
         //dump($expiredu);
 
-        // set new passwort for expired users
+        // set new passwort and block login for expired users
         $sldap->connect();
         foreach ($expiredu as $dn1){
           $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()_-=+?";
