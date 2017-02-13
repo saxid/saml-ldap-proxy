@@ -22,7 +22,7 @@ class TestAPIController extends Controller
         $ldapdata = $slp->getAllLdapUser();
         $slp->disconnect();
         foreach ($ldapdata as $luser) {
-          $tmparr2[] = $luser->getEduPersonPrincipalName();
+          $tmparr2[] = $luser->getUid() . ' | ' . $luser->getDn();
         }
         dump($tmparr2);
 

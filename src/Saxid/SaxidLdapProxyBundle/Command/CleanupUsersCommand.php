@@ -104,7 +104,16 @@ class CleanupUsersCommand extends ContainerAwareCommand
             }
           }
         }
-
+        // get dn (ldap) for expired users
+        unset($value); unset($v1);
+        $expiredusersdn = [];
+        foreach ($expiredusers as $key => $value) {
+          foreach ($ldapdata as $k1 => $v1) {
+            if($value == $v1->getEduPersonPrincipalName()) {
+              $expiredusersdn[$key] = $v1->getDn();
+            }
+          }
+        }
         //get UUID from API to delete
         // unset($value); unset($v1);
         // $uuidtodel = [];
@@ -116,41 +125,31 @@ class CleanupUsersCommand extends ContainerAwareCommand
         //   }
         // }
 
-        $output->writeln('<info>DN / UUID for users to delete</info>');
-
-        //delete data from resultset
-        $sldap->connect();
-        foreach ($dntodel as $dn){
-          //$sldap->deleteLDAPObject($dn);
-          $sldap->setUserShell( $dn, '/sbin/nologin' );
-          $output->writeln('user ' . $dn . ' blocked in ldap for login...');
-        }
-        $sldap->disconnect();
-
-        unset($value); unset($v1);
-        $expiredusers = [];
-        // get dn (ldap) for expired users
-        foreach ($expiredusers as $key => $value) {
-          foreach ($ldapdata as $k1 => $v1) {
-            if($value == $v1->getEduPersonPrincipalName()) {
-              $expiredu[$key] = $v1->getDn();
-            }
-          }
-        }
-
         $output->writeln('<info>DN for users who are expired -> block them</info>');
         //dump($expiredu);
 
         // set new passwort and block login for expired users
         $sldap->connect();
-        foreach ($expiredu as $dn1){
+        foreach ($expiredusersdn as $dn1){
           $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()_-=+?";
           $password = substr(str_shuffle($chars), 0, 16);
           $sldap->setUserPassword( $dn1, $password );
           $sldap->setUserShell( $dn1, '/sbin/nologin' );
-          $output->writeln('... pass and shell for user ' . $dn1 . ' changed in ldap ...');
+          $output->writeln(' ... pass and shell for user ' . $dn1 . ' changed in ldap ...');
         }
         $sldap->disconnect();
+
+        $output->writeln('<info>DN / UUID for users to delete</info>');
+        //finally delete users in ldap ; currently user is blocked
+        $sldap->connect();
+        foreach ($dntodel as $dn){
+          //$sldap->deleteLDAPObject($dn);
+          $sldap->setUserShell( $dn, '/sbin/nologin' );
+          $output->writeln(' ... user ' . $dn . ' blocked in ldap for login...');
+        }
+        $sldap->disconnect();
+
+
 
       } catch (Exception $ex){
 
