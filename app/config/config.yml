@@ -86,4 +86,4 @@ swiftmailer:
 # maybe try to filter through simplesamlphp in config.php, check -> https://simplesamlphp.org/docs/stable/simplesamlphp-authproc#section_1_1
 saxid_simplesamlphp:
     sp: saxid-ldap-proxy
-    authentication_attribute: [urn:oid:1.3.6.1.4.1.5923.1.1.1.6, urn:mace:dir:attribute-def:eduPersonPrincipalName]
+    authentication_attribute: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.6', 'urn:mace:dir:attribute-def:eduPersonPrincipalName']

@@ -9,7 +9,7 @@ use \Saxid\SaxidLdapProxyBundle\Services\SaxIDAPI;
 class TestAPIController extends Controller
 {
 
-    public function ApiAction()
+    public function queryapiAction()
     {
         $sapi = $this->get('saxid_ldap_proxy.saxapi');
 
@@ -22,7 +22,7 @@ class TestAPIController extends Controller
         $ldapdata = $slp->getAllLdapUser();
         $slp->disconnect();
         foreach ($ldapdata as $luser) {
-          $tmparr2[] = $luser->getUid() . ' | ' . $luser->getDn();
+          $tmparr2[] = $luser->getUid() . '|' . $luser->getDn();
         }
         dump($tmparr2);
 

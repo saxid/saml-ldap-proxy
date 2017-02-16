@@ -66,7 +66,7 @@ class LdapController extends Controller
 
           $slp->disconnect();
 
-          $this->addFlash( "info", "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern."
+          $this->addFlash( "info", "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern/setzen."
               //$status['type'],
               //$status['message']
           );

@@ -164,6 +164,6 @@ class CleanupUsersCommand extends ContainerAwareCommand
 
       }
       // outputs a message followed by a "\n"
-      $output->writeln('Finished!');
+      $output->writeln('Finished LDAP User cleanup with SaxAPI-Data!');
     }
 }

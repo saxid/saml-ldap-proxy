@@ -28,4 +28,4 @@ saxid_ldap_proxy_password:
 saxid_ldap_proxy_testAPI:
     path: /testAPI
     defaults:
-        _controller: SaxidLdapProxyBundle:TestAPI:Api
+        _controller: SaxidLdapProxyBundle:TestAPI:queryapi
