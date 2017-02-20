@@ -36,6 +36,9 @@ class SaxidUser implements UserInterface, EquatableInterface
         'tu-dresden.de' => 'Technische Universität Dresden',
         'tu-chemnitz.de' => 'Technische Universität Chemnitz',
         'tu-freiberg.de' => 'Technische Universität Freiberg',
+        'uni-leipzig.de' => 'Universität Leipzig',
+        'htw-dresden.de' => 'Hochschule für Technik und Wirtschaft Dresden',
+        'hs-mittweida.de' => 'Hochschule Mittweida (FH)',
             // 'rnd.feide.no'  => 'Feide NO',
     );
     private static $attributeMapping = array(// SAML 2
@@ -61,8 +64,8 @@ class SaxidUser implements UserInterface, EquatableInterface
         'urn:mace:dir:attribute-def:eduPersonAffiliation' => 'eduPersonAffiliation',
         'urn:mace:dir:attribute-def:eduPersonScopedAffiliation' => 'eduPersonScopedAffiliation',
         'urn:mace:dir:attribute-def:eduPersonEntitlement' => 'eduPersonEntitlement',
-            //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
-            //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
+        //'urn:oid:1.3.6.1.1.1.1.3' => 'homeDirectory',
+        //'urn:oid:1.3.6.1.1.1.1.4' => 'loginShell',
     );
     private static $uidPrefixMapping = array(
         'tu-dresden.de' => 'tud',
@@ -198,6 +201,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         #$salt = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 4)), 0, 4);
         #$this->password = '{SSHA}' . base64_encode(sha1( $password.$salt, TRUE ) . $salt);
         #$this->password = '{MD5}' . base64_encode(md5($password, TRUE));
+        #$this->password = "{CRYPT}" . crypt($password, "$6$" . bin2hex(openssl_random_pseudo_bytes(16))); SHA-512
         $this->password = $password;
         return $this;
     }
@@ -457,7 +461,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         }
         else
         {
-            return "dc=sax-id,dc=de";
+            return $this->getParameter('ldap_baseDN');
         }
         return $return;
     }
@@ -551,9 +555,9 @@ class SaxidUser implements UserInterface, EquatableInterface
 
     /**
      * TODO: Adapt this Function to fit your local IDM needs
-     * check for local IDM uidnumber collision
+     * check for local IDM uidnumber collision.
+     * Unix UidNumber max length 2.147.483.648
      */
-    //UidNumber max length 2.147.483.648
     public function generateSaxIDUIDNumber($uidNumberPrefix, $uidNumber)
     {
         if ($this->isFromSaxonAcademy())
@@ -607,7 +611,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['objectclass'][] = 'saxID';
 
         // Set basic user information
-        //$data['givenName'] = $this->getGivenName();
+        $data['givenName'] = $this->getGivenName();
         $data['sn'] = $this->getSurname();
         $data['cn'] = $this->getCommonName();
         $data['mail'] = $this->getEmail();
@@ -642,17 +646,17 @@ class SaxidUser implements UserInterface, EquatableInterface
         return $data;
     }
 
-    public function createLdapUserDN()
+    public function createLdapUserDN($baseDN)
     {
-        return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
+        return "cn=" . $this->getCommonName() . ",o=" . $this->getAcademyDomain() . "," . $baseDN;
     }
 
-    public function createLdapOrganizationDN()
+    public function createLdapOrganizationDN($baseDN)
     {
-        return "o=" . $this->getAcademyDomain() . ",dc=sax-id,dc=de";
+        return "o=" . $this->getAcademyDomain() . "," . $baseDN;
     }
 
-    public function dump()
+    public function mydump()
     {
         print_r(get_object_vars($this));
     }

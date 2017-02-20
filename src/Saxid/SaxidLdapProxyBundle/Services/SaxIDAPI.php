@@ -7,10 +7,12 @@
 
 namespace Saxid\SaxidLdapProxyBundle\Services;
 
+use Symfony\Bridge\Monolog\Logger;
+
 /**
  * Description of SaxIDAPI
  *
- * @author Norman
+ * @author Norman Walther, Jan Frömberg
  */
 class SaxIDAPI
 {
@@ -18,6 +20,7 @@ class SaxIDAPI
     private $apiBaseURL;
     private $authToken;
     private $setupToken;
+    private $spUUID;
 
     /**
      * Creates SaxIDAPI access object
@@ -27,11 +30,13 @@ class SaxIDAPI
      * @param string $setupToken not used yet
 
      */
-    function __construct($apiBaseURL, $authToken, $setupToken = "1234")
+    function __construct($apiBaseURL, $authToken, $spUUID, $setupToken = "1234", Logger $logger)
     {
         $this->apiBaseURL = $apiBaseURL;
         $this->authToken = $authToken;
         $this->setupToken = $setupToken;
+        $this->logger = $logger;
+        $this->spUUID = $spUUID;
     }
 
      /**
@@ -51,6 +56,8 @@ class SaxIDAPI
 
         // execute request
         $result = file_get_contents($apiurl, false, stream_context_create($options));
+        $this->logger->info('API GET Services result: ' . $result);
+        return json_decode($result, true);
     }
 
      /**
@@ -70,18 +77,19 @@ class SaxIDAPI
 
         // execute request
         $result = file_get_contents($apiurl, false, stream_context_create($options));
+        $this->logger->info('API GET Res result: ' . $result);
+        return json_decode($result, true);
     }
 
     /**
      * POST: Erstellt lokal neue Ressource anhand eines SetupToken und Metadaten, die durch das Plugin eines Dienstes mitgesendet werden
      *
      * @param string $eppn EduPersonPrinicalName e.g. user1@tu-dresden.de
-     * @param string $spUUID uuid for the sp in the api
      * @param string $deleteDate delete Date
      * @param string $expirationDate expiry date
      *
      */
-    public function createAPIEntry($eppn, $spUUID = '076f2d546d034c8f923c9bb76aa37c9e', $deleteDate, $expirationDate)
+    public function createAPIEntry($eppn, $deleteDate, $expirationDate)
     {
         $apiurl = $this->apiBaseURL . "res/";
         //$format = 'Y-m-d\TH:i:s\Z';
@@ -89,10 +97,11 @@ class SaxIDAPI
 
         // data for post request
         $data = [
+            'sp_primary_key' => $eppn,
             'eppn' => $eppn,
             'expiry_date' => $expirationDate,
             'deletion_date' => $deleteDate,
-            'sp' => $spUUID,
+            'sp' => $this->spUUID,
             'setup_token' => $this->setupToken
         ];
         $options = [
@@ -105,5 +114,7 @@ class SaxIDAPI
 
         // execute request
         $result = file_get_contents($apiurl, false, stream_context_create($options));
+        $this->logger->info('API create result: ' . $result);
     }
+
 }

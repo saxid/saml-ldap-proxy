@@ -15,7 +15,7 @@ $config = array(
     // and Shibboleth 1.3 IdPs.
     'saxid-ldap-proxy' => array(
         'saml:SP',
-        'privatekey' => 'saml.pem',
+        'privatekey' => 'saml.pem.key',
         'certificate' => 'saml.crt',
 
         // The entity ID of this SP.
@@ -57,6 +57,24 @@ $config = array(
          * The metadata will then be created as follows:
          * <md:RequestedAttribute FriendlyName="friendlyName" Name="name" />
          */
+         'attributes' => array(
+           // Specify friendly names for these attributes:
+           'eduPersonPrincipalName' => 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6',
+           'urn:oid:1.3.6.1.4.1.5923.1.1.1.9', //Scoped Affilation
+           'urn:oid:1.3.6.1.4.1.5923.1.1.1.7', //Entitlement
+           'urn:oid:2.5.4.3', //cn
+           'mail' => 'urn:oid:0.9.2342.19200300.100.1.3',
+           'sn' => 'urn:oid:2.5.4.4',
+           'givenName' => 'urn:oid:2.5.4.42',
+         ),
+         //ePPN
+         'attributes.required' => array (
+           'urn:oid:1.3.6.1.4.1.5923.1.1.1.6',
+           'urn:oid:0.9.2342.19200300.100.1.3',
+         ),
+         
+         'attributes.NameFormat' => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic',
+
         /*'attributes' => array(
             'attrname' => 'urn:oid:x.x.x.x',
         ),*/

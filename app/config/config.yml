@@ -53,15 +53,15 @@ assetic:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
 # Doctrine Configuration
-doctrine:
-    dbal:
-        driver:   pdo_mysql
-        host:     "%database_host%"
-        port:     "%database_port%"
-        dbname:   "%database_name%"
-        user:     "%database_user%"
-        password: "%database_password%"
-        charset:  UTF8
+#doctrine:
+    #dbal:
+        #driver:   pdo_mysql
+        #host:     "%database_host%"
+        #port:     "%database_port%"
+        #dbname:   "%database_name%"
+        #user:     "%database_user%"
+        #password: "%database_password%"
+        #charset:  UTF8
         # if using pdo_sqlite as your database driver:
         #   1. add the path in parameters.yml
         #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
@@ -69,10 +69,10 @@ doctrine:
         #   3. Uncomment next line:
         #     path:     "%database_path%"
 
-    orm:
-        auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
+    #orm:
+        #auto_generate_proxy_classes: "%kernel.debug%"
+        #naming_strategy: doctrine.orm.naming_strategy.underscore
+        #auto_mapping: true
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -83,6 +83,7 @@ swiftmailer:
     spool:     { type: memory }
 
 # SimplesamlphpBundle Configuration
+# maybe try to filter through simplesamlphp in config.php, check -> https://simplesamlphp.org/docs/stable/simplesamlphp-authproc#section_1_1
 saxid_simplesamlphp:
     sp: saxid-ldap-proxy
-    authentication_attribute: urn:oid:1.3.6.1.4.1.5923.1.1.1.6
+    authentication_attribute: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.6', 'urn:mace:dir:attribute-def:eduPersonPrincipalName']

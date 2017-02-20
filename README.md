@@ -39,21 +39,53 @@ Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
 1. Virtual Host einrichten: die Environment-Variablen `SIMPLESAMLPHP_*_DIR`/`SAXIDLDAPPROXY_LOG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp sind obligatorisch.
 
         Alias /simplesamlphp /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp
-        <VirtualHost /n*:443>
-            ServerName saxid.zih.tu-dresden.de
-            DocumentRoot /srv/www/htdocs/saxid-ldap-proxy/web
 
-            SSLEngine on
-            SSLCertificateKeyFile /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.key.pem
-            SSLCertificateFile /etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem
-            SSLCertificateChainFile /etc/apache2/ssl.crt/chain.txt
+        <FilesMatch '^\.[Dd][Ss]_[Ss]'>
+                Require all denied
+        </FilesMatch>
 
-            SetEnv SIMPLESAMLPHP_CONFIG_DIR /var/simplesamlphp/config
-            SetEnv SIMPLESAMLPHP_METADATA_DIR /var/simplesamlphp/metadata
-            SetEnv SIMPLESAMLPHP_CERT_DIR /var/simplesamlphp/cert
-            SetEnv SIMPLESAMLPHP_LOG_DIR /var/log/simplesamlphp
-            SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/www/saxid-ldap-proxy
+        TraceEnable off
+
+        <IfDefine SSL>
+        <IfDefine !NOSSL>
+
+        <VirtualHost *:443>
+        DocumentRoot /srv/www/htdocs/saxid-ldap-proxy/web
+        Redirect permanent /srv/www/htdocs/saxid-ldap-proxy/web/web /srv/www/htdocs/saxid-ldap-proxy/web
+        ServerAdmin server.admin@tu-dresden.de
+        ServerName saxid.zih.tu-dresden.de
+
+        SSLEngine on
+        SSLCertificateKeyFile /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.nocrypt.key.pem
+        SSLCertificateFile /etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem
+        SSLCertificateChainFile /etc/apache2/ssl.crt/chain.txt
+
+        SetEnv SIMPLESAMLPHP_CONFIG_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/config
+        SetEnv SIMPLESAMLPHP_CERT_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert
+        SetEnv SIMPLESAMLPHP_METADATA_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/metadata
+        #SetEnv SIMPLESAMLPHP_LOG_DIR /srv/www/htdocs/saxid-ldap-proxy/app/logs/simplesamlphp
+        #SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/www/saxid-ldap-proxy
+
+        # HSTS (mod_headers is required) (15768000 seconds = 6 months)
+        Header always set Strict-Transport-Security "max-age=15768000"
+
         </VirtualHost>
+
+        # modern configuration, tweak to your needs
+        SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
+        SSLCipherSuite          ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+        SSLHonorCipherOrder     on
+        SSLCompression          off
+
+        # OCSP Stapling, only in httpd 2.3.3 and later
+        SSLUseStapling          on
+        SSLStaplingResponderTimeout 5
+        SSLStaplingReturnResponderErrors off
+        SSLStaplingCache        shmcb:/var/run/ocsp(128000)
+
+        </IfDefine>
+        </IfDefine>
+
 
 #### Hinweise ####
 
@@ -78,10 +110,22 @@ Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyB
 
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f saxid-organisations.ldif
 
+1. core-Schema um neue ObjektKlasse und neue Attribute erweitern :
+{55}( 2.6.0.5 NAME ( 'lastAcademyUIDNumber' ) DESC 'The last used UIDNumber for a academy' SUP name ) 
+{27}( 2.6.0.1 NAME 'saxID' DESC 'SaxID attributes' SUP top AUXILIARY MAY (uidNumberPrefix $ lastUserUIDNumber $ lastAcademyUIDNumber $ userServices))
+
+        ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f new_attrs.ldif
+
 ### <a name="php"></a>Installation PHP-Repository ###
 
 1. SaxID-LDAP-Proxy-Repository beziehen (z.B. gitlab@TUC) und installieren (`composer install`)
 1. Shibboleth ServiceProvider beim lokalen Shibboleth IdP bekannt machen
+
+# Cache
+
+Prüfen bzw setzen, so dass der Cache vom Webserver beschreibbar ist!
+
+    chown -R wwwrun:www app/cache
 
 ### <a name="optional"></a>Optionale Installationen ###
 
@@ -103,7 +147,7 @@ Ich (Moritz) habe stets lokal entwickelt, und dann per (P)SCP auf die VM übertr
 * `deploy-vm-src.sh`: Deployment nur `src/`-Folder
 * `deploy-vm-config.sh`: Deployment nur `app/config/`-Folder
 
-Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeichnis vor der Übertragung komprimiert wird und auf dem Server wieder entpackt wird.
+Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeichnis vor der Übertragung komprimiert wird und auf dem Server wieder entpackt wird. Alternativ kann die git pull routine auf dem Server genutzt werden.
 
 * `deploy.sh` : Deployment zipped (gz) Folder
 
@@ -115,12 +159,6 @@ Paket- und Dependencymanagement für PHP. Ist auf VM unter `/opt/composer` insta
 
 Roh-Assets sind in `src/Saxid/SaxidLdapProxyBundle/Resource/public` und werden per Befehl
 
-    php app/console assets:install --symlink
+    php app/console assets:install --symlink path_to_installfolder/web
 
-in den Order `web/bundles/...` compiliert. Wenn die Assets ohne `--symlinks` installiert werden, muss der Befehl nach jeder Änderung in `src/` aufgerufen werden.
-
-# Cache
-
-Prüfen ob der Cache vom Webserver beschreibbar ist und setzen des "Webserver-Users"!
-
-    chown -R wwwrun:www app/cache
+in den Order `web/bundles/...` compiliert. Wenn die Assets ohne `--symlink` installiert werden, muss der Befehl nach jeder Änderung in `src/` aufgerufen werden.

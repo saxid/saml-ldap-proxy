@@ -39,10 +39,12 @@ class LdapController extends Controller
     public function readuserAction(Request $request)
     {
       $session = $request->getSession();
-      if ($session->get('tosyes') != 'DONE' )
+      if ( empty($session->get('tosyes')) && empty($session->get('Ldapuser')))
       {
         // redirect to the "homepage" route
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
+      } else {
+
       }
 
       if(!$this->getUser()->isFromSaxonAcademy()) {
@@ -60,13 +62,13 @@ class LdapController extends Controller
           // gets user-data from LDAP and returns the LdapUser-Class
           $ldapuser = $slp->getLdapUser("uid=" . $saxidUser->getUid());
 
-          $status = $slp->getStatus();
+          //$status = $slp->getStatus();
 
           $slp->disconnect();
 
-          $this->addFlash(
-              $status['type'],
-              $status['message']
+          $this->addFlash( "info", "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern/setzen."
+              //$status['type'],
+              //$status['message']
           );
       }
 

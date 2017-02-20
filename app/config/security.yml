@@ -7,6 +7,10 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        default:
+            pattern: ^/imprint
+            anonymous: ~
+            context: saml
         saml:
             pattern: ^/
             anonymous: true
@@ -18,7 +22,8 @@ security:
                 path:   /logout
                 success_handler: simplesamlphp.logout_handler
 
+
     access_control:
-        - { path: ^/,         roles: IS_AUTHENTICATED_FULLY }
         # Make imprint accessible for anonymous access
-        - { path: ^/imprint$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/imprint, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/,        roles: IS_AUTHENTICATED_FULLY }

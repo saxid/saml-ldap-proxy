@@ -10,90 +10,19 @@ use Saxid\SaxidLdapProxyBundle\Form\UserPasswordType;
 
 class PasswordController extends Controller
 {
-
     /**
-     * @Route("/chpwd", name="saxid_ldap_proxy_password")
+     *
+     * @Route("/managepwd", name="saxid_ldap_proxy_password")
      */
-    public function chPasswordAction(Request $request)
-    {
-      $session = $request->getSession();
-      //redirect if user didn't accept tos
-      if ($session->get('tosyes') != 'DONE' )
-      {
-        // redirect to the "homepage" route
-        return $this->redirectToRoute('saxid_ldap_proxy_tos');
-      }
-
-      // Check if from saxony
-      if (!$this->getUser()->isFromSaxonAcademy())
-      {
-          $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP');
-          return $this->render('SaxidLdapProxyBundle::password.html.twig');
-      }
-
-      // Check if a button is pressed
-      if (is_null($request->get('btnChange')) && is_null($request->get('btnGenerate')))
-      {
-          return $this->render('SaxidLdapProxyBundle::password.html.twig');
-      }
-
-      // Get User Object
-      /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
-      $saxidUser = $this->getUser();
-
-      // get LDAP Access Object
-      $saxLdap = $this->get('saxid_ldap_proxy');
-
-      // Connect to LDAP
-      $saxLdap->connect();
-
-      $passwordToChange;
-      // Set new password
-      if (!is_null($request->get('btnChange')))
-      {
-          if (empty($request->get('newPassword')) || empty($request->get('newPasswordCheck')))
-          {
-              $this->addFlash("danger", "Error - Passwords are empty.");
-              return $this->render('SaxidLdapProxyBundle::password.html.twig');
-          }
-
-          if ($request->get('newPassword') != $request->get('newPasswordCheck'))
-          {
-              $this->addFlash("danger", "Error - Passwords are different.");
-              return $this->render('SaxidLdapProxyBundle::password.html.twig');
-          }
-
-          $passwordToChange = $request->get('newPassword');
-      }
-      // Generate new password
-      else if (!is_null($request->get('btnGenerate')))
-      {
-          $passwordToChange = $saxidUser->generateRandomPassword();
-          $this->addFlash("info", "Generated service password: " . $passwordToChange);
-      }
-
-      // Set password
-      $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $passwordToChange);
-
-      // Get status
-      $status = $saxLdap->getStatus();
-
-      // Close connection
-      $saxLdap->disconnect();
-
-      // Add status message to Symfony flashbag
-      $this->addFlash($status['type'], $status['message']);
-
-      return $this->render('SaxidLdapProxyBundle::password.html.twig');
-    }
-
     public function newAction(Request $request)
     {
       $session = $request->getSession();
-      if ($session->get('tosyes') != 'DONE' )
+      if ( empty($session->get('tosyes')) && empty($session->get('Ldapuser')))
       {
         // redirect to the "homepage" route
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
+      } else {
+
       }
       // Get User Object
       /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
@@ -113,10 +42,8 @@ class PasswordController extends Controller
       if ($form->get('generate')->isClicked()) {
 
           $newPass = $saxidUser->generateRandomPassword();
-          $this->addFlash("info", "Generated service password: " . $newPass);
-          $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $newPass );
-          $status = $saxLdap->getStatus();
-          $this->addFlash($status['type'], $status['message']);
+          $this->addFlash("info", "Dein erzeugtes Service-Passwort lautet: " . $newPass);
+          $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $newPass );
 
       }
 
@@ -124,11 +51,12 @@ class PasswordController extends Controller
 
           $data = $form->getData();
           // Set password
-          $saxLdap->setUserPassword($saxidUser->createLdapUserDN(), $data->getPassword() );
+          $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $data->getPassword() );
           // Get ldap-status
           $status = $saxLdap->getStatus();
           // Add status message to Symfony flashbag
-          $this->addFlash($status['type'], $status['message']);
+          //$this->addFlash($status['type'], $status['message']);
+          $this->addFlash("info", "Dein Passwort wurde gespeichert.");
 
           return $this->redirectToRoute('saxid_ldap_proxy_password');
       }
@@ -140,4 +68,51 @@ class PasswordController extends Controller
           'hpcform' => $form->createView(),
       ));
     }
+
+    /**
+     * old routine, not used anymore
+     * @Route("/chpwd", name="saxid_ldap_proxy_password")
+     */
+    public function chPasswordAction(Request $request)
+    {
+      //$session = $request->getSession();
+
+      // Check if a button is pressed
+      if (is_null($request->get('btnChange')) && is_null($request->get('btnGenerate')))
+      {
+          return $this->render('SaxidLdapProxyBundle::password.html.twig');
+      }
+
+      // Get User Object
+      /* @var $saxidUser \Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser */
+      // $saxidUser = $this->getUser();
+      //
+      // $passwordToChange;
+      // // Set new password
+      // if (!is_null($request->get('btnChange')))
+      // {
+      //     if (empty($request->get('newPassword')) || empty($request->get('newPasswordCheck')))
+      //     {
+      //         $this->addFlash("danger", "Error - Passwords are empty.");
+      //         return $this->render('SaxidLdapProxyBundle::password.html.twig');
+      //     }
+      //
+      //     if ($request->get('newPassword') != $request->get('newPasswordCheck'))
+      //     {
+      //         $this->addFlash("danger", "Error - Passwords are different.");
+      //         return $this->render('SaxidLdapProxyBundle::password.html.twig');
+      //     }
+      //
+      //     $passwordToChange = $request->get('newPassword');
+      // }
+      // // Generate new password
+      // else if (!is_null($request->get('btnGenerate')))
+      // {
+      //     $passwordToChange = $saxidUser->generateRandomPassword();
+      //     $this->addFlash("info", "Dein erzeugtes Service-Password: " . $passwordToChange);
+      // }
+
+      return $this->render('SaxidLdapProxyBundle::password.html.twig');
+    }
+
 }

@@ -3,9 +3,12 @@
 namespace Saxid\SaxidLdapProxyBundle\LdapProxy;
 
 use Saxid\SaxidLdapProxyBundle\Security\User\LdapUser;
+use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Fetches data from an SAML2 IdP and passes them through to an LDAP server
+ * Authors: Norman Walther (ZIH), Jan Frömberg (ZIH)
+ * Date: 2016 - 2017
  */
 class SaxidLdapProxy
 {
@@ -20,7 +23,7 @@ class SaxidLdapProxy
     //Other
     private $connected = false;
     private $debug = false;
-    private $logger;
+    private $mylogger;
     private $status;
 
     /**
@@ -32,16 +35,17 @@ class SaxidLdapProxy
      * @param string $ldap_pass The ldap user password
      * @param string $baseDN The baseDN for search
      */
-    function __construct($ldap_host, $ldap_port, $ldap_user, $ldap_pass, $baseDN)
+    function __construct($ldap_host, $ldap_port, $ldap_user, $ldap_pass, $baseDN, Logger $logger)
     {
         $this->ldapHost = $ldap_host;
         $this->ldapPort = $ldap_port;
         $this->ldapUser = $ldap_user;
         $this->ldapPassword = $ldap_pass;
         $this->baseDN = $baseDN;
+        $this->logger = $logger;
 
         //Start logger
-        $this->startLogging();
+        //$this->startLogging();
     }
 
     /**
@@ -66,14 +70,14 @@ class SaxidLdapProxy
         if (ldap_bind($this->ldapConnection))
         {
             $message = "connect - Connection to LDAP-Server (" . $this->ldapHost . ") successfully established.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
         }
         else
         {
             $errorMessage = $this->getLdapError("connect - Error: Connection to LDAP-Server (" . $this->ldapHost . ") could not be established.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             $this->connected = false;
             return false;
         }
@@ -82,19 +86,53 @@ class SaxidLdapProxy
         if (ldap_bind($this->ldapConnection, $this->ldapUser, $this->ldapPassword))
         {
             $message = "connect - Bind successfull.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             $this->connected = true;
         }
         else
         {
             $errorMessage = $this->getLdapError("connect - Error: Bind failed.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             $this->connected = false;
             return false;
         }
         return true;
+    }
+
+    /**
+     * Gets all LDAP Users
+     * like this:
+     *     0 => array:3 [▼
+     *  "edupersonprincipalname" => array:1 [▶]
+     *  0 => "edupersonprincipalname"
+     *  "dn" => "cn=norman,o=tu-dresden.de,dc=sax-id,dc=de"
+     *]
+     *
+     * will be transformed w/o count -> rCountRemover
+     *
+     * @return array Return an array with all ldap users and thier ePPNs
+     */
+    public function getAllUsers()
+    {
+
+      if (!$this->connected)
+      {
+          //$this->setStatus("getAllUser failed! - no connection to LDAP", LOGLEVEL::ERROR);
+          return;
+      }
+
+      $filter = "(|(objectclass=eduPerson))";
+      $justthese = array("eduPersonPrincipalName");
+
+      $sr = ldap_search($this->ldapConnection, $this->baseDN, $filter, $justthese);
+
+      $ePPNs = ldap_get_entries($this->ldapConnection, $sr);
+
+      //$this->setStatus($ePPNs["count"]." Entries fround.", LOGLEVEL::ERROR);
+
+      return $this->rCountRemover($ePPNs);
     }
 
     /**
@@ -103,13 +141,13 @@ class SaxidLdapProxy
      * @param string $seachParam Search parameter in following form: 'uid=norman'
      * @return bool Return object if user was found or false when not
      */
-    public function existsUser($seachParam)
+    public function userExist($seachParam)
     {
         if (!$this->connected)
         {
-            $errorMessage = "existsUser - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $errorMessage = "userExist - Error: No valid LDAP-Connection.";
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -130,8 +168,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "existsOrganization - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -139,16 +177,16 @@ class SaxidLdapProxy
 
         if (($searchResult = @ldap_search($this->ldapConnection, $organizationDN, $filter)) == false)
         {
-            $message = "existsOrganization - Organization '" . $organizationDN . "' doesn't exists.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $message = "existsOrganization - Organization '" . $organizationDN . "' doesn't exist.";
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return false;
         }
         else
         {
-            $message = "existsOrganization - Organization '" . $organizationDN . "' exists.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $message = "existsOrganization - Organization '" . $organizationDN . "' exist.";
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
         }
     }
@@ -165,8 +203,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "addLDAPObject - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -174,15 +212,15 @@ class SaxidLdapProxy
         if (ldap_add($this->ldapConnection, $dn, $data))
         {
             $message = "addLDAPObject - Object '" . $dn . "' successfully added.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
         }
         else
         {
             $errorMessage = $this->getLdapError("addLDAPObject - Error: Failed to add object.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
@@ -199,8 +237,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "modifyLDAPObject - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -208,15 +246,15 @@ class SaxidLdapProxy
         if (ldap_modify($this->ldapConnection, $dn, $data))
         {
             $message = "modifyLDAPObject - Object '" . $dn . "' successfully updated.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
         }
         else
         {
             $errorMessage = $this->getLdapError("modifyLDAPObject - Error: Update of object failed.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
@@ -232,8 +270,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "deleteLDAPObject - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -241,15 +279,15 @@ class SaxidLdapProxy
         if (ldap_delete($this->ldapConnection, $dn))
         {
             $message = "deleteLDAPObject - Object '" . $dn . "' successfully deleted.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
         }
         else
         {
             $errorMessage = $this->getLdapError("deleteLDAPObject - Error: Delete of '" . $dn . "' failed.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
@@ -257,7 +295,7 @@ class SaxidLdapProxy
     /**
      * Gets attributes of a user
      *
-     * @param string $seachParam search paramter in following form: 'uid=norman'
+     * @param string $seachParam search paramter in following form: 'uid=tud_norman'
      * @param array $returnAttributesFilter Filters the return values, default everything is shown. Example: array("dn, sn, mail, ...")
      *
      * @return array Return an array with userdata of a ldapuser
@@ -267,8 +305,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getUserData - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -276,43 +314,43 @@ class SaxidLdapProxy
         if (($searchResult = ldap_search($this->ldapConnection, $this->baseDN, $seachParam, $returnAttributesFilter)) == false)
         {
             $errorMessage = $this->getLdapError("getUserData - Error: LDAP search failed.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
         {
             $message = "getUserData - LDAP search successful.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
         }
 
         //Normally only 1 entry should be found
         if (ldap_count_entries($this->ldapConnection, $searchResult) == 1)
         {
             $message = "getUserData - Found 1 object.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
         }
         else if (ldap_count_entries($this->ldapConnection, $searchResult) == 0)
         {
             $errorMessage = "getUserData - Error: No object matching searchparameter was found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
         {
             $errorMessage = "getUserData - Error: Found '" . ldap_count_entries($this->ldapConnection, $searchResult) . "' objects matching searchparameter.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         //Get entry
         $entry = ldap_first_entry($this->ldapConnection, $searchResult);
         $attributes = ldap_get_attributes($this->ldapConnection, $entry);
-
+//TODO: there is a bug with the ldap user class and rCountRemover func
         return $attributes;
     }
 
@@ -326,8 +364,29 @@ class SaxidLdapProxy
     public function getLdapUser($seachParam)
     {
         $attrs = $this->getUserData($seachParam);
-
         return new LdapUser($attrs);
+    }
+
+    /**
+     * Gets an ldap-user of class-type LdapUser
+     *
+     * @param string $seachParam search paramter of form: 'uid=norman'
+     *
+     * @return array Return Array of LdapUser-Classes
+     */
+    public function getAllLdapUser()
+    {
+
+      $seachParam="eduPersonPrincipalName=";
+
+      $eppnusers = $this->getAllUsers();
+      $ldaparray = array();
+      foreach ($eppnusers as $usereppn){
+        $userattrs = $this->getUserData($seachParam . $usereppn['edupersonprincipalname'][0]);
+        $userattrs['dn'] = $usereppn['dn'];
+        $ldaparray[] = new LdapUser($userattrs);
+      }
+      return $ldaparray;
     }
 
     /**
@@ -342,23 +401,23 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         if (in_array($attributeKey, $searchResult) AND ! is_null($searchResult[$attributeKey][0]))
         {
             $message = "getAttribute - Found valid attribute with key '" . $attributeKey . "'.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return $searchResult[$attributeKey][0];
         }
         else
         {
             $errorMessage = "getAttribute - Error: Found no valid attribute with key '" . $attributeKey . "'.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
@@ -377,7 +436,7 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "setUserPassword - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
+            $this->logger->error($errorMessage);
             return;
         }
 
@@ -388,14 +447,14 @@ class SaxidLdapProxy
         if ($this->modifyLDAPObject($dn, $dataToModify))
         {
             $message = "setUserPassword - User password for '" . $dn . "' successfully changed.";
-            $this->logEvent($message);
+            $this->logger->info($message);
             return true;
         }
         else
         {
             $errorMessage = $this->getLdapError("setUserPassword - Error: Failed to set user password for '" . $dn . "'.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
@@ -408,8 +467,8 @@ class SaxidLdapProxy
         ldap_close($this->ldapConnection);
 
         $errorMessage = "disconnect - Connection to LDAP closed.";
-        $this->logEvent($errorMessage);
-        $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+        $this->logger->info($errorMessage);
+        //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
     }
 
     /**
@@ -459,16 +518,16 @@ class SaxidLdapProxy
         $ldaplogdir = getenv('SAXIDLDAPPROXY_LOG_DIR');
         if ($ldaplogdir === false)
         {
-            //$ldaplogdir = '/var/log/www/saxid-ldap-proxy';
-            $ldaplogdir = 'C:/tmp';
+            $ldaplogdir = '/var/log/www/saxid-ldap-proxy';
+            //$ldaplogdir = 'C:/tmp';
             //C:\TMP
         }
 
         $file = "{$ldaplogdir}/{$date}.log";
-        $this->logger = fopen($file, 'a');
+        $mylogger = fopen($file, 'a');
 
         $message = "Logger started.";
-        $this->logEvent($message);
+        $this->logger->info($message);
         $this->setStatus($message, LOGLEVEL::INFO);
     }
 
@@ -478,9 +537,9 @@ class SaxidLdapProxy
     public function stopLogging()
     {
         $message = "Logger stopped.";
-        $this->logEvent($message);
+        $this->logger->info($message);
         $this->setStatus($message, LOGLEVEL::INFO);
-        fclose($this->logger);
+        fclose($mylogger);
     }
 
     /**
@@ -489,7 +548,7 @@ class SaxidLdapProxy
      */
     private function logEvent($event)
     {
-        if (is_null($this->logger))
+        if (is_null($mylogger))
         {
             return;
         }
@@ -498,7 +557,7 @@ class SaxidLdapProxy
         {
             $datetime = date('Y-m-d H:i:s');
             $message = "[{$datetime}] {$event}" . PHP_EOL;
-            fwrite($this->logger, $message);
+            fwrite($mylogger, $message);
 
             //TMP Test
             print $message . "</br>";
@@ -530,12 +589,27 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "setLastUserUIDNumber - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         $dataToModify['lastUserUIDNumber'] = $data;
+
+        $this->modifyLDAPObject($dn, $dataToModify);
+    }
+
+    public function setUserShell($dn, $shell)
+    {
+        if (!$this->connected)
+        {
+            $errorMessage = "setUserShell - Error: No valid LDAP-Connection.";
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            return false;
+        }
+
+        $dataToModify['loginShell'] = $shell;
 
         $this->modifyLDAPObject($dn, $dataToModify);
     }
@@ -545,16 +619,16 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getLastUserUIDNumber - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         if ($this->getLDAPObject($dn, "lastUserUIDNumber") == FALSE)
         {
             $errorMessage = "getLastUserUIDNumber - Error: No object found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
@@ -568,8 +642,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "setLastAcademyUIDNumber - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
@@ -583,16 +657,16 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getLastAcademyUIDNumber - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         if (!$this->getLDAPObject($dn, "lastAcademyUIDNumber"))
         {
             $errorMessage = "getLastAcademyUIDNumber - Error: No object found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
@@ -606,8 +680,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getAttribute - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
@@ -621,16 +695,16 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getUIDNumberPrefix - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
         if (!$this->getLDAPObject($dn, "uidNumberPrefix"))
         {
             $errorMessage = "getUIDNumberPrefix - Error: No object found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
@@ -644,8 +718,8 @@ class SaxidLdapProxy
         if (!$this->connected)
         {
             $errorMessage = "getLDAPObject - Error: No valid LDAP-Connection.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return;
         }
 
@@ -655,36 +729,36 @@ class SaxidLdapProxy
         if (($searchResult = ldap_read($this->ldapConnection, $dn, $defaultSearchParam)) == false)
         {
             $errorMessage = $this->getLdapError("getLDAPObject - Error: LDAP search failed.");
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
         {
             $message = "getLDAPObject - LDAP search successful.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
         }
 
         //Normally only 1 entry should be found
         if (ldap_count_entries($this->ldapConnection, $searchResult) == 1)
         {
             $message = "getLDAPObject - Found 1 object.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
         }
         else if (ldap_count_entries($this->ldapConnection, $searchResult) == 0)
         {
             $errorMessage = "getLDAPObject - Error: No object matching searchparameter was found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
         else
         {
             $errorMessage = "getLDAPObject - Error: Found '" . ldap_count_entries($this->ldapConnection, $searchResult) . "' objects matching searchparameter.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
 
@@ -695,18 +769,32 @@ class SaxidLdapProxy
         if (array_key_exists($returnAttribut, $attributes))
         {
             $message = "getLDAPObject - Attribute '" . $returnAttribut . "' found.";
-            $this->logEvent($message);
-            $this->setStatus($message, LOGLEVEL::INFO);
+            $this->logger->info($message);
+            //$this->setStatus($message, LOGLEVEL::INFO);
             return $attributes[$returnAttribut][0];
         }
         else
         {
             $errorMessage = "getLDAPObject - Error: No attribute '" . $returnAttribut . "' found.";
-            $this->logEvent($errorMessage);
-            $this->setStatus($errorMessage, LOGLEVEL::ERROR);
+            $this->logger->error($errorMessage);
+            //$this->setStatus($errorMessage, LOGLEVEL::ERROR);
             return false;
         }
     }
+
+    private function rCountRemover($arr) {
+      foreach($arr as $key=>$val) {
+        # (int)0 == "count", so we need to use ===
+        if($key === "count") {
+          unset($arr[$key]);
+        }
+        elseif(is_array($val)){
+          $arr[$key] = $this->rCountRemover($arr[$key]);
+        }
+      }
+      return $arr;
+    }
+
 }
 abstract class LOGLEVEL
 {

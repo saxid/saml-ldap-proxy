@@ -11,6 +11,10 @@
         {
             "name": "Jan Frömberg",
             "email": "jan.froemberg@tu-dresden.de"
+        },
+        {
+            "name": "Norman Walther",
+            "email": "norman.walther@tu-dresden.de"
         }
     ],
     "autoload": {
@@ -28,7 +32,8 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "sax_id/simplesamlphp-bundle": "dev-master@dev"
+        "sax_id/simplesamlphp-bundle": "dev-master@dev",
+        "squizlabs/php_codesniffer": "^2.7"
     },
     "repositories": [
         {
