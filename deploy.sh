@@ -75,6 +75,7 @@ if [ "$UPLOAD" = true ]; then
   ssh $serverusr@$server php $installpath/app/console assets:install --symlink -- $installpath/web
   ssh $serverusr@$server php $installpath/app/console cache:clear --env=prod
   ssh $serverusr@$server php $installpath/app/console cache:clear --env=dev
+  ssh $serverusr@$server mkdir $installpath/app/logs/simplesamlphp
   ssh $serverusr@$server chown -R wwwrun:www $installpath/
 
   rm -f $uploadfile
