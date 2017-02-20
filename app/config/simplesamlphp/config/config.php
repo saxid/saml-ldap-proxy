@@ -470,12 +470,6 @@ $config = array(
              'class' => 'core:AttributeMap', 'addurnprefix'
          ), */
 
-        // eduPersonPrincipalName Attribute Mapping to SAML2-Name
-        10 => array(
-         'class' => 'core:AttributeMap',
-         'urn2oid',
-        ),
-
         /* Enable the authproc filter below to automatically generated eduPersonTargetedID.
         20 => 'core:TargetedID',
         */
@@ -532,6 +526,11 @@ $config = array(
             'class' => 'core:AttributeMap', 'removeurnprefix'
         ),
         */
+        // eduPersonPrincipalName Attribute Mapping to SAML2-Name
+        10 => array(
+         'class' => 'core:AttributeMap',
+         'urn2oid',
+        ),
 
         /*
          * Generate the 'group' attribute populated from other variables, including eduPersonAffiliation.
