@@ -116,10 +116,10 @@ $services = array(
 		'password' => true
 	),
 	array(
-		'name'     => 'ownCloud',
-		'academy'  => 'SaxID-Föderation',
-		'contact'  => 'Vorname Nachname',
-		'email'    => 'vorname.nachname(ett)domain.tld',
+		'name'     => 'ownCloud / nextCloud',
+		'academy'  => 'TU Chemnitz',
+		'contact'  => 'Daniel Klaffenbach',
+		'email'    => 'vorname.nachname(ett)tu-chemnitz.de',
 		'password' => false
 	),
 	array(

@@ -7,7 +7,7 @@
 
 			<section id="userdata">
 				<ul>
-					<li>Login Server: <code>saxid-login.zih.tu-dresden.de</code></li>
+					<li>Login Server: <code>ssh://{{ ldapuser.uid }}@saxid-login.zih.tu-dresden.de</code></li>
 					<li>Login Name(uid): <code>{{ ldapuser.uid }}</code></li>
 					<li>uid-Number: <code>{{ ldapuser.uidNumber }}</code></li>
 					<li>gid-Number: <code>{{ ldapuser.gidNumber }}</code></li>
@@ -17,7 +17,6 @@
 					<li>Common Name: <code>{{ ldapuser.cn }}</code></li>
 					<li>E-Mail: <code>{{ ldapuser.mail }}</code></li>
 					<li>Academy: <code>{{ ldapuser.o }}</code></li>
-					<li>Academy Domain: <code>{{ ldapuser.ou }}</code></li>
 					<li>Login Shell: <code>{{ ldapuser.loginShell }}</code></li>
 					<li>Home Directory: <code>{{ ldapuser.homeDirectory }}</code></li>
 					<li>User Services: <code>{{ ldapuser.userServices }}</code></li>

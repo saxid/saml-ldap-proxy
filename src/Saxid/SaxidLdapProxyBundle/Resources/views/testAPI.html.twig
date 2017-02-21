@@ -2,26 +2,50 @@
 
 {% block body %}
 
-<ul>
-{% for service in apiservices %}
- <li><code><b> {{ service.name }} </b></code></li>
- <li>realm: <code> {{ service.realm }} </code></li>
- <li>expired: <code> {{ service.expiry_date }} </code></li>
- <br>
-{% endfor %}
-</ul>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Service-Name</th>
+      <th>Realm</th>
+      <th>Expiry_Date</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for service in apiservices %}
+     <tr>
+       <td><code> {{ service.name }} <code></td>
+       <td><code> {{ service.realm }} </code></td>
+       <td><code> {{ service.expiry_date }} </code></td>
+     </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
 
 <hr>
 
-<ul>
-{% for res in apiresources %}
- <li>eppn: <code><b> {{ res.eppn }} </b></code></li>
- <li>realm: <code> {{ res.realm_idp }} </code></li>
- <li>added: <code> {{ res.added }} </code></li>
- <li>expired: <code> {{ res.expiry_date }} </code></li>
- <li>deletion: <code> {{ res.deletion_date }} </code></li>
- <br>
-{% endfor %}
-</ul>
+<div class="panel-group" id="accordion">
+{% for key,res in apiresources %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ key }}">
+        {{ res.eppn }}</a>
+      </h4>
+    </div>
+    <div id="collapse-{{ key }}" class="panel-collapse collapse">
+      <div class="panel-body">
+      <ul>
+        <li>realm: <code> {{ res.realm_idp }} </code></li>
+        <li>added: <code> {{ res.added }} </code></li>
+        <li>expired: <code> {{ res.expiry_date }} </code></li>
+        <li>deletion: <code> {{ res.deletion_date }} </code></li>
+      </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
 {% endblock body %}

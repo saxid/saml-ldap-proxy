@@ -99,7 +99,7 @@ class DefaultController extends Controller
 
               // generate user password
               $initialPassword = $saxidUser->generateRandomPassword();
-              $this->addFlash("info", "Dein initiales Service-Passwort (bitte merken): " . $initialPassword);
+              $this->addFlash("warning", "Dein initiales Service-Passwort (bitte merken bzw. ändern unter 'Mein Konto'): " . $initialPassword);
               $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $initialPassword);
 
               // Add user to SaxIDAPI
@@ -127,7 +127,7 @@ class DefaultController extends Controller
 
           // Add status message to Symfony flashbag
           //$this->addFlash($status['type'], $status['message']);
-          $this->addFlash('info', 'Hallo ' . $saxidUser->getSurname() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
+          $this->addFlash('success', 'Hallo ' . $saxidUser->getSurname() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
           // set init user check and write to do this only once per page load
           $session->set('status', 'DONE');
         }
@@ -150,7 +150,7 @@ class DefaultController extends Controller
           $session->set('Ldapuser', '1');
           // Modify entry
           $saxLdap->modifyLDAPObject($this->getUser()->createLdapUserDN($this->getParameter('ldap_baseDN')), $this->getUser()->createLdapDataArray());
-          $this->addFlash('info', 'Willkommen zurück ' . $this->getUser()->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert.');
+          $this->addFlash('info', 'Willkommen zurück ' . $this->getUser()->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert. Details findest du unter Mein Konto im Menu oben.');
         }
 
         // Close connection

@@ -18,7 +18,6 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $uid;
     private $uidNumber;
     private $password;
-    private $uncryptPassword;
     private $username;
     private $salt;
     private $email;
@@ -209,17 +208,6 @@ class SaxidUser implements UserInterface, EquatableInterface
     public function getPassword()
     {
         return $this->password;
-    }
-
-    public function setUncryptPassword($password)
-    {
-        $this->uncryptPassword = $password;
-        return $this;
-    }
-
-    public function getUncryptPassword()
-    {
-        return $this->uncryptPassword;
     }
 
     public function setEduPersonPrincipalName($eduPersonPrincipalName)
@@ -615,7 +603,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         $data['sn'] = $this->getSurname();
         $data['cn'] = $this->getCommonName();
         $data['mail'] = $this->getEmail();
-        $data['ou'] = $this->getOrganizationalUnitName();
+        //$data['ou'] = $this->getOrganizationalUnitName();
         $data['o'] = $this->getAcademy();
         $data['displayName'] = $this->getDisplayName();
         //$data['userPassword'] = $this->getPassword();

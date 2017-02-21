@@ -56,7 +56,7 @@ class PasswordController extends Controller
           $status = $saxLdap->getStatus();
           // Add status message to Symfony flashbag
           //$this->addFlash($status['type'], $status['message']);
-          $this->addFlash("info", "Dein Passwort wurde gespeichert.");
+          $this->addFlash("success", "Dein Passwort wurde gespeichert.");
 
           return $this->redirectToRoute('saxid_ldap_proxy_password');
       }
