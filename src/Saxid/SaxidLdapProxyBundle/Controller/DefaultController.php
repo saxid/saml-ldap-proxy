@@ -21,7 +21,8 @@ class DefaultController extends Controller
 
         if (!$this->getUser()->isFromSaxonAcademy())
         {
-            $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP');
+            $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP. Please Contact your Service-Provider-Admin to add your academy.');
+            return $this->render('SaxidLdapProxyBundle::index.html.twig');;
         }
 
         // redirect if TOS not yet accepted
@@ -127,7 +128,7 @@ class DefaultController extends Controller
 
           // Add status message to Symfony flashbag
           //$this->addFlash($status['type'], $status['message']);
-          $this->addFlash('success', 'Hallo ' . $saxidUser->getSurname() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
+          $this->addFlash('success', 'Hallo ' . $saxidUser->getGivenName() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
           // set init user check and write to do this only once per page load
           $session->set('status', 'DONE');
         }

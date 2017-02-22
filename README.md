@@ -36,12 +36,10 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
         /etc/apache2/httpd.conf.local
 
-1. Virtual Host einrichten: die Environment-Variablen `SIMPLESAMLPHP_*_DIR`/`SAXIDLDAPPROXY_LOG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp sind obligatorisch.
-
-        Alias /simplesamlphp /srv/www/htdocs/saxid-ldap-proxy/vendor/simplesamlphp/simplesamlphp
+1. Virtual Host einrichten: die Environment-Variable `SIMPLESAMLPHP_CONFIG_DIR` mit Verweis auf die entsprechenden Konfigurationsdateien für SimpleSAMLphp ist obligatorisch.
 
         <FilesMatch '^\.[Dd][Ss]_[Ss]'>
-                Require all denied
+        Require all denied
         </FilesMatch>
 
         TraceEnable off
@@ -50,24 +48,26 @@ Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
         <IfDefine !NOSSL>
 
         <VirtualHost *:443>
-        DocumentRoot /srv/www/htdocs/saxid-ldap-proxy/web
-        Redirect permanent /srv/www/htdocs/saxid-ldap-proxy/web/web /srv/www/htdocs/saxid-ldap-proxy/web
-        ServerAdmin server.admin@tu-dresden.de
+
+        DocumentRoot /path/to/web
+        Redirect permanent /path/to/web/web /path/to/web
+        ServerAdmin server.admin@domain.tld
         ServerName saxid.zih.tu-dresden.de
 
         SSLEngine on
-        SSLCertificateKeyFile /etc/apache2/ssl.key/saxid.zih.tu-dresden.de.nocrypt.key.pem
-        SSLCertificateFile /etc/apache2/ssl.crt/saxid.zih.tu-dresden.de.pem
-        SSLCertificateChainFile /etc/apache2/ssl.crt/chain.txt
+        SSLCertificateKeyFile /path/to/ssl/keyfile.pem
+        SSLCertificateFile /path/to/ssl/certfile.pem
+        SSLCertificateChainFile /path/to/ssl/chainfile.txt
 
-        SetEnv SIMPLESAMLPHP_CONFIG_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/config
-        SetEnv SIMPLESAMLPHP_CERT_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert
-        SetEnv SIMPLESAMLPHP_METADATA_DIR /srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/metadata
-        #SetEnv SIMPLESAMLPHP_LOG_DIR /srv/www/htdocs/saxid-ldap-proxy/app/logs/simplesamlphp
-        #SetEnv SAXIDLDAPPROXY_LOG_DIR /var/log/www/saxid-ldap-proxy
+        Alias /simplesamlphp /path/to/vendor/simplesamlphp/simplesamlphp/www
+
+        SetEnv SIMPLESAMLPHP_CONFIG_DIR /path/to/app/config/simplesamlphp/config
 
         # HSTS (mod_headers is required) (15768000 seconds = 6 months)
         Header always set Strict-Transport-Security "max-age=15768000"
+
+        # to avoid clickjacking
+        Header always append X-Frame-Options SAMEORIGIN
 
         </VirtualHost>
 
@@ -94,15 +94,20 @@ Die Anpassungen an der Apache-Konfiguration befinden sich in der Datei
 
 ### <a name="ldap"></a>LDAP-Konfiguration ###
 
+Es gibt Probleme bei der TLS-Verbindung. Um diese zu Umgehen benötigt der LDAP die Anweisung TLS_REQCERT=never (normalerweise auf 'demand')
+
 1. /etc/openldap/ldap.conf
 
-        host    localhost
-        base    dc=sax-id,dc=de
-        binddn  cn=admin,dc=sax-id,dc=de
+        host	localhost
+        base	dc=sax-id,dc=de
+        binddn	cn=readuser,dc=sax-id,dc=de
+
+        TLS_REQCERT never
+        TLS_CACERT /path/to/certs/ca_cert_chain.pem
 
 Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyBundle/Resources/schema`.
 
-1. LDAP-Fremdschemata importieren ([mindestens `eduPerson`, `SCHAC`, `dfnEduPerson`](https://www.aai.dfn.de/der-dienst/attribute/))
+1. LDAP-Fremdschemata importieren ([mindestens `eduPerson`, `SCHAC`, `dfnEduPerson`, `nis`](https://www.aai.dfn.de/der-dienst/attribute/))
 
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f file.ldif
 
@@ -111,7 +116,7 @@ Hinweis: Die LDIF-Dateien liegen im Repository-Folder `src/Saxid/SaxidLdapProxyB
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f saxid-organisations.ldif
 
 1. core-Schema um neue ObjektKlasse und neue Attribute erweitern :
-{55}( 2.6.0.5 NAME ( 'lastAcademyUIDNumber' ) DESC 'The last used UIDNumber for a academy' SUP name ) 
+{55}( 2.6.0.5 NAME ( 'lastAcademyUIDNumber' ) DESC 'The last used UIDNumber for a academy' SUP name )
 {27}( 2.6.0.1 NAME 'saxID' DESC 'SaxID attributes' SUP top AUXILIARY MAY (uidNumberPrefix $ lastUserUIDNumber $ lastAcademyUIDNumber $ userServices))
 
         ldapadd -Q -Y EXTERNAL -H ldapi:/// -W -f new_attrs.ldif
@@ -149,11 +154,11 @@ Ich (Moritz) habe stets lokal entwickelt, und dann per (P)SCP auf die VM übertr
 
 Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeichnis vor der Übertragung komprimiert wird und auf dem Server wieder entpackt wird. Alternativ kann die git pull routine auf dem Server genutzt werden.
 
-* `deploy.sh` : Deployment zipped (gz) Folder
+* `./deploy.sh true` : Deployment zipped (gz) Folder
 
 # Composer
 
-Paket- und Dependencymanagement für PHP. Ist auf VM unter `/opt/composer` installiert. Nach clonen des git-Repositories müssen die externen Pakete mit `composer install` hinzugefügt werden.
+Paket- und Dependencymanagement für PHP. Ist auf VM unter `/opt/composer` derzeit nicht installiert. Nach clonen des git-Repositories müssen die externen Pakete mit `composer install` hinzugefügt werden.
 
 # Assets
 

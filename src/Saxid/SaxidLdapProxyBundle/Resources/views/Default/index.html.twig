@@ -17,10 +17,10 @@
 			<li>email: <code>{{ app.user.email }}</code></li>
 			<li>eduPersonPrincipalName: <code>{{ app.user.eduPersonPrincipalName }}</code></li>
 			<li>eduPersonEntitlement: <code>{{ app.user.eduPersonEntitlement }}</code></li>
-			<li>eduPersonScopedAffiliation: <code>{{ app.user.eduPersonScopedAffiliation }}</code></li>
-
+			
 			{#<li>eduPersonOrgUnitDN: <code>{{ app.user.eduPersonOrgUnitDN }}</code></li>
 			<li>eduPersonAffiliation: <code>{{ app.user.eduPersonAffiliation }}</code></li>
+			<li>eduPersonScopedAffiliation: <code>{% if app.user.eduPersonScopedAffiliation %}{{ app.user.eduPersonScopedAffiliation }}{% endif %}</code></li>
 			<li>eduPersonPrimaryAffiliation: <code>{{ app.user.eduPersonPrimaryAffiliation }}</code></li>
 			<li>organizationalUnitName: <code>{{ app.user.organizationalUnitName }}</code></li>#}
 

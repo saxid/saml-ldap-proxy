@@ -62,13 +62,13 @@ class LdapController extends Controller
           // gets user-data from LDAP and returns the LdapUser-Class
           $ldapuser = $slp->getLdapUser("uid=" . $saxidUser->getUid());
 
-          //$status = $slp->getStatus();
+          $status = $slp->getStatus();
 
           $slp->disconnect();
 
-          $this->addFlash( "info", "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern/setzen."
-              //$status['type'],
-              //$status['message']
+          $this->addFlash(
+              $status['type'],
+              $status['message']
           );
       }
 

@@ -15,6 +15,10 @@ class TestAPIController extends Controller
 
         $as = $sapi->getServices();
         $ar = $sapi->getRessources();
+        foreach ($ar as $key => $value) {
+          $ret[$value['eppn']] = $value;
+        }
+        ksort($ret, SORT_STRING);
 
         // Connect to LDAP and get Users
         $slp = $this->get('saxid_ldap_proxy');
@@ -26,7 +30,7 @@ class TestAPIController extends Controller
         }
         dump($tmparr2);
 
-        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as, 'apiresources' => $ar ) );
+        return $this->render('SaxidLdapProxyBundle::testAPI.html.twig', array( 'apiservices' => $as, 'apiresources' => $ret ) );
     }
 
     //TEST

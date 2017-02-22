@@ -328,8 +328,8 @@ class SaxidLdapProxy
         //Normally only 1 entry should be found
         if (ldap_count_entries($this->ldapConnection, $searchResult) == 1)
         {
-            $message = "getUserData - Found 1 object.";
-            $this->logger->info($message);
+            //$message = "getUserData - Found 1 object.";
+            //$this->logger->info($message);
             //$this->setStatus($message, LOGLEVEL::INFO);
         }
         else if (ldap_count_entries($this->ldapConnection, $searchResult) == 0)
@@ -364,6 +364,15 @@ class SaxidLdapProxy
     public function getLdapUser($seachParam)
     {
         $attrs = $this->getUserData($seachParam);
+        if (isset($attrs)) {
+          $this->setStatus( "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern/setzen.",
+          "info"
+          );
+        } else {
+          $this->setStatus( "Ooops, es gab leider ein Problem mit der Datenbank. Bitte wende dich an den Servicedesk.",
+          LOGLEVEL::DANGER);
+          $this->logger->error("Error at LDAP-User retreaval. See Logfile.");
+        }
         return new LdapUser($attrs);
     }
 
@@ -520,7 +529,6 @@ class SaxidLdapProxy
         {
             $ldaplogdir = '/var/log/www/saxid-ldap-proxy';
             //$ldaplogdir = 'C:/tmp';
-            //C:\TMP
         }
 
         $file = "{$ldaplogdir}/{$date}.log";
@@ -799,8 +807,10 @@ class SaxidLdapProxy
 abstract class LOGLEVEL
 {
     const ERROR = "ERROR";
-    const INFO = "INFO";
-    const WARNING = "WARNING";
+    const SUCCESS = "success";
+    const INFO = "info";
+    const WARNING = "warning";
+    const DANGER = "danger";
     const DEBUG = "DEBUG";
 
 }
