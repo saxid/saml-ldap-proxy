@@ -371,7 +371,7 @@ class SaxidLdapProxy
         } else {
           $this->setStatus( "Ooops, es gab leider ein Problem mit der Datenbank. Bitte wende dich an den Servicedesk.",
           LOGLEVEL::DANGER);
-          $this->logger->error("Error at LDAP-User retreaval. See Logfile.");
+          $this->logger->error("Error at LDAP-User retreval. See Logfile.");
         }
         return new LdapUser($attrs);
     }

@@ -42,7 +42,7 @@ class PasswordController extends Controller
       if ($form->get('generate')->isClicked()) {
 
           $newPass = $saxidUser->generateRandomPassword();
-          $this->addFlash("info", "Dein erzeugtes Service-Passwort lautet: " . $newPass);
+          $this->addFlash("success", "Dein erzeugtes Service-Passwort lautet: " . $newPass);
           $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $newPass );
 
       }

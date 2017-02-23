@@ -2,6 +2,8 @@
 
 namespace Saxid\SaxidLdapProxyBundle\Security\User;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Represents a LdapUser with his/her Attributes including his/hers DN
  */
@@ -14,6 +16,14 @@ class LdapUser
     protected $uidNumber = "no Data";
     protected $gidNumber = "no Data";
     protected $mail = "no Data";
+    /**
+     * @Assert\Length(
+     *      min = 7,
+     *      max = 12,
+     *      minMessage = "Your password must be at least {{ limit }} characters long",
+     *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
+     * )
+     */
     protected $userPassword = "no Data";
     protected $o = "no Data";
     protected $ou = "no Data";

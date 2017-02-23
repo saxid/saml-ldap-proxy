@@ -4,6 +4,7 @@ namespace Saxid\SaxidLdapProxyBundle\Security\User;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User class with all necessary infos
@@ -17,6 +18,14 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $displayName;
     private $uid;
     private $uidNumber;
+    /**
+     * @Assert\Length(
+     *      min = 7,
+     *      max = 12,
+     *      minMessage = "Your password must be at least {{ limit }} characters long",
+     *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
+     * )
+     */
     private $password;
     private $username;
     private $salt;
@@ -176,6 +185,7 @@ class SaxidUser implements UserInterface, EquatableInterface
         return true;
     }
 
+    // example: uid=tud_def
     public function setUid($uid)
     {
         $this->uid = self::$uidPrefixMapping[$this->getAcademyDomain()] . "_" . $uid;
