@@ -61,6 +61,15 @@ class PasswordController extends Controller
           return $this->redirectToRoute('saxid_ldap_proxy_password');
       }
 
+      if (!$form->isValid()) {
+
+        $validator = $this->get('validator');
+        $errors = $validator->validate($saxidUser);
+        foreach ($errors as $key => $err) {
+          $this->addFlash("warning", $err->getMessage());
+        }
+      }
+
       // Close connection
       $saxLdap->disconnect();
 

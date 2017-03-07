@@ -11,6 +11,11 @@ class TestAPIController extends Controller
 
     public function queryapiAction()
     {
+
+        if (false === $this->get('security.authorization_checker')->isGranted('SAXIDUSER')) {
+          throw new AccessDeniedException();
+        }
+
         $sapi = $this->get('saxid_ldap_proxy.saxapi');
 
         $as = $sapi->getServices();

@@ -19,11 +19,17 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $uid;
     private $uidNumber;
     /**
+     * @Assert\NotBlank()
      * @Assert\Length(
      *      min = 7,
-     *      max = 12,
+     *      max = 16,
      *      minMessage = "Your password must be at least {{ limit }} characters long",
      *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
+     * )
+     * @Assert\Regex(
+     *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[@#$%])\S*$/",
+     *     match=true,
+     *     message="Your password must contain a number, one special char '@#$%', upper and lowercase characters."
      * )
      */
     private $password;
