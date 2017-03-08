@@ -19,6 +19,12 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $uid;
     private $uidNumber;
     /**
+    * @SecurityAssert\UserPassword(
+    *     message = "Wrong value for your current password"
+    * )
+    */
+    protected $oldPassword;
+    /**
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = 7,
@@ -29,7 +35,7 @@ class SaxidUser implements UserInterface, EquatableInterface
      * @Assert\Regex(
      *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[@#$%])\S*$/",
      *     match=true,
-     *     message="Your password must contain a number, one special char '@#$%', upper and lowercase characters."
+     *     message="Your password must contain a number, one special char from the list '@#$%', upper and lowercase characters."
      * )
      */
     private $password;

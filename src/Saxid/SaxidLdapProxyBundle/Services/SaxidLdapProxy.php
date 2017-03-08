@@ -1,6 +1,6 @@
 <?php
 
-namespace Saxid\SaxidLdapProxyBundle\LdapProxy;
+namespace Saxid\SaxidLdapProxyBundle\Services;
 
 use Saxid\SaxidLdapProxyBundle\Security\User\LdapUser;
 use Symfony\Bridge\Monolog\Logger;

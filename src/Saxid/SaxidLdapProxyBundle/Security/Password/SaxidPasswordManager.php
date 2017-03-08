@@ -11,6 +11,7 @@ class SaxidPasswordManager
 {
 	private $user;
 	private $oldpassword;
+	private $newpassword;
 
 	function __construct(SaxidUser $user) {
 

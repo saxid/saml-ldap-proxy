@@ -4,6 +4,7 @@ namespace Saxid\SaxidLdapProxyBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use \Saxid\SaxidLdapProxyBundle\Services\SaxIDAPI;
 
 class TestAPIController extends Controller
@@ -12,8 +13,13 @@ class TestAPIController extends Controller
     public function queryapiAction()
     {
 
-        if (false === $this->get('security.authorization_checker')->isGranted('SAXIDUSER')) {
-          throw new AccessDeniedException();
+        //if (false === $this->get('security.authorization_checker')->isGranted('SAXIDUSER')) {
+        //  throw new AccessDeniedException();
+        //}
+
+        $env = $this->container->get( 'kernel' )->getEnvironment();
+        if ($env === 'prod') {
+          return $this->redirectToRoute('saxid_ldap_proxy_tos');
         }
 
         $sapi = $this->get('saxid_ldap_proxy.saxapi');
@@ -31,7 +37,7 @@ class TestAPIController extends Controller
         $ldapdata = $slp->getAllLdapUser();
         $slp->disconnect();
         foreach ($ldapdata as $luser) {
-          $tmparr2[] = $luser->getUid() . '|' . $luser->getDn();
+          $tmparr2[] = $luser->getUid() . '|' . $luser->getDn() . '|' . $luser->getLoginShell();
         }
         dump($tmparr2);
 

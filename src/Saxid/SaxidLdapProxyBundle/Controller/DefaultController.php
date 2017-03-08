@@ -107,8 +107,8 @@ class DefaultController extends Controller
               $sa = $this->get('saxid_ldap_proxy.saxapi');
 
               $format = 'Y-m-d\TH:i:s\Z';
-              $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
-              $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365 + 30));
+              $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 14));
+              $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
 
               $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
 

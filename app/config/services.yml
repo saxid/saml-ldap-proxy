@@ -9,6 +9,6 @@ services:
         arguments: [ '@simplesamlphp.auth', '@session']
 
     saxid_ldap_proxy:
-       class: Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy
+       class: Saxid\SaxidLdapProxyBundle\Services\SaxidLdapProxy
     #   arguments: [ '@security.context' ]
        arguments: [ '%ldap_host%', '%ldap_port%', '%ldap_user%', '%ldap_pass%', '%ldap_baseDN%', '@logger' ]

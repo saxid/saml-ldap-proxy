@@ -15,7 +15,7 @@ class UserPasswordType extends AbstractType
         $builder
             ->add('password', RepeatedType::class, array(
               'type' => PasswordType::class,
-              'invalid_message' => 'Die Passwörter müssen übereinstimmen.',
+              'invalid_message' => 'The passwords have to be the same.',
               'options' => array('attr' => array('class' => 'form-control')),
               'required' => true,
               'first_options'  => array('label' => 'Passwort'),

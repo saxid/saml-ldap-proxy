@@ -21,7 +21,7 @@ parameters:
     # LDAP server settings
     ldap_host:         'ldap://ip.of.ldap.server'
     ldap_port:         389
-    ldap_user:         'cn=admin,dc=sax-id,dc=de'
+    ldap_user:         'cn=theldapuser,dc=sax-id,dc=de'
     ldap_pass:         theldappass
     ldap_baseDN:       'dc=sax-id,dc=de'
 
