@@ -27,3 +27,9 @@ security:
         # Make imprint accessible for anonymous access
         - { path: ^/imprint, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/,        roles: IS_AUTHENTICATED_FULLY }
+
+    #encoders:
+    #    Saxid\SaxidLdapProxyBundle\Security\User\SaxidUser:
+    #        algorithm:           sha512
+    #        encode_as_base64:    true
+    #        iterations:          5000

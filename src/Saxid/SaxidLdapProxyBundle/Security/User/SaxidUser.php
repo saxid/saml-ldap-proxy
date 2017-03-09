@@ -4,6 +4,7 @@ namespace Saxid\SaxidLdapProxyBundle\Security\User;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+//use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -18,11 +19,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $displayName;
     private $uid;
     private $uidNumber;
-    /**
-    * @SecurityAssert\UserPassword(
-    *     message = "Wrong value for your current password"
-    * )
-    */
+
     protected $oldPassword;
     /**
      * @Assert\NotBlank()

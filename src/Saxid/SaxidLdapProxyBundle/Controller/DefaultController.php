@@ -116,14 +116,25 @@ class DefaultController extends Controller
                 $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
 
                 $logger->info('API Info: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
+
+                // Add status message to Symfony flashbag
+                //$this->addFlash($status['type'], $status['message']);
+                $this->addFlash('success', 'Hallo ' . $saxidUser->getGivenName() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
+                // set init user check and write to session
+                // do this only once per page load
+                $session->set('status', 'DONE');
+
                 //$logger->error('An error occurred');
                 //$logger->critical('I left the oven on!', array(
                     // include extra "context" info in your logs
                 //    'cause' => 'in_hurry',
                 //));
+
               } else {
+
                 $this->addFlash("warning", "Beim Anlegen deiner Daten ist etwas schief gelaufen. Bitte kontaktiere den ServiceDesk und komm etwas später wieder. Vielen Dank für Dein Verständnis.");
-                $logger->error('User: '. $saxidUser->getEduPersonPrincipalName() . ' Error adding to LDAP, baybe hes down.');
+                $logger->error('User: '. $saxidUser->getEduPersonPrincipalName() . ' Error adding to LDAP, baybe hes down or somethin is wrong with the credentials.');
+
               }
 
           }
@@ -134,11 +145,6 @@ class DefaultController extends Controller
           // Close connection
           $saxLdap->disconnect();
 
-          // Add status message to Symfony flashbag
-          //$this->addFlash($status['type'], $status['message']);
-          $this->addFlash('success', 'Hallo ' . $saxidUser->getGivenName() . '. Deine Attribute vom Identityprovider wurden erfolgreich in die Datenbank übertragen. Ein Service-Passwort haben wir angelegt.');
-          // set init user check and write to do this only once per page load
-          $session->set('status', 'DONE');
         }
 
         return $this->render('SaxidLdapProxyBundle:Default:index.html.twig');
