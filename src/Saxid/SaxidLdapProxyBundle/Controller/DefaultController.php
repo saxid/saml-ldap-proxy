@@ -93,31 +93,39 @@ class DefaultController extends Controller
               }
 
               // Add user to ldap
-              $saxLdap->addLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray(true));
-              $logger->info('User Added to LDAP: '. $saxidUser->getUid());
-              // modify lastUserUIDNumber
-              $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')), ($tmpLastUserUIDNumber + 1));
+              $added = $saxLdap->addLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray(true));
+              //$logger->info('User Added to LDAP: '. $saxidUser->getUid());
 
-              // generate user password
-              $initialPassword = $saxidUser->generateRandomPassword();
-              $this->addFlash("warning", "Dein initiales Service-Passwort (bitte merken bzw. ändern unter 'Mein Konto'): " . $initialPassword);
-              $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $initialPassword);
+              // if user added to ldap add him to saxapi
+              if ($added) {
+                // modify lastUserUIDNumber
+                $saxLdap->setLastUserUIDNumber($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')), ($tmpLastUserUIDNumber + 1));
 
-              // Add user to SaxIDAPI
-              $sa = $this->get('saxid_ldap_proxy.saxapi');
+                // generate user password
+                $initialPassword = $saxidUser->generateRandomPassword();
+                $this->addFlash("warning", "Dein initiales Service-Passwort (bitte merken bzw. ändern unter 'Mein Konto'): " . $initialPassword);
+                $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $initialPassword);
 
-              $format = 'Y-m-d\TH:i:s\Z';
-              $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 14));
-              $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
+                // Add user to SaxIDAPI
+                $sa = $this->get('saxid_ldap_proxy.saxapi');
 
-              $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
+                $format = 'Y-m-d\TH:i:s\Z';
+                $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 14));
+                $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
 
-              $logger->info('API Info: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
-              //$logger->error('An error occurred');
-              //$logger->critical('I left the oven on!', array(
-                  // include extra "context" info in your logs
-              //    'cause' => 'in_hurry',
-              //));
+                $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
+
+                $logger->info('API Info: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
+                //$logger->error('An error occurred');
+                //$logger->critical('I left the oven on!', array(
+                    // include extra "context" info in your logs
+                //    'cause' => 'in_hurry',
+                //));
+              } else {
+                $this->addFlash("warning", "Beim Anlegen deiner Daten ist etwas schief gelaufen. Bitte kontaktiere den ServiceDesk und komm etwas später wieder. Vielen Dank für Dein Verständnis.");
+                $logger->error('User: '. $saxidUser->getEduPersonPrincipalName() . ' Error adding to LDAP, baybe hes down.');
+              }
+
           }
 
           // Get status
