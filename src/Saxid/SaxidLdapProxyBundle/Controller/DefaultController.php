@@ -32,6 +32,7 @@ class DefaultController extends Controller
           return $this->redirectToRoute('saxid_ldap_proxy_tos');
         }
 
+        // TODO: check for correct implementation (only update user once if logged in)
         if (empty($session->get('status')) && $session->get('tosyes') == 'DONE')
         {
           // Get User Object
