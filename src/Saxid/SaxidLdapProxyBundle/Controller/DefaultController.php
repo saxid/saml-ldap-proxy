@@ -163,7 +163,7 @@ class DefaultController extends Controller
           $session->set('Ldapuser', '1');
           // Modify entry
           $saxLdap->modifyLDAPObject($this->getUser()->createLdapUserDN($this->getParameter('ldap_baseDN')), $this->getUser()->createLdapDataArray());
-          $this->addFlash('info', 'Willkommen zurück ' . $this->getUser()->getGivenName() . '! Deine Attribute wurden erfolgreich aktualisiert. Details findest du unter Mein Konto im Menu oben.');
+          $this->addFlash('info', 'Willkommen zurück ' . $this->getUser()->getGivenName());
         }
 
         // Close connection
