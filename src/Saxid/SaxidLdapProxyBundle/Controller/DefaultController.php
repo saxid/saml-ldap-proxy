@@ -13,7 +13,7 @@ class DefaultController extends Controller
 
     public function indexAction(Request $request)
     {
-        // todo auth check
+        // TODO: auth check
         //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $session = $request->getSession();
@@ -22,11 +22,11 @@ class DefaultController extends Controller
         if (!$this->getUser()->isFromSaxonAcademy())
         {
             $this->addFlash('danger', 'You have to be a member of a Saxon academy in order to persist User to LDAP. Please Contact your Service-Provider-Admin to add your academy.');
-            return $this->render('SaxidLdapProxyBundle::index.html.twig');;
+            return $this->render('SaxidLdapProxyBundle::index.html.twig');
         }
 
         // redirect if TOS not yet accepted
-        if ( empty($session->get('tosyes')) )
+        if (empty($session->get('tosyes')))
         {
           // redirect to the "homepage" route
           return $this->redirectToRoute('saxid_ldap_proxy_tos');
@@ -52,12 +52,10 @@ class DefaultController extends Controller
               $saxLdap->modifyLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray());
               $logger->info('User Modified in LDAP: '. $saxidUser->getUid());
 
-          }
-          else
-          {
+          } else {
               // Add new entry
               // When organization doesn't exists -> create
-              if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN'))) == FALSE)
+              if ($saxLdap->existsOrganization($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN'))) == false)
               {
                   //objectclasses
                   $organizationData['objectclass'][] = 'organization';
@@ -79,19 +77,18 @@ class DefaultController extends Controller
               $tmpLastUserUIDNumber = $saxLdap->getLastUserUIDNumber($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')));
               $tmpAcademyPrefix = $saxLdap->getUIDNumberPrefix($saxidUser->createLdapOrganizationDN($this->getParameter('ldap_baseDN')));
 
-              // Create unique UIDNumber for user
-              for ($index = 0; $index < 100; $index++)
-              {
-                  $tmpUidNumber = $saxidUser->generateSaxIDUIDNumber($tmpAcademyPrefix, $tmpLastUserUIDNumber + 1);
-
-                  // if user not exists in ldap set a new UID Num
-                  if ($saxLdap->userExist("uidNumber=" . $tmpUidNumber) == FALSE)
-                  {
-                      // Set UIDNumber
-                      $saxidUser->setUidNumber($tmpUidNumber);
-                      break;
-                  }
-              }
+                // Create unique UIDNumber for user
+                for ($index = 0; $index < 100; $index++)
+                {
+                    $tmpUidNumber = $saxidUser->generateSaxIDUIDNumber($tmpAcademyPrefix, $tmpLastUserUIDNumber + 1);
+                    // if user not exists in ldap set a new UID Num
+                    if ($saxLdap->userExist("uidNumber=" . $tmpUidNumber) == false)
+                    {
+                        // Set UIDNumber
+                        $saxidUser->setUidNumber($tmpUidNumber);
+                        break;
+                    }
+                }
 
               // Add user to ldap
               $added = $saxLdap->addLDAPObject($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $saxidUser->createLdapDataArray(true));
@@ -108,13 +105,13 @@ class DefaultController extends Controller
                 $saxLdap->setUserPassword($saxidUser->createLdapUserDN($this->getParameter('ldap_baseDN')), $initialPassword);
 
                 // Add user to SaxIDAPI
-                $sa = $this->get('saxid_ldap_proxy.saxapi');
+                $saxapi = $this->get('saxid_ldap_proxy.saxapi');
 
                 $format = 'Y-m-d\TH:i:s\Z';
                 $expiryDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 14));
                 $deletionDate = date($format, mktime(0, 0, 0, date('m'), date('d') + 365));
 
-                $sa->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
+                $saxapi->createAPIEntry($saxidUser->getEduPersonPrincipalName(), $deletionDate, $expiryDate);
 
                 $logger->info('API Info: '. $saxidUser->getEduPersonPrincipalName() . ' added.');
 
@@ -134,7 +131,7 @@ class DefaultController extends Controller
               } else {
 
                 $this->addFlash("warning", "Beim Anlegen deiner Daten ist etwas schief gelaufen. Bitte kontaktiere den ServiceDesk und komm etwas später wieder. Vielen Dank für Dein Verständnis.");
-                $logger->error('User: '. $saxidUser->getEduPersonPrincipalName() . ' Error adding to LDAP, baybe hes down or somethin is wrong with the credentials.');
+                $logger->error('User: '. $saxidUser->getEduPersonPrincipalName() . ' Error adding to LDAP, baybe he is down or somethin is wrong with the credentials.');
 
               }
 

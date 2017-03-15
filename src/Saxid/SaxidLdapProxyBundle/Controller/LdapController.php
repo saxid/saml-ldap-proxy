@@ -18,7 +18,8 @@ class LdapController extends Controller
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
       }
 
-      if(!$this->getUser()->isFromSaxonAcademy()) {
+      if (!$this->getUser()->isFromSaxonAcademy()) 
+      {
           $this->addFlash(
               'danger',
               'You have to be a member of a Saxon academy in order to persist User to LDAP'
@@ -39,7 +40,7 @@ class LdapController extends Controller
     public function readuserAction(Request $request)
     {
       $session = $request->getSession();
-      if ( empty($session->get('tosyes')) && empty($session->get('Ldapuser')))
+      if (empty($session->get('tosyes')) && empty($session->get('Ldapuser')))
       {
         // redirect to the "homepage" route
         return $this->redirectToRoute('saxid_ldap_proxy_tos');
@@ -47,7 +48,7 @@ class LdapController extends Controller
 
       }
 
-      if(!$this->getUser()->isFromSaxonAcademy()) {
+      if (!$this->getUser()->isFromSaxonAcademy()) {
           $this->addFlash(
               'danger',
               'You have to be a member of a Saxon academy in order to persist User to LDAP'

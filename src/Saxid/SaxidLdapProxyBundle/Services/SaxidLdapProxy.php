@@ -246,6 +246,8 @@ class SaxidLdapProxy
         if (ldap_modify($this->ldapConnection, $dn, $data))
         {
             $message = "modifyLDAPObject - Object '" . $dn . "' successfully updated.";
+            $this->setStatus('Deine Attribute wurden erfolgreich aktualisiert. Details findest du unter Mein Konto im Menu oben.',
+            LOGLEVEL::INFO);
             $this->logger->info($message);
             //$this->setStatus($message, LOGLEVEL::INFO);
             return true;
@@ -366,8 +368,7 @@ class SaxidLdapProxy
         $attrs = $this->getUserData($seachParam);
         if (isset($attrs)) {
           $this->setStatus( "Wir haben dich in der Datenbank gefunden. Dein Passwort kannst du unter Mein Konto ändern/setzen.",
-          "info"
-          );
+          LOGLEVEL::INFO);
         } else {
           $this->setStatus( "Ooops, es gab leider ein Problem mit der Datenbank. Bitte wende dich an den Servicedesk.",
           LOGLEVEL::DANGER);

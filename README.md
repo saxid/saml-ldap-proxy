@@ -136,10 +136,6 @@ Prüfen bzw setzen, so dass der Cache vom Webserver beschreibbar ist!
 
 [Apache Directory Studio](https://directory.apache.org/studio/) installieren
 
-# Apache-Config
-
-Die Anpassungen an der Apache-Konfiguration finden sich in der Datei `/etc/apache2/httpd.conf.local`
-
 # SSH-Zugang
 
 Eigenes SSH-Zertifikat muss an Matthias Jurenz geschickt werden, um Zugriff auf die SaxID-LDAP-Proxy-VM zu erhalten sowie Info bzgl. Freischaltung IP
@@ -159,6 +155,12 @@ Ich (Jan) habe ein neues deploy-Script geschrieben, bei der das gesamte Verzeich
 # Composer
 
 Paket- und Dependencymanagement für PHP. Ist auf VM unter `/opt/composer` derzeit nicht installiert. Nach clonen des git-Repositories müssen die externen Pakete mit `composer install` hinzugefügt werden.
+
+# Cron-Job für Webserver zu Deprovisionierung einrichten
+
+    crontab -e -u wwwrun
+    # alle 2 Stunden Abgleich von LDAP mit SaxAPI
+    1 */2 * * * php /path/to/your/webfolder/app/console saxid_ldap_proxy:cleanup-users
 
 # Assets
 
