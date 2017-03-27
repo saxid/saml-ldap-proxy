@@ -30,9 +30,9 @@ class SaxidUser implements UserInterface, EquatableInterface
      *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
      * )
      * @Assert\Regex(
-     *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[@#$%])\S*$/",
+     *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[@#$%-])\S*$/",
      *     match=true,
-     *     message="Your password must contain a number, one special char from the list '@#$%', upper and lowercase characters."
+     *     message="Your password must contain a number, one special char from the list '@#$%-', upper and lowercase characters."
      * )
      */
     private $password;
