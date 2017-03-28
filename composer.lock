@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "195b146aee387e6c963b99b5b1b05618",
+    "content-hash": "e3383c45b66d86204e4bd5f484f0b9eb",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1146,7 +1146,7 @@
         },
         {
             "name": "sax_id/simplesamlphp-bundle",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.hrz.tu-chemnitz.de:saxid-federated-resource-management/simplesamlphp-bundle.git",
@@ -1177,7 +1177,7 @@
                 "saml",
                 "simplesamlphp"
             ],
-            "time": "2017-02-20 14:59:49"
+            "time": "2017-02-20T14:59:49+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -2602,9 +2602,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "sax_id/simplesamlphp-bundle": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

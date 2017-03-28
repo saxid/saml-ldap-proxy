@@ -32,7 +32,7 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "sax_id/simplesamlphp-bundle": "dev-master@dev",
+        "sax_id/simplesamlphp-bundle": "~1.0",
         "squizlabs/php_codesniffer": "^2.7"
     },
     "repositories": [
