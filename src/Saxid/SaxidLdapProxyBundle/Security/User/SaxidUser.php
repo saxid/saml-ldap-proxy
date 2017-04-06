@@ -24,15 +24,15 @@ class SaxidUser implements UserInterface, EquatableInterface
     /**
      * @Assert\NotBlank()
      * @Assert\Length(
-     *      min = 7,
-     *      max = 16,
+     *      min = 9,
+     *      max = 128,
      *      minMessage = "Your password must be at least {{ limit }} characters long",
      *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
      * )
      * @Assert\Regex(
-     *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[@#$%-])\S*$/",
+     *     pattern="/^\S*(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[0-9])(?=\S*[!@#$%-])\S*$/",
      *     match=true,
-     *     message="Your password must contain a number, one special char from the list '@#$%-', upper and lowercase characters."
+     *     message="Your password must contain a number, one special char from the list '!@#$%-', upper and lowercase characters."
      * )
      */
     private $password;
