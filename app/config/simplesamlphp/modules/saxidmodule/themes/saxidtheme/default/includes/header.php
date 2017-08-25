@@ -53,8 +53,9 @@ if(array_key_exists('header', $this->data)) {
 }
 ?></title>
 
-	<link rel="stylesheet" type="text/css" href="/<?php echo $this->data['baseurlpath']; ?>resources/saxidtheme/default.css" />
 	<link rel="icon" type="image/icon" href="/<?php echo $this->data['baseurlpath']; ?>resources/icons/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="<?php echo SimpleSAML_Module::getModuleURL("saxidmodule/bootstrap.min.css"); ?>" >
+	<link rel="stylesheet" type="text/css" href="<?php echo SimpleSAML_Module::getModuleURL("saxidmodule/default.css"); ?>" />
 
 <?php
 
@@ -106,7 +107,9 @@ if(array_key_exists('head', $this->data)) {
 	echo '<!-- head -->' . $this->data['head'] . '<!-- /head -->';
 }
 ?>
+
 </head>
+
 <?php
 $onLoad = '';
 if(array_key_exists('autofocus', $this->data)) {
@@ -122,12 +125,30 @@ if($onLoad !== '') {
 ?>
 <body<?php echo $onLoad; ?>>
 
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a style="text-decoration: none; color: white; border: none" class="navbar-brand" href="/home">
+				<img alt="SaxID" height="32px" src="<?php echo SimpleSAML_Module::getModuleURL("saxidmodule/tud_logo_weiss.svg"); ?>">
+				SaxID
+			</a>
+		</div>
+	</div>
+</nav>
+
 <div id="wrap">
 
 	<div id="header">
 		<h1><a style="text-decoration: none; color: white" href="/<?php echo $this->data['baseurlpath']; ?>"><?php
 			echo (isset($this->data['header']) ? $this->data['header'] : 'SimpleSAMLphp');
-		?></a></h1>
+		?></a><a style="text-decoration: none; color: white;float: right" href="/imprint"> Imprint</a></h1>
 	</div>
 
 

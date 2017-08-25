@@ -12,6 +12,7 @@ Im folgenden wird als Hostsystem ein SLES 12.02 (x64) angenommen. Die Systemkonf
 1. [LDAP-Konfiguration](#ldap)
 1. [Installation PHP-Repository](#php)
 1. [Optionale Installationen](#optional)
+1. [Known Bugs](#bugs)
 
 ### <a name="system"></a>Systemeinrichtung ###
 
@@ -169,3 +170,12 @@ Roh-Assets sind in `src/Saxid/SaxidLdapProxyBundle/Resource/public` und werden p
     php app/console assets:install --symlink path_to_installfolder/web
 
 in den Order `web/bundles/...` compiliert. Wenn die Assets ohne `--symlink` installiert werden, muss der Befehl nach jeder Änderung in `src/` aufgerufen werden.
+
+### <a name="bugs"></a>Known Bugs ###
+
+Das Anpassen des Knotens psr-4 mit "Checking composer.json: WARNING
+Defining autoload.psr-4 with an empty namespace prefix is a bad idea for performance"
+
+in der `composer.json`
+
+führt zu einer ClassNotFoundException! Leave empty or try to fix this.

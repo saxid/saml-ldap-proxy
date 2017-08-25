@@ -21,6 +21,7 @@ class SaxidUser implements UserInterface, EquatableInterface
     private $uidNumber;
 
     protected $oldPassword;
+    // to meet the IDM and IT security password strength
     /**
      * @Assert\NotBlank()
      * @Assert\Length(

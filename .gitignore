@@ -16,6 +16,7 @@ saxidprox_depl.tgz
 /vendor/
 /web/bundles/
 /doc/
+tud_idp.txt
 
 # Created by https://www.gitignore.io/api/composer,symfony,netbeans,sublimetext,macos,vim,linux,windows,emacs,eclipse,osx
 
