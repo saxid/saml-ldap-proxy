@@ -135,7 +135,7 @@ if($onLoad !== '') {
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a style="text-decoration: none; color: white; border: none" class="navbar-brand" href="/home">
+			<a style="text-decoration: none; color: grey; border: none" class="navbar-brand" href="/home">
 				<img alt="SaxID" height="32px" src="<?php echo SimpleSAML_Module::getModuleURL("saxidmodule/tud_logo_weiss.svg"); ?>">
 				SaxID
 			</a>
