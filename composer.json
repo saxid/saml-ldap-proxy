@@ -30,8 +30,7 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "sax_id/simplesamlphp-bundle": "~1.0",
-        "squizlabs/php_codesniffer": "^2.7",
-        "doctrine/annotations": "1.4"
+        "squizlabs/php_codesniffer": "^2.7"
     },
     "repositories": [
         {
@@ -66,7 +65,10 @@
         ]
     },
     "config": {
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "platform": {
+            "php": "7.0.7"
+        }
     },
     "extra": {
         "symfony-app-dir": "app",
