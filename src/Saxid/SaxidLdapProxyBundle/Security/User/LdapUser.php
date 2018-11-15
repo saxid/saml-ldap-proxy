@@ -48,7 +48,7 @@ class LdapUser
         // maps the LDAP Attrs to the class attrs
         foreach ($attributes as $key => $value)
         {
-            if (count($value) > 1)
+            if ((count($value)) > 1)
             {
                 $value = $value[0];
             }

@@ -160,8 +160,8 @@ Paket- und Dependencymanagement für PHP. Ist auf VM unter `/opt/composer` derze
 # Cron-Job für Webserver zu Deprovisionierung einrichten
 
     crontab -e -u wwwrun
-    # alle 2 Stunden Abgleich von LDAP mit SaxAPI
-    1 */2 * * * php /path/to/your/webfolder/app/console saxid_ldap_proxy:cleanup-users
+    # alle 8 Stunden Abgleich von LDAP mit SaxAPI
+    1 */8 * * * php /path/to/your/webfolder/app/console --env=prod saxid_ldap_proxy:cleanup-users
 
 # Assets
 
