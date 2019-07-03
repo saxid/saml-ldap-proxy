@@ -62,18 +62,18 @@ if [ "$UPLOAD" = true ]; then
   #echo "... removing .git"
   #ssh root@$server rm -rf $installpath/.git
   echo "... removing Logs and Cache"
-  ssh $serverusr@$server rm -rf $installpath/app/logs/*
-  ssh $serverusr@$server rm -rf $installpath/app/cache/*
+  ssh $serverusr@$server rm -rf $installpath/var/logs/*
+  ssh $serverusr@$server rm -rf $installpath/var/cache/*
   echo "... installing Server Certificate for SimpleSAML (taken from Apache-SSL)"
   #ssh root@$server mkdir $installpath/app/config/simplesamlphp/cert
   ssh $serverusr@$server cp -v $pathtosamlkey $installpath/app/config/simplesamlphp/cert/saml.pem.key
   ssh $serverusr@$server cp -v $pathtosamlcert $installpath/app/config/simplesamlphp/cert/saml.crt
   echo "... installing assets & clearing cache for prod,dev + setting user to wwwrun:www"
-  ssh $serverusr@$server chmod u+x $installpath/app/console
-  ssh $serverusr@$server php $installpath/app/console assets:install --symlink -- $installpath/web
-  ssh $serverusr@$server php $installpath/app/console cache:clear --env=prod
-  ssh $serverusr@$server php $installpath/app/console cache:clear --env=dev
-  ssh $serverusr@$server mkdir $installpath/app/logs/simplesamlphp
+  ssh $serverusr@$server chmod u+x $installpath/bin/console
+  ssh $serverusr@$server php $installpath/bin/console assets:install --symlink -- $installpath/web
+  ssh $serverusr@$server php $installpath/bin/console cache:clear --env=prod
+  ssh $serverusr@$server php $installpath/bin/console cache:clear --env=dev
+  ssh $serverusr@$server mkdir $installpath/var/logs/simplesamlphp
   echo "... copy simplesamlphp theme to vendor folder - config folder for themeing didn't work"
   ssh $serverusr@$server cp -R $installpath/app/config/simplesamlphp/modules/saxidmodule $installpath/vendor/simplesamlphp/simplesamlphp/modules
   echo "... set owner to wwwrun:www"

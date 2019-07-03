@@ -7,7 +7,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\HttpFoundation\Session\Session;
-use \SimpleSAML_Auth_Simple;
+use \SimpleSAML\Auth\Simple;
 
 use Saxid\SaxidLdapProxyBundle\LdapProxy\SaxidLdapProxy;
 
@@ -20,7 +20,7 @@ class SaxidUserProvider implements UserProviderInterface
     private $ldapUser;
     private $ldapPass;
 
-    public function __construct(SimpleSAML_Auth_Simple $auth, Session $session) {
+    public function __construct(SimpleSAML\Auth\Simple $auth, Session $session) {
         $this->auth     = $auth;
         $this->session  = $session;
 

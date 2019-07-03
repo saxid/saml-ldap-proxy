@@ -4,7 +4,7 @@
  *
  */
 
-$config = array(
+$config = [
 
     /**
      * Setup the following parameters to match the directory of your installation.
@@ -22,9 +22,23 @@ $config = array(
      * reverse proxy).
      */
     'baseurlpath' => 'simplesamlphp/',
-    'certdir' => '/srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/cert',
-    'loggingdir' => '/srv/www/htdocs/saxid-ldap-proxy/app/logs/simplesamlphp',
-    'metadatadir' => '/srv/www/htdocs/saxid-ldap-proxy/app/config/simplesamlphp/metadata',
+
+    /*
+     * The following settings are *filesystem paths* which define where
+     * SimpleSAMLphp can find or write the following things:
+     * - 'certdir': The base directory for certificate and key material.
+     * - 'loggingdir': Where to write logs.
+     * - 'datadir': Storage of general data.
+     * - 'tempdir': Saving temporary files. SimpleSAMLphp will attempt to create
+     *   this directory if it doesn't exist.
+     * When specified as a relative path, this is relative to the SimpleSAMLphp
+     * root directory.
+     */
+
+    'certdir' => '../../app/config/simplesamlphp/cert',
+    //'loggingdir' => '/srv/www/htdocs/saxid-ldap-proxy/app/logs/simplesamlphp',
+    'loggingdir' => '../../../var/logs/simplesamlphp',
+    'datadir' => 'data/',
 
     /*
      * A directory where simpleSAMLphp can save temporary files.
@@ -33,17 +47,47 @@ $config = array(
      */
     'tempdir' => '/tmp/simplesaml',
 
+    /************************
+     | ERRORS AND DEBUGGING |
+     ************************/
 
     /*
-     * If you enable this option, simpleSAMLphp will log all sent and received messages
-     * to the log file.
+     * The 'debug' option allows you to control how SimpleSAMLphp behaves in certain
+     * situations where further action may be taken
      *
-     * This option also enables logging of the messages that are encrypted and decrypted.
+     * It can be left unset, in which case, debugging is switched off for all actions.
+     * If set, it MUST be an array containing the actions that you want to enable, or
+     * alternatively a hashed array where the keys are the actions and their
+     * corresponding values are booleans enabling or disabling each particular action.
      *
-     * Note: The messages are logged with the DEBUG log level, so you also need to set
-     * the 'logging.level' option to LOG_DEBUG.
+     * SimpleSAMLphp provides some pre-defined actiones, though modules could add new
+     * actions here. Refer to the documentation of every module to learn if they
+     * allow you to set any more debugging actions.
+     *
+     * The pre-defined actions are:
+     *
+     * - 'saml': this action controls the logging of SAML messages exchanged with other
+     * entities. When enabled ('saml' is present in this option, or set to true), all
+     * SAML messages will be logged, including plaintext versions of encrypted
+     * messages.
+     *
+     * - 'backtraces': this action controls the logging of error backtraces. If you
+     * want to log backtraces so that you can debug any possible errors happening in
+     * SimpleSAMLphp, enable this action (add it to the array or set it to true).
+     *
+     * - 'validatexml': this action allows you to validate SAML documents against all
+     * the relevant XML schemas. SAML 1.1 messages or SAML metadata parsed with
+     * the XML to SimpleSAMLphp metadata converter or the metaedit module will
+     * validate the SAML documents if this option is enabled.
+     *
+     * If you want to disable debugging completely, unset this option or set it to an
+     * empty array.
      */
-    'debug' => false,
+    'debug' => [
+        'saml' => false,
+        'backtraces' => true,
+        'validatexml' => false,
+    ],
 
     /*
      * When showerrors is enabled, all error messages and stack traces will be output
@@ -79,6 +123,12 @@ $config = array(
     'admin.protectindexpage' => true,
     'admin.protectmetadata' => false,
 
+    /*
+     * Set this option to false if you don't want SimpleSAMLphp to check for new stable releases when
+     * visiting the configuration tab in the web interface.
+     */
+    'admin.checkforupdates' => true,
+
     /**
      * This is a secret salt used by simpleSAMLphp when it needs to generate a secure hash
      * of a value. It must be changed from its default value to a secret value. The value of
@@ -106,22 +156,24 @@ $config = array(
      */
     'timezone' => 'Europe/Berlin',
 
+    /**************************
+     | LOGGING AND STATISTICS |
+     **************************/
+
     /*
-     * Logging.
-     *
-     * define the minimum log level to log
-     *      SimpleSAML_Logger::ERR      No statistics, only errors
-     *      SimpleSAML_Logger::WARNING  No statistics, only warnings/errors
-     *      SimpleSAML_Logger::NOTICE   Statistics and errors
-     *      SimpleSAML_Logger::INFO     Verbose logs
-     *      SimpleSAML_Logger::DEBUG    Full debug logs - not reccomended for production
+     * Define the minimum log level to log. Available levels:
+     * - SimpleSAML\Logger::ERR     No statistics, only errors
+     * - SimpleSAML\Logger::WARNING No statistics, only warnings/errors
+     * - SimpleSAML\Logger::NOTICE  Statistics and errors
+     * - SimpleSAML\Logger::INFO    Verbose logs
+     * - SimpleSAML\Logger::DEBUG   Full debug logs - not recommended for production
      *
      * Choose logging handler.
      *
      * Options: [syslog,file,errorlog]
      *
      */
-    'logging.level' => SimpleSAML_Logger::WARNING,
+    'logging.level' => SimpleSAML\Logger::WARNING,
     'logging.handler' => 'file',
 
     /*
@@ -197,10 +249,12 @@ $config = array(
     ),
 
 
+    /*************
+     | PROTOCOLS |
+     *************/
+
     /*
-     * Enable
-     *
-     * Which functionality in simpleSAMLphp do you want to enable. Normally you would enable only
+     * Which functionality in SimpleSAMLphp do you want to enable. Normally you would enable only
      * one of the functionalities below, but in some cases you could run multiple functionalities.
      * In example when you are setting up a federation bridge.
      */
@@ -230,10 +284,14 @@ $config = array(
      */
 
 
-    /*
-     * This value is the duration of the session in seconds. Make sure that the time duration of
-     * cookies both at the SP and the IdP exceeds this duration.
-     */
+     /*************************
+       | SESSION CONFIGURATION |
+       *************************/
+
+      /*
+       * This value is the duration of the session in seconds. Make sure that the time duration of
+       * cookies both at the SP and the IdP exceeds this duration.
+       */
     'session.duration' => 8 * (60 * 60), // 8 hours.
 
     /*
@@ -290,13 +348,50 @@ $config = array(
      * through https. If the user can access the service through
      * both http and https, this must be set to FALSE.
      */
-    'session.cookie.secure' => true,
+    'session.cookie.secure' => false,
 
     /*
      * When set to FALSE fallback to transient session on session initialization
      * failure, throw exception otherwise.
      */
     'session.disable_fallback' => false,
+
+
+
+    /*
+     * Array of domains that are allowed when generating links or redirects
+     * to URLs. SimpleSAMLphp will use this option to determine whether to
+     * to consider a given URL valid or not, but you should always validate
+     * URLs obtained from the input on your own (i.e. ReturnTo or RelayState
+     * parameters obtained from the $_REQUEST array).
+     *
+     * SimpleSAMLphp will automatically add your own domain (either by checking
+     * it dynamically, or by using the domain defined in the 'baseurlpath'
+     * directive, the latter having precedence) to the list of trusted domains,
+     * in case this option is NOT set to NULL. In that case, you are explicitly
+     * telling SimpleSAMLphp to verify URLs.
+     *
+     * Set to an empty array to disallow ALL redirects or links pointing to
+     * an external URL other than your own domain. This is the default behaviour.
+     *
+     * Set to NULL to disable checking of URLs. DO NOT DO THIS UNLESS YOU KNOW
+     * WHAT YOU ARE DOING!
+     *
+     * Example:
+     *   'trusted.url.domains' => ['sp.example.com', 'app.example.com'],
+     */
+    'trusted.url.domains' => [],
+
+    /*
+     * Enable regular expression matching of trusted.url.domains.
+     *
+     * Set to true to treat the values in trusted.url.domains as regular
+     * expressions. Set to false to do exact string matching.
+     *
+     * If enabled, the start and end delimiters ('^' and '$') will be added to
+     * all regular expressions in trusted.url.domains.
+     */
+    'trusted.url.regex' => false,
 
     /*
      * Enable secure POST from HTTPS to HTTP.
@@ -310,6 +405,17 @@ $config = array(
      * http://idp.example.org/ssp/module.php/core/postredirect.php must be accessible.
      */
     'enable.http_post' => false,
+
+    /*
+     * Set the allowed clock skew between encrypting/decrypting assertions
+     *
+     * If you have an server that is constantly out of sync, this option
+     * allows you to adjust the allowed clock-skew.
+     *
+     * Allowed range: 180 - 300
+     * Defaults to 180.
+     */
+    'assertion.allowed_clock_skew' => 180,
 
     /*
      * Options to override the default settings for php sessions.
@@ -374,6 +480,8 @@ $config = array(
     'language.cookie.name' => 'language',
     'language.cookie.domain' => null,
     'language.cookie.path' => '/',
+    'language.cookie.secure' => false,
+    'language.cookie.httponly' => false,
     'language.cookie.lifetime' => (60 * 60 * 24 * 900),
 
     /**
@@ -413,6 +521,10 @@ $config = array(
      * Example: 'attributes.extradictionary' => 'ourmodule:ourattributes',
      */
     'attributes.extradictionary' => null,
+
+    /**************
+     | APPEARANCE |
+     **************/
 
     /*
      * Which theme directory should be used?
@@ -551,9 +663,19 @@ $config = array(
     ),
 
 
+    /**************************
+     | METADATA CONFIGURATION |
+     **************************/
+
+    /*
+     * This option allows you to specify a directory for your metadata outside of the standard metadata directory
+     * included in the standard distribution of the software.
+     */
+    'metadatadir' => 'app/config/simplesamlphp/metadata',
+
     /*
      * This option configures the metadata sources. The metadata sources is given as an array with
-     * different metadata sources. When searching for metadata, simpleSAMPphp will search through
+     * different metadata sources. When searching for metadata, SimpleSAMLphp will search through
      * the array from start to end.
      *
      * Each element in the array is an associative array which configures the metadata source.
@@ -570,38 +692,101 @@ $config = array(
      * This metadata handler parses an XML file with either an EntityDescriptor element or an
      * EntitiesDescriptor element. The XML file may be stored locally, or (for debugging) on a remote
      * web server.
-     * The XML hetadata handler defines the following options:
+     * The XML metadata handler defines the following options:
      * - 'type': This is always 'xml'.
      * - 'file': Path to the XML file with the metadata.
      * - 'url': The URL to fetch metadata from. THIS IS ONLY FOR DEBUGGING - THERE IS NO CACHING OF THE RESPONSE.
      *
+     * MDQ metadata handler:
+     * This metadata handler looks up for the metadata of an entity at the given MDQ server.
+     * The MDQ metadata handler defines the following options:
+     * - 'type': This is always 'mdq'.
+     * - 'server': Base URL of the MDQ server. Mandatory.
+     * - 'validateFingerprint': The fingerprint of the certificate used to sign the metadata. You don't need this
+     *                          option if you don't want to validate the signature on the metadata. Optional.
+     * - 'cachedir': Directory where metadata can be cached. Optional.
+     * - 'cachelength': Maximum time metadata can be cached, in seconds. Defaults to 24
+     *                  hours (86400 seconds). Optional.
+     *
+     * PDO metadata handler:
+     * This metadata handler looks up metadata of an entity stored in a database.
+     *
+     * Note: If you are using the PDO metadata handler, you must configure the database
+     * options in this configuration file.
+     *
+     * The PDO metadata handler defines the following options:
+     * - 'type': This is always 'pdo'.
      *
      * Examples:
      *
      * This example defines two flatfile sources. One is the default metadata directory, the other
-     * is a metadata directory with autogenerated metadata files.
+     * is a metadata directory with auto-generated metadata files.
      */
-      'metadata.sources' => array(
-          array('type' => 'flatfile'),
-          array('type' => 'flatfile', 'directory' => 'metadata-generated'),
-          ),
-
-     /* This example defines a flatfile source and an XML source.
-     * 'metadata.sources' => array(
-     *     array('type' => 'flatfile'),
-     *     array('type' => 'xml', 'file' => 'idp.example.org-idpMeta.xml'),
-     *     ),
+      'metadata.sources' => [
+          ['type' => 'flatfile'],
+          ['type' => 'flatfile', 'directory' => 'metadata-generated'],
+      ],
+     /*
+     * This example defines a flatfile source and an XML source.
+     * 'metadata.sources' => [
+     *     ['type' => 'flatfile'],
+     *     ['type' => 'xml', 'file' => 'idp.example.org-idpMeta.xml'],
+     * ],
      *
+     * This example defines an mdq source.
+     * 'metadata.sources' => [
+     *      [
+     *          'type' => 'mdq',
+     *          'server' => 'http://mdq.server.com:8080',
+     *          'cachedir' => '/var/simplesamlphp/mdq-cache',
+     *          'cachelength' => 86400
+     *      ]
+     * ],
+     *
+     * This example defines an pdo source.
+     * 'metadata.sources' => [
+     *     ['type' => 'pdo']
+     * ],
      *
      * Default:
-     *  'metadata.sources' => array(
-     *      array('type' => 'flatfile')
-     *  ),
+     * 'metadata.sources' => [
+     *     ['type' => 'flatfile']
+     * ],
      *
-     *'metadata.sources' => array(
-     *    array('type' => 'flatfile', 'directory' => $metadatadir),
-     *),
+     *'metadata.sources' => [
+     *    ['type' => 'flatfile'],
+     *],
      */
+
+
+     /*
+       * Should signing of generated metadata be enabled by default.
+       *
+       * Metadata signing can also be enabled for a individual SP or IdP by setting the
+       * same option in the metadata for the SP or IdP.
+       */
+      'metadata.sign.enable' => false,
+
+      /*
+       * The default key & certificate which should be used to sign generated metadata. These
+       * are files stored in the cert dir.
+       * These values can be overridden by the options with the same names in the SP or
+       * IdP metadata.
+       *
+       * If these aren't specified here or in the metadata for the SP or IdP, then
+       * the 'certificate' and 'privatekey' option in the metadata will be used.
+       * if those aren't set, signing of metadata will fail.
+       */
+      'metadata.sign.privatekey' => null,
+      'metadata.sign.privatekey_pass' => null,
+      'metadata.sign.certificate' => null,
+      'metadata.sign.algorithm' => null,
+
+
+     /****************************
+      | DATA STORE CONFIGURATION |
+      ****************************/
+
 
     /*
      * Configure the datastore for simpleSAMLphp.
@@ -637,133 +822,112 @@ $config = array(
     'store.sql.prefix' => 'simpleSAMLphp',
 
 
-    /*
-     * Configuration for the MemcacheStore class. This allows you to store
-     * multiple redudant copies of sessions on different memcache servers.
-     *
-     * 'memcache_store.servers' is an array of server groups. Every data
-     * item will be mirrored in every server group.
-     *
-     * Each server group is an array of servers. The data items will be
-     * load-balanced between all servers in each server group.
-     *
-     * Each server is an array of parameters for the server. The following
-     * options are available:
-     *  - 'hostname': This is the hostname or ip address where the
-     *    memcache server runs. This is the only required option.
-     *  - 'port': This is the port number of the memcache server. If this
-     *    option isn't set, then we will use the 'memcache.default_port'
-     *    ini setting. This is 11211 by default.
-     *  - 'weight': This sets the weight of this server in this server
-     *    group. http://php.net/manual/en/function.Memcache-addServer.php
-     *    contains more information about the weight option.
-     *  - 'timeout': The timeout for this server. By default, the timeout
-     *    is 3 seconds.
-     *
-     * Example of redudant configuration with load balancing:
-     * This configuration makes it possible to lose both servers in the
-     * a-group or both servers in the b-group without losing any sessions.
-     * Note that sessions will be lost if one server is lost from both the
-     * a-group and the b-group.
-     *
-     * 'memcache_store.servers' => array(
-     *     array(
-     *         array('hostname' => 'mc_a1'),
-     *         array('hostname' => 'mc_a2'),
-     *     ),
-     *     array(
-     *         array('hostname' => 'mc_b1'),
-     *         array('hostname' => 'mc_b2'),
-     *     ),
-     * ),
-     *
-     * Example of simple configuration with only one memcache server,
-     * running on the same computer as the web server:
-     * Note that all sessions will be lost if the memcache server crashes.
-     *
-     * 'memcache_store.servers' => array(
-     *     array(
-     *         array('hostname' => 'localhost'),
-     *     ),
-     * ),
-     *
-     */
-    'memcache_store.servers' => array(
-        array(
-            array('hostname' => 'localhost'),
-        ),
-    ),
+    /**************************
+         | MEMCACHE CONFIGURATION |
+         **************************/
+
+        /*
+         * Configuration for the 'memcache' session store. This allows you to store
+         * multiple redundant copies of sessions on different memcache servers.
+         *
+         * 'memcache_store.servers' is an array of server groups. Every data
+         * item will be mirrored in every server group.
+         *
+         * Each server group is an array of servers. The data items will be
+         * load-balanced between all servers in each server group.
+         *
+         * Each server is an array of parameters for the server. The following
+         * options are available:
+         *  - 'hostname': This is the hostname or ip address where the
+         *    memcache server runs. This is the only required option.
+         *  - 'port': This is the port number of the memcache server. If this
+         *    option isn't set, then we will use the 'memcache.default_port'
+         *    ini setting. This is 11211 by default.
+         *  - 'weight': This sets the weight of this server in this server
+         *    group. http://php.net/manual/en/function.Memcache-addServer.php
+         *    contains more information about the weight option.
+         *  - 'timeout': The timeout for this server. By default, the timeout
+         *    is 3 seconds.
+         *
+         * Example of redundant configuration with load balancing:
+         * This configuration makes it possible to lose both servers in the
+         * a-group or both servers in the b-group without losing any sessions.
+         * Note that sessions will be lost if one server is lost from both the
+         * a-group and the b-group.
+         *
+         * 'memcache_store.servers' => [
+         *     [
+         *         ['hostname' => 'mc_a1'],
+         *         ['hostname' => 'mc_a2'],
+         *     ],
+         *     [
+         *         ['hostname' => 'mc_b1'],
+         *         ['hostname' => 'mc_b2'],
+         *     ],
+         * ],
+         *
+         * Example of simple configuration with only one memcache server,
+         * running on the same computer as the web server:
+         * Note that all sessions will be lost if the memcache server crashes.
+         *
+         * 'memcache_store.servers' => [
+         *     [
+         *         ['hostname' => 'localhost'],
+         *     ],
+         * ],
+         *
+         */
+        'memcache_store.servers' => [
+            [
+                ['hostname' => 'localhost'],
+            ],
+        ],
+
+        /*
+         * This value allows you to set a prefix for memcache-keys. The default
+         * for this value is 'simpleSAMLphp', which is fine in most cases.
+         *
+         * When running multiple instances of SSP on the same host, and more
+         * than one instance is using memcache, you probably want to assign
+         * a unique value per instance to this setting to avoid data collision.
+         */
+        'memcache_store.prefix' => '',
+
+        /*
+         * This value is the duration data should be stored in memcache. Data
+         * will be dropped from the memcache servers when this time expires.
+         * The time will be reset every time the data is written to the
+         * memcache servers.
+         *
+         * This value should always be larger than the 'session.duration'
+         * option. Not doing this may result in the session being deleted from
+         * the memcache servers while it is still in use.
+         *
+         * Set this value to 0 if you don't want data to expire.
+         *
+         * Note: The oldest data will always be deleted if the memcache server
+         * runs out of storage space.
+         */
+        'memcache_store.expires' => 36 * (60 * 60), // 36 hours.
 
 
-    /*
-     * This value is the duration data should be stored in memcache. Data
-     * will be dropped from the memcache servers when this time expires.
-     * The time will be reset every time the data is written to the
-     * memcache servers.
-     *
-     * This value should always be larger than the 'session.duration'
-     * option. Not doing this may result in the session being deleted from
-     * the memcache servers while it is still in use.
-     *
-     * Set this value to 0 if you don't want data to expire.
-     *
-     * Note: The oldest data will always be deleted if the memcache server
-     * runs out of storage space.
-     */
-    'memcache_store.expires' => 36 * (60 * 60), // 36 hours.
+        /***********************
+         | PROXY CONFIGURATION |
+         ***********************/
 
+        /*
+         * Proxy to use for retrieving URLs.
+         *
+         * Example:
+         *   'proxy' => 'tcp://proxy.example.com:5100'
+         */
+        'proxy' => null,
 
-    /*
-     * Should signing of generated metadata be enabled by default.
-     *
-     * Metadata signing can also be enabled for a individual SP or IdP by setting the
-     * same option in the metadata for the SP or IdP.
-     */
-    'metadata.sign.enable' => false,
+        /*
+         * Username/password authentication to proxy (Proxy-Authorization: Basic)
+         * Example:
+         *   'proxy.auth' = 'myuser:password'
+         */
+        //'proxy.auth' => 'myuser:password',
 
-    /*
-     * The default key & certificate which should be used to sign generated metadata. These
-     * are files stored in the cert dir.
-     * These values can be overridden by the options with the same names in the SP or
-     * IdP metadata.
-     *
-     * If these aren't specified here or in the metadata for the SP or IdP, then
-     * the 'certificate' and 'privatekey' option in the metadata will be used.
-     * if those aren't set, signing of metadata will fail.
-     */
-    'metadata.sign.privatekey' => null,
-    'metadata.sign.privatekey_pass' => null,
-    'metadata.sign.certificate' => null,
-
-
-    /*
-     * Proxy to use for retrieving URLs.
-     *
-     * Example:
-     *   'proxy' => 'tcp://proxy.example.com:5100'
-     */
-    'proxy' => null,
-
-    /*
-     * Array of domains that are allowed when generating links or redirections
-     * to URLs. simpleSAMLphp will use this option to determine whether to
-     * to consider a given URL valid or not, but you should always validate
-     * URLs obtained from the input on your own (i.e. ReturnTo or RelayState
-     * parameters obtained from the $_REQUEST array).
-     *
-     * Set to NULL to disable checking of URLs.
-     *
-     * simpleSAMLphp will automatically add your own domain (either by checking
-     * it dinamically, or by using the domain defined in the 'baseurlpath'
-     * directive, the latter having precedence) to the list of trusted domains,
-     * in case this option is NOT set to NULL. In that case, you are explicitly
-     * telling simpleSAMLphp to verify URLs.
-     *
-     * Set to an empty array to disallow ALL redirections or links pointing to
-     * an external URL other than your own domain.
-     *
-     * Example:
-     *   'trusted.url.domains' => array('sp.example.com', 'app.example.com'),
-     */
-    'trusted.url.domains' => array(),
-);
+];
